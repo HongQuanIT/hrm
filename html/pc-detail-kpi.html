@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Chi tiết KPI - PeoplePulse</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#191b23",
+                    "background": "#faf8ff",
+                    "on-secondary-container": "#54647a",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "on-tertiary-fixed": "#360f00",
+                    "inverse-surface": "#2e3039",
+                    "surface-container-low": "#f3f3fe",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "tertiary-fixed": "#ffdbcd",
+                    "primary-fixed": "#dbe1ff",
+                    "on-primary-fixed": "#00174b",
+                    "error": "#ba1a1a",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "surface-container": "#ededf9",
+                    "surface-tint": "#0053db",
+                    "surface": "#faf8ff",
+                    "inverse-on-surface": "#f0f0fb",
+                    "on-secondary-fixed": "#0b1c30",
+                    "tertiary-fixed-dim": "#ffb596",
+                    "surface-container-highest": "#e1e2ed",
+                    "surface-bright": "#faf8ff",
+                    "primary-container": "#2563eb",
+                    "on-tertiary-fixed-variant": "#7d2d00",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-container": "#eeefff",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-container": "#ffede6",
+                    "primary": "#004ac6",
+                    "surface-container-high": "#e7e7f3",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "on-surface-variant": "#434655",
+                    "on-error": "#ffffff",
+                    "tertiary-container": "#bc4800",
+                    "outline": "#737686",
+                    "on-primary": "#ffffff",
+                    "secondary": "#505f76",
+                    "secondary-container": "#d0e1fb",
+                    "on-background": "#191b23",
+                    "surface-dim": "#d9d9e5",
+                    "surface-variant": "#e1e2ed",
+                    "secondary-fixed": "#d3e4fe",
+                    "inverse-primary": "#b4c5ff",
+                    "on-error-container": "#93000a",
+                    "tertiary": "#943700",
+                    "outline-variant": "#c3c6d7",
+                    "on-secondary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sidebar-width": "260px",
+                    "md": "16px",
+                    "xl": "32px",
+                    "sm": "12px",
+                    "lg": "24px",
+                    "container-max": "1280px",
+                    "base": "4px",
+                    "xs": "8px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .progress-circle {
+            transition: stroke-dashoffset 0.5s ease;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        /* Custom scrollbar for webkit */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e1e2ed; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen pb-24 md:pb-0 md:pl-[260px]">
+<!-- Sidebar (Desktop) -->
+<aside class="hidden md:flex fixed left-0 top-0 h-full w-[260px] bg-surface flex-col border-r border-outline-variant z-50">
+<div class="px-lg py-xl">
+<span class="font-headline-lg text-headline-lg text-primary">PeoplePulse</span>
+</div>
+<nav class="flex-1 px-md">
+<ul class="space-y-xs">
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-variant transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">dashboard</span>
+<span class="font-body-md text-body-md">Tổng quan</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg bg-secondary-container text-on-secondary-container" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">insights</span>
+<span class="font-body-md text-body-md font-semibold">KPI &amp; Dự án</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-variant transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">groups</span>
+<span class="font-body-md text-body-md">Nhân viên</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-variant transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">event_busy</span>
+<span class="font-body-md text-body-md">Nghỉ phép</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-variant transition-colors group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">settings</span>
+<span class="font-body-md text-body-md">Cài đặt</span>
+</a>
+</li>
+</ul>
+</nav>
+<div class="p-lg mt-auto border-t border-outline-variant">
+<div class="flex items-center gap-md">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="Close up professional portrait of a tech company manager, clean corporate style, soft studio lighting, smiling warmly, wearing a smart casual blazer, neutral background, 8k high resolution photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDqMT41eEqYOAsOEVE7aBz78xkRubgwX3YWh3iwyhv2m6eo-Ks5MPqvNCtxtWMJrm0UmS8avdnUQ9CKoHKVFhTjea6KnIgNMnDjFmTJXFJnFZRb3JAD3s2bUfuFt9ker7h--hdP6hoRZu8T8QIg5ZNZTlLP0g963NjtjEED0IsD9WE8rvYkNSdInh9jzhN__TeDsa6NmvEZxhFZji6LrX-91FTdrxS8lCTbYs91dCLtExXUbWGUmCc3255lOOzv-nmjx38eU0KyP2g"/>
+<div class="overflow-hidden">
+<p class="font-body-md text-body-md font-semibold truncate">Minh Trần</p>
+<p class="text-xs text-on-surface-variant truncate">Quản lý dự án</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Top App Bar (Mobile) -->
+<header class="md:hidden fixed top-0 left-0 w-full z-50 flex justify-between items-center px-md py-sm bg-surface shadow-sm">
+<div class="flex items-center gap-sm">
+<span class="material-symbols-outlined text-primary">arrow_back</span>
+<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">PeoplePulse</span>
+</div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<img class="w-8 h-8 rounded-full border border-outline-variant" data-alt="A small circular avatar of a professional Asian male with glasses, looking professional and friendly, clean office lighting background, corporate headshot style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbfY0GVuziCWFtroB5NW8DWNNWASWkHarzzZRj94c-sYSfYtWpFrZE0LUU43VNYVDDUnDHn_XFe7RyUoinc25FW1Z0Aji9UREuzW6DzNoL9xhXJGdE06fcn2AQ__Qy-cwUSYUVjYrAxkobV28ZFfB3lL6_gj82m-f8ma86I6ZKcbuhcOdkZFPo3SxiE8bx6dHH-NpTdwGJsrrf2RsPZkkzQONRxhHRSNb-Vp_jy4lAFsVlFuM9RV-SPC1wmHFklDjrtOEDvoyG5zs"/>
+</div>
+</header>
+<!-- Main Content -->
+<main class="pt-20 md:pt-lg px-md md:px-xl max-w-container-max mx-auto">
+<!-- Breadcrumb & Actions -->
+<div class="hidden md:flex items-center justify-between mb-lg">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="font-label-md text-label-md">Dự án</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="font-label-md text-label-md">KPI Quý 4</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="font-label-md text-label-md text-primary font-semibold">Hoàn thành Website dự án</span>
+</div>
+<div class="flex gap-md">
+<button class="flex items-center gap-xs px-lg py-sm border border-outline-variant rounded-full font-label-md text-label-md hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined text-sm">share</span> Chia sẻ
+                </button>
+<button class="flex items-center gap-xs px-lg py-sm bg-primary text-on-primary rounded-full font-label-md text-label-md shadow-lg shadow-primary/20 hover:opacity-90 transition-all">
+<span class="material-symbols-outlined text-sm">edit</span> Chỉnh sửa KPI
+                </button>
+</div>
+</div>
+<!-- KPI Header Card -->
+<section class="mb-lg">
+<div class="bg-surface-container-lowest rounded-xl p-lg border border-outline-variant shadow-sm overflow-hidden relative">
+<div class="absolute top-0 right-0 p-lg opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-8xl">task_alt</span>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Title and Description -->
+<div class="lg:col-span-2">
+<span class="inline-block px-3 py-1 bg-primary-container text-on-primary-container rounded-full text-xs font-semibold mb-sm">ƯU TIÊN CAO</span>
+<h1 class="font-display-lg text-display-lg text-on-surface mb-xs">Hoàn thành Website dự án</h1>
+<p class="text-on-surface-variant body-lg mb-lg max-w-2xl">
+                            Xây dựng và triển khai nền tảng website mới tích hợp hệ thống quản lý nhân sự PeoplePulse, đảm bảo trải nghiệm người dùng tối ưu và hiệu năng cao.
+                        </p>
+<div class="flex flex-wrap gap-xl">
+<div class="flex flex-col">
+<span class="text-xs text-on-surface-variant font-medium">MỤC TIÊU</span>
+<span class="font-headline-md text-headline-md">100% Hoàn tất</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs text-on-surface-variant font-medium">HẠN ĐỊNH</span>
+<span class="font-headline-md text-headline-md text-error">30 Th12, 2024</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs text-on-surface-variant font-medium">CHỦ TRÌ</span>
+<div class="flex items-center gap-xs">
+<img class="w-6 h-6 rounded-full" data-alt="Close up professional portrait of a tech company manager, clean corporate style, soft studio lighting, smiling warmly, wearing a smart casual blazer, neutral background, 8k high resolution photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvF4hbkSKhUu170c1uHVgot-Vo1roJmV0UrEXUAk1Pb9lt0tLDHGC48ej2fAU3pKqAepWiQaEyIFFtkwPyQ6CVVm3G5e83htlRocR4edVe6uQnpuO3A2dZ3Z-cz9JkQw_eh5i1o767OmK6WVr5NOAtvuRjYsmYHIgOAOaemc2g5cgu-q5IaWdXY5in-E4_6WreRwZ17GWSI8YhsmwCJjjSMIDErkdUnCdNdKQWVit9B6ZSccZ4W3y4AN31FPjyJLVX4BSmXda8WUc"/>
+<span class="font-headline-md text-headline-md">Minh Trần</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Progress Visualization -->
+<div class="flex flex-col items-center justify-center bg-surface-container-low rounded-xl p-lg border border-outline-variant/50">
+<div class="relative w-32 h-32 mb-md">
+<svg class="w-full h-full transform -rotate-90">
+<circle class="text-surface-container-highest" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-width="12"></circle>
+<circle class="text-primary progress-circle" cx="64" cy="64" fill="transparent" r="58" stroke="currentColor" stroke-dasharray="364.4" stroke-dashoffset="109.32" stroke-linecap="round" stroke-width="12"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center flex-col">
+<span class="text-2xl font-bold">70%</span>
+<span class="text-[10px] text-on-surface-variant uppercase tracking-wider">Tiến độ</span>
+</div>
+</div>
+<p class="text-sm font-medium text-center">4/6 giai đoạn hoàn thành</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Main Layout Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg mb-xl">
+<!-- Project Phases (Left/Middle Column) -->
+<div class="lg:col-span-2 space-y-md">
+<div class="flex items-center justify-between px-xs">
+<h2 class="font-headline-md text-headline-md">Các giai đoạn thực hiện</h2>
+<button class="text-primary font-label-md text-label-md hover:underline">Thêm giai đoạn</button>
+</div>
+<!-- Phase Card: UI/UX -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl hover:shadow-md transition-shadow">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-md">
+<div class="flex items-start gap-md">
+<div class="p-xs bg-success/10 text-success rounded-lg mt-1">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg font-semibold">Thiết kế UI/UX</h3>
+<p class="text-body-md text-on-surface-variant">Hoàn thiện Wireframe và Hi-fi prototype cho 12 màn hình chính.</p>
+<div class="flex items-center gap-md mt-sm">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+<span class="text-xs">15 Th10, 2024</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">person</span>
+<span class="text-xs">Lê Phương</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-lg sm:flex-col sm:items-end">
+<span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold">ĐÃ XONG</span>
+<div class="flex -space-x-2">
+<img class="w-8 h-8 rounded-full border-2 border-surface" data-alt="Portrait of a creative young female designer, artistic vibe, soft colorful studio lighting, wearing modern glasses, modern minimalist style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEYMospZbGiJuItHG-2NDZZt2xOOvyWja_e6quoa8EkUp8SojSlSWce4zMmDSZfQQejdivbVey1_RZSmecDE0Xhlu7MqeYBKtgBIo7lthqg8p0nrJmdhTabdSgOtibBMEh15pTWCAyoERdpSJ13jP70BqBzA_ufGo5T6K4nFcddDm03f7PnD5W5lgftr6w3rklyB8kIDvSbd-_quEnGOEJ3e61rjoz2ppeuhuRXKQfkt8r8Cs--F-ftjgTEI45DJax7K_gMmYjDjg"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Phase Card: Frontend -->
+<div class="bg-surface-container-lowest border border-primary/30 p-md rounded-xl shadow-sm border-l-4 border-l-primary relative overflow-hidden">
+<div class="absolute top-0 right-0 h-1 w-full bg-surface-container-high">
+<div class="h-full bg-primary" style="width: 65%;"></div>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-md pt-2">
+<div class="flex items-start gap-md">
+<div class="p-xs bg-primary/10 text-primary rounded-lg mt-1">
+<span class="material-symbols-outlined animate-pulse">pending</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg font-semibold text-primary">Phát triển Frontend</h3>
+<p class="text-body-md text-on-surface-variant">Tích hợp giao diện với ReactJS và Tailwind CSS.</p>
+<div class="flex items-center gap-md mt-sm">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+<span class="text-xs">05 Th11, 2024</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">person</span>
+<span class="text-xs">Nguyễn An</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-lg sm:flex-col sm:items-end">
+<span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold">ĐANG LÀM</span>
+<div class="flex -space-x-2">
+<img class="w-8 h-8 rounded-full border-2 border-surface" data-alt="Portrait of a young male software developer, tech-focused environment, soft screen-light glow, wearing headphones, professional but relaxed look." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDT4LC0Kmvct7BeM7nsxl_uJQUUfLKMyg-g_V4lsXm2ZHhLnXYclL5qvK16eFkZ_-SoH4zF1mf6fWjxGzRAwC2F2Gj_k0_R7Zc-hGFjPQPw2g_dGr7PlgvAHxQQxA2BmFKkXhk7rNlRzJGmOkE2K8l0VR0sS8MEGS4U8K9xhwVCKZbr4_uVvCcZuOXLOZ38m_C1s_PRs3Sz3fMPoj6Y5qxcLesZcXAhjlOyMp0bbrosIqyj26w3o2gecOdFihuBUGM7cEoI2RPHKss"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Phase Card: Backend -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl opacity-80">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-md">
+<div class="flex items-start gap-md">
+<div class="p-xs bg-outline-variant/20 text-on-surface-variant rounded-lg mt-1">
+<span class="material-symbols-outlined">schedule</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg font-semibold">Phát triển Backend</h3>
+<p class="text-body-md text-on-surface-variant">Xây dựng API hệ thống và quản trị cơ sở dữ liệu.</p>
+<div class="flex items-center gap-md mt-sm">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+<span class="text-xs">20 Th11, 2024</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">person</span>
+<span class="text-xs">Phạm Hùng</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-lg sm:flex-col sm:items-end">
+<span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant rounded-full text-xs font-bold">CHỜ</span>
+<div class="flex -space-x-2">
+<img class="w-8 h-8 rounded-full border-2 border-surface" data-alt="Portrait of a senior male backend engineer, experienced and confident look, modern office background, warm professional lighting, wearing a dark sweater." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdEop-pCcHxdhHfqq8rwEcoTcXUR8ATLJs4sb7ugPncQ9TV0g7yoR8HOaiH_TQn9VHjBvwA_GnxV0ke5in02W1BakklLGNw_5sGy5tAelbbIrMm0tTJ1Gb6FSXpcUDzqJDMuBAyWeCCoQZAeVsqFuY-nkyKpLv3sHxQCmQbprSJ6GuFGYazrESo_St4xEfzpiVCBpc_O4NPGX8-WyEvneMaj1emUcV96NWG32__SRahT94FyxRHh9O7ixkIHCsUFmbQp9qfLobRoY"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Phase Card: Testing -->
+<div class="bg-surface-container-lowest border border-outline-variant p-md rounded-xl opacity-80">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-md">
+<div class="flex items-start gap-md">
+<div class="p-xs bg-outline-variant/20 text-on-surface-variant rounded-lg mt-1">
+<span class="material-symbols-outlined">bug_report</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg font-semibold">Testing &amp; QA</h3>
+<p class="text-body-md text-on-surface-variant">Kiểm thử bảo mật và hiệu năng trước khi ra mắt chính thức.</p>
+<div class="flex items-center gap-md mt-sm">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+<span class="text-xs">10 Th12, 2024</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-sm">person</span>
+<span class="text-xs">Trần Lan</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-lg sm:flex-col sm:items-end">
+<span class="px-3 py-1 bg-surface-container-highest text-on-surface-variant rounded-full text-xs font-bold">CHỜ</span>
+<div class="flex -space-x-2">
+<img class="w-8 h-8 rounded-full border-2 border-surface" data-alt="Portrait of a focused female QA analyst, modern tech office environment, soft daylighting, looking sharp and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAquItgogtNLw1FXUBu3I3Jw4LOxZiO2zfM-zlAp6GgYbenVXVn6ouLY4DKKH92J4GtSI6lVVzJ2G0oNpGTgtyTttJ6GqBkEtLkiU-WCLG178YKOp7uhGCcDRgtGnMC3R-mC1rNIBxuV0sbmiW7F2aDFdWy075qEEvbFQlKnsN2gDHDffBkVtGJC6LmylwYv_hGjxWAI8mObQCxuLpKhCcPUV0Cz_ZBKARprDJTQ0zAtRz0nJDgG9WM49C36wbkkOCv2nqpLlINdXA"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Sidebar: Team & Activity -->
+<div class="space-y-lg">
+<!-- Team Section -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-lg">
+<h2 class="font-headline-md text-headline-md mb-md">Thành viên dự án</h2>
+<div class="space-y-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-md">
+<img class="w-10 h-10 rounded-full" data-alt="Close up professional portrait of a tech company manager, clean corporate style, soft studio lighting, smiling warmly, wearing a smart casual blazer, neutral background, 8k high resolution photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmJMnbw08ABtoB2slvQzZEOlwcoT1WvhLaaLWP-7WSjqJ1V2BIxRZ3UkJR3efVKSA6PpnhJ87fcfrXwbirLjT0QqzUlirUX9LN462N1h3tpXzMTHYFiiklTowMGVHO9QokoROxNtNLRJDF-Jyyk_dm3YCQE4CXtU3qqvrvC98ipmqcrsHLMrLZPaQXNI81I9FJFDKkd3aCoselwFAnC7qP82mVWRRuuC3L6l1ie4CdZprmwDbmX9dZ8eePf3-sQJ1QqEsBNU9cGQk"/>
+<div>
+<p class="font-body-md text-body-md font-semibold">Minh Trần</p>
+<p class="text-xs text-on-surface-variant">Project Manager</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">chat_bubble</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-md">
+<img class="w-10 h-10 rounded-full" data-alt="Portrait of a creative young female designer, artistic vibe, soft colorful studio lighting, wearing modern glasses, modern minimalist style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-LTYzpI8vPo7BHNDJNyGGr4ZLF9dgwWkc7YBflKL0rCfhbt2__Q_thoWazNSF_jiIYx1KxbPnY-72hWyXd2dFOBU1Issaoc_Rp80F1jmqriWlB96WDaacESOdweinVzpSGoQD6sk6pMK3NDLKD8cAGlJ2BFY7yVQXPJtLcQ5avwMi7bRmXlQKPtU024CoKdjQ99uKSqRE-mfRy526zDuJv63zp7Y0ULK4_vxkEfSBia5GPjP52yzHM0TSjmx9HKG9ZyVv90QoExg"/>
+<div>
+<p class="font-body-md text-body-md font-semibold">Lê Phương</p>
+<p class="text-xs text-on-surface-variant">UI/UX Designer</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">chat_bubble</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-md">
+<img class="w-10 h-10 rounded-full" data-alt="Portrait of a young male software developer, tech-focused environment, soft screen-light glow, wearing headphones, professional but relaxed look." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD1S_X4FvMHcwVZwKQhuLy_QCqQzcn7z7bFXMUBbaPiMohZhQZoFOujp-gjIibJ3weOS5JFYnlcz6TkaCPZ4pozf-_EWd3C_LgssyWV__-WH57WcGOls8VXkUSi2aLUSxM-euuthbjE55Etd9ZUd1Yq8_R4kOjQAzNRsEqR8KoWPc57pToRDh9y6tYDZiQdZ7ypR_K0f7HSYJBpoQuEqhr8Ih3o4b9qqz4M__7zULCHrOfhdvMCtVIbCYH-vbKV4maUAzl16iKa-oM"/>
+<div>
+<p class="font-body-md text-body-md font-semibold">Nguyễn An</p>
+<p class="text-xs text-on-surface-variant">Frontend Dev</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">chat_bubble</span>
+</div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-md">
+<img class="w-10 h-10 rounded-full" data-alt="Portrait of a senior male backend engineer, experienced and confident look, modern office background, warm professional lighting, wearing a dark sweater." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNbJfVH1y2RE7juwUfy6cP-r5cYMbhbOdGaXgkaurYxZ6oC8E3usreZM2AG2bJj7g5eG1_S8Ln3oiEJdFS3mML6VbhV3pg1_0fw7yT150U6LJNYJ7R1vq1jg7F-TmoRqRJO5GbiUAvnpB3ZyEmsXx-zM2M02whH_kq8p4brOJuYv3hypYDXXVFgoESMr7PwGJjWdiUei6rPqwZFhGbE7jdMopK5seYONbdqEFXwqjJ0EMOrPSycIRNkjCk_QFepUee0iJ8S2H3pio"/>
+<div>
+<p class="font-body-md text-body-md font-semibold">Phạm Hùng</p>
+<p class="text-xs text-on-surface-variant">Backend Dev</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant text-sm">chat_bubble</span>
+</div>
+</div>
+<button class="w-full mt-lg py-sm border border-dashed border-outline rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors font-label-md text-label-md">
+                        + Mời thêm thành viên
+                    </button>
+</div>
+<!-- Recent Activity -->
+<div class="bg-surface-container-low border border-outline-variant rounded-xl p-lg">
+<h2 class="font-headline-md text-headline-md mb-md">Hoạt động mới nhất</h2>
+<div class="space-y-md border-l-2 border-outline-variant ml-2 pl-6 relative">
+<div class="relative">
+<div class="absolute -left-[31px] top-0 w-3 h-3 rounded-full bg-primary"></div>
+<p class="text-xs text-on-surface-variant">10 phút trước</p>
+<p class="text-sm"><strong>Nguyễn An</strong> đã cập nhật trạng thái "Frontend" thành 65%.</p>
+</div>
+<div class="relative">
+<div class="absolute -left-[31px] top-0 w-3 h-3 rounded-full bg-outline-variant"></div>
+<p class="text-xs text-on-surface-variant">2 giờ trước</p>
+<p class="text-sm"><strong>Lê Phương</strong> đã hoàn thành giai đoạn "Thiết kế UI/UX".</p>
+</div>
+<div class="relative">
+<div class="absolute -left-[31px] top-0 w-3 h-3 rounded-full bg-outline-variant"></div>
+<p class="text-xs text-on-surface-variant">Hôm qua</p>
+<p class="text-sm"><strong>Minh Trần</strong> đã thay đổi deadline dự án đến 30/12.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Nav Bar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-sm pb-safe pt-xs bg-surface border-t border-outline-variant shadow-lg rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Tổng quan</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">insights</span>
+<span class="font-label-md text-label-md">Dự án</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-md text-label-md">Nhân viên</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Cài đặt</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions and interactive logic
+        document.querySelectorAll('.hover\\:shadow-md').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+                card.style.transition = 'all 0.3s ease';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Simulating the progress circle animation on load
+        window.addEventListener('load', () => {
+            const circle = document.querySelector('.progress-circle');
+            if(circle) {
+                // Circumference = 2 * PI * 58 = 364.4
+                // 70% progress = 364.4 * 0.3 = 109.32 offset
+                circle.style.strokeDashoffset = '109.32';
+            }
+        });
+    </script>
+</body></html>

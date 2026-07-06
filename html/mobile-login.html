@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Đăng nhập | PeoplePulse HRM</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-fixed-dim": "#ffb596",
+                      "surface-tint": "#0053db",
+                      "surface-dim": "#d9d9e5",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "on-primary-container": "#eeefff",
+                      "on-primary-fixed": "#00174b",
+                      "secondary-fixed-dim": "#b7c8e1",
+                      "on-surface-variant": "#434655",
+                      "outline": "#737686",
+                      "on-secondary": "#ffffff",
+                      "surface-variant": "#e1e2ed",
+                      "error": "#ba1a1a",
+                      "on-primary-fixed-variant": "#003ea8",
+                      "tertiary-container": "#bc4800",
+                      "inverse-surface": "#2e3039",
+                      "error-container": "#ffdad6",
+                      "on-error": "#ffffff",
+                      "surface": "#faf8ff",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "tertiary": "#943700",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-high": "#e7e7f3",
+                      "on-tertiary": "#ffffff",
+                      "primary": "#004ac6",
+                      "on-surface": "#191b23",
+                      "tertiary-fixed": "#ffdbcd",
+                      "on-secondary-container": "#54647a",
+                      "background": "#faf8ff",
+                      "on-background": "#191b23",
+                      "secondary-container": "#d0e1fb",
+                      "on-tertiary-container": "#ffede6",
+                      "on-error-container": "#93000a",
+                      "secondary": "#505f76",
+                      "surface-container-highest": "#e1e2ed",
+                      "on-secondary-fixed": "#0b1c30",
+                      "surface-bright": "#faf8ff",
+                      "on-tertiary-fixed": "#360f00",
+                      "inverse-primary": "#b4c5ff",
+                      "outline-variant": "#c3c6d7",
+                      "surface-container": "#ededf9",
+                      "inverse-on-surface": "#f0f0fb",
+                      "surface-container-low": "#f3f3fe",
+                      "secondary-fixed": "#d3e4fe",
+                      "primary-fixed": "#dbe1ff",
+                      "primary-container": "#2563eb",
+                      "on-primary": "#ffffff",
+                      "on-tertiary-fixed-variant": "#7d2d00"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "sm": "12px",
+                      "xl": "32px",
+                      "lg": "24px",
+                      "container-max": "1280px",
+                      "md": "16px",
+                      "sidebar-width": "260px",
+                      "base": "4px",
+                      "xs": "8px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "body-md": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "headline-md": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #faf8ff;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .input-focus-ring:focus {
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+            border-color: #2563EB;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-md relative overflow-hidden">
+<!-- Background Atmospheric Elements -->
+<div class="absolute inset-0 z-0 pointer-events-none">
+<div class="absolute top-[-10%] right-[-5%] w-[40rem] h-[40rem] bg-secondary-container/30 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-[-10%] left-[-5%] w-[35rem] h-[35rem] bg-primary-container/10 rounded-full blur-[100px]"></div>
+</div>
+<main class="relative z-10 w-full max-w-[1100px] flex flex-col md:flex-row items-stretch justify-center gap-0 bg-surface-container-lowest rounded-xl shadow-2xl overflow-hidden min-h-[640px]">
+<!-- Left Side: Visual/Branding Section -->
+<section class="hidden md:flex md:w-1/2 bg-primary-container relative p-xl flex-col justify-between text-on-primary">
+<div class="absolute inset-0 overflow-hidden opacity-20">
+
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-xs mb-xl">
+<div class="w-10 h-10 bg-on-primary rounded-lg flex items-center justify-center shadow-lg">
+<span class="material-symbols-outlined text-primary text-[28px]" style="font-variation-settings: 'FILL' 1;">pulse_alert</span>
+</div>
+<span class="font-headline-lg text-headline-lg tracking-tight">PeoplePulse</span>
+</div>
+<h1 class="font-display-lg text-display-lg mt-xl leading-tight">Nền tảng quản trị nhân sự thế hệ mới</h1>
+<p class="font-body-lg text-body-lg mt-md opacity-90 max-w-sm">Giải pháp toàn diện giúp doanh nghiệp vận hành chuyên nghiệp, minh bạch và hiệu quả hơn mỗi ngày.</p>
+</div>
+<div class="relative z-10">
+<div class="flex items-center gap-sm">
+<div class="flex -space-x-3">
+<div class="w-10 h-10 rounded-full border-2 border-primary-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Professional corporate headshot of a smiling female HR manager in a bright modern office setting, soft natural lighting, high-quality digital photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBN9a0mrJHSxsrkfscP4J5r9pZ9f21G2A63SEXD_25RPxUAgOoxFeLgu5Js-RDaRLCMMZHhU94cpen1G_AaMLo3TxaWWnIC7OedkSK6NuVf2-Si9b-4Rf8WxbijhWNfSF9ZHnp7JYeOE34mBT_5y8WEo4nEa4byX-72gNoO7nOAJd6xd4Ks6d3s4ekYxy_-qZYGXCkx5ir2bcwVlUNZM5xmgk89UEqi4IYR7arXX9zJMgRRGxDo90JFb_OERlK328o0Fl18YEnoa0Q"/>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-primary-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Professional corporate headshot of a confident male executive in professional attire, minimalist studio background, soft lighting, 4k resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2XoH2wnyS7frFrrcVbEnLsamHh-Y30H9W4vw2FEyzOs6o84BBfVofcQG7eMln1a7pPhmW9N-v7ehQ0nanRi_63vHbvfGWOdKGZD43zALCJBJREMFBchQmToTNhouNv3oHBWv78YPLHwszIa4T_T7i8vnuLux4pQkrW3km5ZnPpku-rbGh2SKIfDVhL4JHo6Gg3zjdFMT4yqsFvkcX4U585UV2HsLGYh6pOvfSe0jejMyjksEY6Fel0ZplBatIUU9TaVvpMNCACOo"/>
+</div>
+<div class="w-10 h-10 rounded-full border-2 border-primary-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="Portrait of a diverse young professional woman smiling, blurred modern office background with green plants, soft cinematic lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDq3KuoCru-7Ab-DtTsmQ1NFJ4HRhZxIYjAh-5vZeIM4XBOwOibQlsdUyRZQID6e1rJVZ8MiPjJzus0M31B6mDg2IjODBZAO8MABakoraK9zMyy007_PgHn-CkrXXeqLI4rU-AaAubeV3vC2UHOSiO9UYMe8oOr-JKoFzKnoUTtdeowAP2u_QvMyW7rmcIWk172VGo4r9P2vk4GA_pperUEDPuGl67Pnd4qE_nQAXY4sKREY0YR-ODuitRxZm2xfQeS2ZbXjvOlJco"/>
+</div>
+</div>
+<span class="font-label-md text-label-md opacity-80">+2,500 doanh nghiệp đang tin dùng</span>
+</div>
+</div>
+</section>
+<!-- Right Side: Login Form Section -->
+<section class="w-full md:w-1/2 p-lg md:p-xl flex flex-col justify-center bg-white">
+<div class="max-w-md mx-auto w-full">
+<!-- Mobile Logo -->
+<div class="flex md:hidden items-center gap-xs mb-lg">
+<div class="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[20px]" style="font-variation-settings: 'FILL' 1;">pulse_alert</span>
+</div>
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-primary font-bold">PeoplePulse</span>
+</div>
+<div class="mb-xl">
+<h2 class="font-headline-lg text-headline-lg md:text-[28px] text-on-surface mb-xs">Chào mừng trở lại</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Vui lòng nhập thông tin để truy cập hệ thống quản trị.</p>
+</div>
+<form class="space-y-lg" onsubmit="event.preventDefault();">
+<!-- Email Input -->
+<div class="space-y-base">
+<label class="font-label-md text-label-md text-on-surface-variant block" for="email">Email nhân viên</label>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline text-[20px]">mail</span>
+</div>
+<input class="w-full pl-[44px] pr-md py-sm bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface transition-all input-focus-ring placeholder:text-outline-variant" id="email" name="email" placeholder="name@company.com" required="" type="email"/>
+</div>
+</div>
+<!-- Password Input -->
+<div class="space-y-base">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface-variant" for="password">Mật khẩu</label>
+<a class="font-label-md text-label-md text-primary font-semibold hover:underline" href="#">Quên mật khẩu?</a>
+</div>
+<div class="relative">
+<div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline text-[20px]">lock</span>
+</div>
+<input class="w-full pl-[44px] pr-[44px] py-sm bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface transition-all input-focus-ring placeholder:text-outline-variant" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute inset-y-0 right-0 pr-md flex items-center text-outline hover:text-primary transition-colors" onclick="togglePasswordVisibility()" type="button">
+<span class="material-symbols-outlined text-[20px]" id="password-toggle-icon">visibility</span>
+</button>
+</div>
+</div>
+<!-- Remember Me & Actions -->
+<div class="flex items-center">
+<input class="w-4 h-4 text-primary border-outline-variant rounded focus:ring-primary/20 transition-all cursor-pointer" id="remember" name="remember" type="checkbox"/>
+<label class="ml-xs font-body-md text-body-md text-on-surface-variant cursor-pointer select-none" for="remember">Ghi nhớ đăng nhập</label>
+</div>
+<button class="w-full py-sm px-lg bg-primary-container text-on-primary font-semibold rounded-lg shadow-md shadow-primary/20 hover:bg-primary transition-all active:scale-[0.98] flex items-center justify-center gap-xs" type="submit">
+<span>Đăng nhập</span>
+<span class="material-symbols-outlined text-[20px]">login</span>
+</button>
+</form>
+<div class="mt-xl pt-lg border-t border-outline-variant/30 text-center">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                        Bạn chưa có tài khoản? 
+                        <a class="text-primary font-semibold hover:underline" href="#">Liên hệ quản trị viên</a>
+</p>
+</div>
+<!-- Footer info for Mobile -->
+<div class="mt-lg md:hidden text-center">
+<div class="flex justify-center gap-md opacity-60">
+<a class="font-label-md text-label-md" href="#">Điều khoản</a>
+<a class="font-label-md text-label-md" href="#">Bảo mật</a>
+<a class="font-label-md text-label-md" href="#">Hỗ trợ</a>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Global Footer (Desktop) -->
+<footer class="absolute bottom-lg left-0 w-full text-center hidden md:block z-10">
+<p class="font-label-md text-label-md text-on-surface-variant opacity-60">
+            © 2024 PeoplePulse HRM Ecosystem. All rights reserved. Version 2.4.0
+        </p>
+</footer>
+<script>
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('password-toggle-icon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.textContent = 'visibility_off';
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.textContent = 'visibility';
+            }
+        }
+
+        // Simple enter interaction for the button
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const btn = document.querySelector('button[type="submit"]');
+                btn.classList.add('scale-[0.98]');
+                setTimeout(() => btn.classList.remove('scale-[0.98]'), 150);
+            }
+        });
+    </script>
+</body></html>

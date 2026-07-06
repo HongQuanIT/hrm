@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Chấm công - PeoplePulse</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                "tertiary-fixed-dim": "#ffb596",
+                "surface-tint": "#0053db",
+                "surface-dim": "#d9d9e5",
+                "primary-fixed-dim": "#b4c5ff",
+                "on-primary-container": "#eeefff",
+                "on-primary-fixed": "#00174b",
+                "secondary-fixed-dim": "#b7c8e1",
+                "on-surface-variant": "#434655",
+                "outline": "#737686",
+                "on-secondary": "#ffffff",
+                "surface-variant": "#e1e2ed",
+                "error": "#ba1a1a",
+                "on-primary-fixed-variant": "#003ea8",
+                "tertiary-container": "#bc4800",
+                "inverse-surface": "#2e3039",
+                "error-container": "#ffdad6",
+                "on-error": "#ffffff",
+                "surface": "#faf8ff",
+                "on-secondary-fixed-variant": "#38485d",
+                "tertiary": "#943700",
+                "surface-container-lowest": "#ffffff",
+                "surface-container-high": "#e7e7f3",
+                "on-tertiary": "#ffffff",
+                "primary": "#004ac6",
+                "on-surface": "#191b23",
+                "tertiary-fixed": "#ffdbcd",
+                "on-secondary-container": "#54647a",
+                "background": "#faf8ff",
+                "on-background": "#191b23",
+                "secondary-container": "#d0e1fb",
+                "on-tertiary-container": "#ffede6",
+                "on-error-container": "#93000a",
+                "secondary": "#505f76",
+                "surface-container-highest": "#e1e2ed",
+                "on-secondary-fixed": "#0b1c30",
+                "surface-bright": "#faf8ff",
+                "on-tertiary-fixed": "#360f00",
+                "inverse-primary": "#b4c5ff",
+                "outline-variant": "#c3c6d7",
+                "surface-container": "#ededf9",
+                "inverse-on-surface": "#f0f0fb",
+                "surface-container-low": "#f3f3fe",
+                "secondary-fixed": "#d3e4fe",
+                "primary-fixed": "#dbe1ff",
+                "primary-container": "#2563eb",
+                "on-primary": "#ffffff",
+                "on-tertiary-fixed-variant": "#7d2d00"
+            },
+            "borderRadius": {
+                "DEFAULT": "0.25rem",
+                "lg": "0.5rem",
+                "xl": "0.75rem",
+                "full": "9999px"
+            },
+            "spacing": {
+                "sm": "12px",
+                "xl": "32px",
+                "lg": "24px",
+                "container-max": "1280px",
+                "md": "16px",
+                "sidebar-width": "260px",
+                "base": "4px",
+                "xs": "8px"
+            },
+            "fontFamily": {
+                "headline-lg-mobile": ["Inter"],
+                "headline-lg": ["Inter"],
+                "label-md": ["Inter"],
+                "body-md": ["Inter"],
+                "display-lg": ["Inter"],
+                "body-lg": ["Inter"],
+                "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-effect { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
+        .pulse-animation { animation: pulse-shadow 2s infinite; }
+        @keyframes pulse-shadow {
+            0% { box-shadow: 0 0 0 0 rgba(0, 83, 219, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 83, 219, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 83, 219, 0); }
+        }
+        .clock-shadow { text-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-md py-sm bg-surface shadow-sm">
+<div class="flex items-center gap-xs">
+<div class="w-8 h-8 rounded-full bg-primary-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A high-quality professional studio portrait of a modern office worker for a user profile avatar. The lighting is soft and even, set against a clean, minimalist off-white background. The style is professional and friendly, matching a corporate SaaS aesthetic with crisp details and a natural, approachable expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxw5hH4RsZLlE41BAFXj4q5y6NVgf92noHofGa0QHNNw7WMP_mIgwDuNlJzm9ioGegHt6OfAfKpkJpKgfgu1WKw1hhDnyur5wbJq2k8NjY9aMlIIQmoJ6aUmojeA2qJ7dVGH4y1iDh51wGi5qhhJH61rc7GcKUsaCpP1eRhe45PKCjwm-duHhL1jS92cwGp-M8dWdxiG5Am49WZFoQDaPvWF9yUdoL86tsKiXEPSfKLK3rbviljnkBL7bcT4yp3YMe4WjMAVh3fWQ"/>
+</div>
+<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">PeoplePulse</span>
+</div>
+<button class="p-xs rounded-full hover:bg-surface-variant transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+</header>
+<main class="pt-20 px-md space-y-lg">
+<!-- Real-time Clock & Status Section -->
+<section class="flex flex-col items-center justify-center space-y-sm text-center">
+<div class="space-y-base">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider" id="current-date">Thứ Hai, 24 Tháng 5, 2024</p>
+<h1 class="font-display-lg text-[48px] font-bold text-primary clock-shadow" id="live-clock">08:25:42</h1>
+</div>
+<div class="inline-flex items-center px-md py-xs bg-secondary-container rounded-full space-x-xs">
+<span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-label-md text-label-md text-on-secondary-container">Trạng thái: Chưa Check-in</span>
+</div>
+</section>
+<!-- Main Action Button -->
+<section class="flex justify-center py-md relative">
+<div class="absolute inset-0 flex items-center justify-center opacity-10">
+
+</div>
+<button class="relative z-10 w-48 h-48 rounded-full bg-primary text-on-primary shadow-xl pulse-animation flex flex-col items-center justify-center space-y-xs active:scale-90 transition-transform duration-150" id="check-action-btn">
+<span class="material-symbols-outlined text-[48px]" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+<span class="font-headline-md text-headline-md tracking-wide">CHECK IN</span>
+</button>
+</section>
+<!-- Contextual Info Bento Grid -->
+<section class="grid grid-cols-2 gap-sm">
+<div class="col-span-2 bg-surface-container-low p-md rounded-xl border border-outline-variant flex items-start space-x-md">
+<div class="p-xs bg-primary-container/20 rounded-lg text-primary">
+<span class="material-symbols-outlined">location_on</span>
+</div>
+<div class="flex-1">
+<p class="font-label-md text-label-md text-on-surface-variant">Vị trí hiện tại</p>
+<p class="font-body-md text-body-md font-semibold">Tòa nhà Keangnam, Mễ Trì, Hà Nội</p>
+<p class="font-label-md text-[10px] text-outline mt-1">Sai số: 5m • data-location="Hanoi"</p>
+</div>
+</div>
+<div class="bg-surface-container-low p-md rounded-xl border border-outline-variant flex flex-col space-y-xs">
+<div class="flex items-center space-x-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">smartphone</span>
+<span class="font-label-md text-label-md">Thiết bị</span>
+</div>
+<p class="font-body-md text-body-md font-semibold">iPhone 15 Pro</p>
+</div>
+<div class="bg-surface-container-low p-md rounded-xl border border-outline-variant flex flex-col space-y-xs">
+<div class="flex items-center space-x-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">lan</span>
+<span class="font-label-md text-label-md">Địa chỉ IP</span>
+</div>
+<p class="font-body-md text-body-md font-semibold">192.168.1.104</p>
+</div>
+</section>
+<!-- Recent History -->
+<section class="space-y-md pb-12">
+<div class="flex justify-between items-center">
+<h3 class="font-headline-md text-headline-md">Lịch sử gần đây</h3>
+<button class="text-primary font-label-md text-label-md">Xem tất cả</button>
+</div>
+<div class="space-y-sm">
+<!-- Day 1 -->
+<div class="bg-surface p-md rounded-xl shadow-sm border border-outline-variant flex items-center justify-between">
+<div class="flex items-center space-x-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex flex-col items-center justify-center border border-outline-variant">
+<span class="font-label-md text-[10px] leading-tight uppercase text-on-surface-variant">May</span>
+<span class="font-body-lg text-body-lg font-bold">23</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-medium">Thứ Năm</p>
+<p class="font-label-md text-label-md text-on-surface-variant">8h 15m làm việc</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md text-primary font-bold">08:28 - 17:45</p>
+<span class="inline-block px-xs py-[2px] bg-green-100 text-green-700 text-[10px] font-bold rounded">ĐÚNG GIỜ</span>
+</div>
+</div>
+<!-- Day 2 -->
+<div class="bg-surface p-md rounded-xl shadow-sm border border-outline-variant flex items-center justify-between">
+<div class="flex items-center space-x-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex flex-col items-center justify-center border border-outline-variant">
+<span class="font-label-md text-[10px] leading-tight uppercase text-on-surface-variant">May</span>
+<span class="font-body-lg text-body-lg font-bold">22</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-medium">Thứ Tư</p>
+<p class="font-label-md text-label-md text-on-surface-variant">8h 02m làm việc</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md text-primary font-bold">08:35 - 17:37</p>
+<span class="inline-block px-xs py-[2px] bg-orange-100 text-orange-700 text-[10px] font-bold rounded">MUỘN 5P</span>
+</div>
+</div>
+<!-- Day 3 -->
+<div class="bg-surface p-md rounded-xl shadow-sm border border-outline-variant flex items-center justify-between">
+<div class="flex items-center space-x-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex flex-col items-center justify-center border border-outline-variant">
+<span class="font-label-md text-[10px] leading-tight uppercase text-on-surface-variant">May</span>
+<span class="font-body-lg text-body-lg font-bold">21</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-medium">Thứ Ba</p>
+<p class="font-label-md text-label-md text-on-surface-variant">8h 30m làm việc</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-label-md text-label-md text-primary font-bold">08:15 - 17:45</p>
+<span class="inline-block px-xs py-[2px] bg-green-100 text-green-700 text-[10px] font-bold rounded">ĐÚNG GIỜ</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-sm pb-safe pt-xs bg-surface border-t border-outline-variant shadow-lg rounded-t-xl">
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Tổng quan</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-md text-label-md">Nhân viên</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+<span class="font-label-md text-label-md">Chấm công</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90">
+<span class="material-symbols-outlined">event_busy</span>
+<span class="font-label-md text-label-md">Nghỉ phép</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Cài đặt</span>
+</button>
+</nav>
+<script>
+        // Real-time Clock Update
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            
+            const clockEl = document.getElementById('live-clock');
+            if (clockEl) {
+                clockEl.textContent = `${hours}:${minutes}:${seconds}`;
+            }
+
+            // Update Date Label
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateEl = document.getElementById('current-date');
+            if (dateEl) {
+                dateEl.textContent = now.toLocaleDateString('vi-VN', options);
+            }
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Check-in / Check-out Toggle Simulation
+        let isCheckedIn = false;
+        const actionBtn = document.getElementById('check-action-btn');
+        const statusBadge = document.querySelector('.bg-secondary-container');
+
+        actionBtn.addEventListener('click', () => {
+            isCheckedIn = !isCheckedIn;
+            
+            if (isCheckedIn) {
+                actionBtn.classList.remove('bg-primary');
+                actionBtn.classList.add('bg-error');
+                actionBtn.querySelector('span:last-child').textContent = 'CHECK OUT';
+                statusBadge.querySelector('span:last-child').textContent = 'Đã Check-in lúc ' + new Date().toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'});
+                statusBadge.classList.replace('bg-secondary-container', 'bg-green-100');
+                statusBadge.querySelector('span:last-child').classList.add('text-green-800');
+            } else {
+                actionBtn.classList.remove('bg-error');
+                actionBtn.classList.add('bg-primary');
+                actionBtn.querySelector('span:last-child').textContent = 'CHECK IN';
+                statusBadge.querySelector('span:last-child').textContent = 'Trạng thái: Chưa Check-in';
+                statusBadge.classList.replace('bg-green-100', 'bg-secondary-container');
+                statusBadge.querySelector('span:last-child').classList.remove('text-green-800');
+            }
+        });
+    </script>
+</body></html>

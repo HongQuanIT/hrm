@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lịch nghỉ phép - PeoplePulse</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary": "#ffffff",
+                    "error": "#ba1a1a",
+                    "surface": "#faf8ff",
+                    "background": "#faf8ff",
+                    "surface-bright": "#faf8ff",
+                    "on-primary-fixed": "#00174b",
+                    "tertiary-container": "#bc4800",
+                    "on-error-container": "#93000a",
+                    "primary-fixed": "#dbe1ff",
+                    "on-error": "#ffffff",
+                    "inverse-primary": "#b4c5ff",
+                    "surface-variant": "#e1e2ed",
+                    "on-tertiary-fixed-variant": "#7d2d00",
+                    "on-primary-container": "#eeefff",
+                    "outline-variant": "#c3c6d7",
+                    "tertiary": "#943700",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "on-secondary-fixed": "#0b1c30",
+                    "secondary": "#505f76",
+                    "surface-tint": "#0053db",
+                    "inverse-surface": "#2e3039",
+                    "surface-container-lowest": "#ffffff",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "on-secondary": "#ffffff",
+                    "tertiary-fixed-dim": "#ffb596",
+                    "primary": "#004ac6",
+                    "inverse-on-surface": "#f0f0fb",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "on-tertiary-fixed": "#360f00",
+                    "surface-container": "#ededf9",
+                    "secondary-fixed": "#d3e4fe",
+                    "on-secondary-container": "#54647a",
+                    "surface-container-high": "#e7e7f3",
+                    "outline": "#737686",
+                    "tertiary-fixed": "#ffdbcd",
+                    "on-surface-variant": "#434655",
+                    "on-background": "#191b23",
+                    "error-container": "#ffdad6",
+                    "surface-container-low": "#f3f3fe",
+                    "surface-container-highest": "#e1e2ed",
+                    "secondary-container": "#d0e1fb",
+                    "on-surface": "#191b23",
+                    "on-tertiary-container": "#ffede6",
+                    "on-tertiary": "#ffffff",
+                    "primary-container": "#2563eb",
+                    "surface-dim": "#d9d9e5"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "md": "16px",
+                    "xs": "8px",
+                    "container-max": "1280px",
+                    "base": "4px",
+                    "sidebar-width": "260px",
+                    "lg": "24px",
+                    "xl": "32px",
+                    "sm": "12px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            vertical-align: middle;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-24">
+<!-- Top App Bar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-md py-sm bg-surface shadow-sm h-16">
+<div class="flex items-center gap-3">
+<button class="p-2 rounded-full hover:bg-surface-variant transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined text-primary">arrow_back</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile text-primary">Lịch nghỉ phép</h1>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 rounded-full hover:bg-surface-variant transition-colors active:scale-95 duration-200 relative">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a corporate employee for a HR management system profile, featuring soft office lighting, a clean blurred background, and a friendly expression. The visual style is high-end, modern, and corporate minimalist with a bright, professional aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOvOUGawPZ0MPFcz1skld3MnGSJJgP4ekK3fRU3sbzKBUtB78LjCg5VymB3GZodClqfsHMAYG1ljoaN7K4NDKbCQZB01FLBfQSoV-uQqnFpUXt6gwDKT2lc65oAJn69P4dpQUQERA0T0xXMPr5DIDBj6qteaQ3toMFFnnoAgD1X7m1e0BNDwvbpH-kInIvK0aQHIzTh5p_RUF1YfojL6tRAmt9CSA9RavZAUJvIDN_xNHSszFXfWKPraF1zgft6iW-OsvQZVymZV4"/>
+</div>
+</div>
+</header>
+<main class="pt-20 px-md max-w-container-max mx-auto space-y-6">
+<!-- Filter/Time Selector Section -->
+<section class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+<div class="flex items-center gap-4 bg-surface-container-lowest p-2 rounded-xl border border-outline-variant/30 shadow-sm">
+<button class="p-1 hover:bg-surface-variant rounded-lg transition-colors">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<div class="flex flex-col items-center min-w-[120px]">
+<span class="font-label-md text-label-md text-on-surface-variant">Tháng 04</span>
+<span class="font-body-md text-body-md font-semibold text-primary">2024</span>
+</div>
+<button class="p-1 hover:bg-surface-variant rounded-lg transition-colors">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-primary-container text-on-primary-container font-label-md text-label-md rounded-full flex items-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-[18px]">calendar_month</span>
+                    Tháng
+                </button>
+<button class="px-4 py-2 bg-surface-container-high text-on-surface-variant font-label-md text-label-md rounded-full flex items-center gap-2 hover:bg-surface-variant transition-all">
+<span class="material-symbols-outlined text-[18px]">view_week</span>
+                    Tuần
+                </button>
+</div>
+</section>
+<!-- Bento Layout for Calendar and Details -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Calendar Grid Card -->
+<div class="lg:col-span-8 bg-surface-container-lowest rounded-2xl border border-outline-variant/50 shadow-sm overflow-hidden">
+<div class="p-md border-b border-outline-variant/20 flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md-mobile text-on-surface">Lịch chi tiết</h2>
+<div class="flex gap-4">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<span class="text-label-md font-label-md text-on-surface-variant">Nghỉ phép</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary"></span>
+<span class="text-label-md font-label-md text-on-surface-variant">Nghỉ ốm</span>
+</div>
+</div>
+</div>
+<div class="p-md">
+<!-- Day Names -->
+<div class="calendar-grid mb-2">
+<div class="text-center py-2 text-label-md font-bold text-on-surface-variant/60 uppercase">T2</div>
+<div class="text-center py-2 text-label-md font-bold text-on-surface-variant/60 uppercase">T3</div>
+<div class="text-center py-2 text-label-md font-bold text-on-surface-variant/60 uppercase">T4</div>
+<div class="text-center py-2 text-label-md font-bold text-on-surface-variant/60 uppercase">T5</div>
+<div class="text-center py-2 text-label-md font-bold text-on-surface-variant/60 uppercase">T6</div>
+<div class="text-center py-2 text-label-md font-bold text-error/60 uppercase">T7</div>
+<div class="text-center py-2 text-label-md font-bold text-error/60 uppercase">CN</div>
+</div>
+<!-- Days -->
+<div class="calendar-grid gap-y-1">
+<!-- Empty slots for previous month (Mar) -->
+<div class="aspect-square flex flex-col items-center justify-center text-on-surface-variant/30 font-body-md text-body-md">25</div>
+<div class="aspect-square flex flex-col items-center justify-center text-on-surface-variant/30 font-body-md text-body-md">26</div>
+<div class="aspect-square flex flex-col items-center justify-center text-on-surface-variant/30 font-body-md text-body-md">27</div>
+<div class="aspect-square flex flex-col items-center justify-center text-on-surface-variant/30 font-body-md text-body-md">28</div>
+<div class="aspect-square flex flex-col items-center justify-center text-on-surface-variant/30 font-body-md text-body-md">29</div>
+<div class="aspect-square flex flex-col items-center justify-center text-on-surface-variant/30 font-body-md text-body-md">30</div>
+<div class="aspect-square flex flex-col items-center justify-center text-on-surface-variant/30 font-body-md text-body-md">31</div>
+<!-- Current Month Days -->
+<button class="aspect-square group flex flex-col items-center justify-center rounded-xl hover:bg-surface-variant transition-all relative">
+<span class="font-body-md text-body-md">01</span>
+</button>
+<button class="aspect-square group flex flex-col items-center justify-center rounded-xl hover:bg-surface-variant transition-all relative">
+<span class="font-body-md text-body-md">02</span>
+</button>
+<button class="aspect-square group flex flex-col items-center justify-center rounded-xl bg-primary text-on-primary shadow-md shadow-primary/30 relative">
+<span class="font-body-md text-body-md font-bold">03</span>
+<div class="absolute bottom-2 flex gap-0.5">
+<span class="w-1 h-1 rounded-full bg-white"></span>
+<span class="w-1 h-1 rounded-full bg-white/60"></span>
+</div>
+</button>
+<button class="aspect-square group flex flex-col items-center justify-center rounded-xl hover:bg-surface-variant transition-all relative">
+<span class="font-body-md text-body-md">04</span>
+</button>
+<button class="aspect-square group flex flex-col items-center justify-center rounded-xl hover:bg-surface-variant transition-all relative">
+<span class="font-body-md text-body-md">05</span>
+<span class="absolute bottom-2 w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+</button>
+<button class="aspect-square group flex flex-col items-center justify-center rounded-xl bg-surface-container-high relative">
+<span class="font-body-md text-body-md text-error/60">06</span>
+</button>
+<button class="aspect-square group flex flex-col items-center justify-center rounded-xl bg-surface-container-high relative">
+<span class="font-body-md text-body-md text-error/60">07</span>
+</button>
+<!-- More rows... -->
+<button class="aspect-square group flex flex-col items-center justify-center rounded-xl hover:bg-surface-variant transition-all relative">
+<span class="font-body-md text-body-md">08</span>
+</button>
+<button class="aspect-square group flex flex-col items-center justify-center rounded-xl hover:bg-surface-variant transition-all relative">
+<span class="font-body-md text-body-md">09</span>
+<span class="absolute bottom-2 w-1.5 h-1.5 rounded-full bg-primary"></span>
+</button>
+<button class="aspect-square group flex flex-col items-center justify-center rounded-xl hover:bg-surface-variant transition-all relative">
+<span class="font-body-md text-body-md">10</span>
+</button>
+<button class="aspect-square group flex flex-col items-center justify-center rounded-xl hover:bg-surface-variant transition-all relative">
+<span class="font-body-md text-body-md">11</span>
+</button>
+<button class="aspect-square group flex flex-col items-center justify-center rounded-xl hover:bg-surface-variant transition-all relative">
+<span class="font-body-md text-body-md">12</span>
+<span class="absolute bottom-2 w-1.5 h-1.5 rounded-full bg-primary"></span>
+</button>
+<button class="aspect-square group flex flex-col items-center justify-center rounded-xl bg-surface-container-high relative">
+<span class="font-body-md text-body-md text-error/60">13</span>
+</button>
+<button class="aspect-square group flex flex-col items-center justify-center rounded-xl bg-surface-container-high relative">
+<span class="font-body-md text-body-md text-error/60">14</span>
+</button>
+<!-- Continue days pattern -->
+<div class="contents" id="rest-of-days">
+<!-- JS or static fill for demonstration -->
+<button class="aspect-square flex flex-col items-center justify-center rounded-xl hover:bg-surface-variant transition-all"><span class="font-body-md text-body-md">15</span></button>
+<button class="aspect-square flex flex-col items-center justify-center rounded-xl hover:bg-surface-variant transition-all"><span class="font-body-md text-body-md">16</span></button>
+<button class="aspect-square flex flex-col items-center justify-center rounded-xl hover:bg-surface-variant transition-all"><span class="font-body-md text-body-md">17</span></button>
+<button class="aspect-square flex flex-col items-center justify-center rounded-xl hover:bg-surface-variant transition-all"><span class="font-body-md text-body-md">18</span></button>
+<button class="aspect-square flex flex-col items-center justify-center rounded-xl hover:bg-surface-variant transition-all"><span class="font-body-md text-body-md">19</span></button>
+<button class="aspect-square flex items-center justify-center bg-surface-container-high rounded-xl"><span class="text-error/60">20</span></button>
+<button class="aspect-square flex items-center justify-center bg-surface-container-high rounded-xl"><span class="text-error/60">21</span></button>
+<button class="aspect-square flex items-center justify-center rounded-xl hover:bg-surface-variant transition-all"><span>22</span></button>
+<button class="aspect-square flex items-center justify-center rounded-xl hover:bg-surface-variant transition-all"><span>23</span></button>
+<button class="aspect-square flex items-center justify-center rounded-xl hover:bg-surface-variant transition-all"><span>24</span></button>
+<button class="aspect-square flex items-center justify-center rounded-xl hover:bg-surface-variant transition-all"><span>25</span></button>
+<button class="aspect-square flex items-center justify-center rounded-xl hover:bg-surface-variant transition-all"><span>26</span></button>
+<button class="aspect-square flex items-center justify-center bg-surface-container-high rounded-xl"><span class="text-error/60">27</span></button>
+<button class="aspect-square flex items-center justify-center bg-surface-container-high rounded-xl"><span class="text-error/60">28</span></button>
+<button class="aspect-square flex items-center justify-center rounded-xl hover:bg-surface-variant transition-all"><span>29</span></button>
+<button class="aspect-square flex items-center justify-center rounded-xl hover:bg-surface-variant transition-all"><span>30</span></button>
+<div class="aspect-square flex items-center justify-center text-on-surface-variant/30">01</div>
+<div class="aspect-square flex items-center justify-center text-on-surface-variant/30">02</div>
+<div class="aspect-square flex items-center justify-center text-on-surface-variant/30">03</div>
+<div class="aspect-square flex items-center justify-center text-on-surface-variant/30">04</div>
+<div class="aspect-square flex items-center justify-center text-on-surface-variant/30">05</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Detail List Section -->
+<div class="lg:col-span-4 space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md-mobile text-on-surface">Chi tiết ngày 03/04</h3>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-label-md font-label-md">3 Nhân viên</span>
+</div>
+<div class="space-y-3">
+<!-- Employee Card 1 -->
+<div class="p-md bg-surface-container-lowest rounded-xl border border-outline-variant/50 shadow-sm hover:shadow-md transition-shadow group">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="A portrait of a male employee wearing a modern business casual outfit, shot in a bright, modern office with soft daylight. High-end professional headshot for a SaaS platform. Corporate minimalist style, focused on high-quality skin textures and soft background bokeh." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDST1n149Yn3aE9l8Wjz1vwntuh4n5oZ1I--uDy2qaiEJzaIYxxiJbSXcv_FUcip41wtNcWZczrPFohSwUo6EXNJ5jXTeGHGDarTCObbzkzw313xA70rV0nWCsw0V1bWi2LRLnDVygVRJOAzpv5Lvoon95DufTC2zEVISrhuQTlO5jXfr5VKc8GvdsKDuhI-5YepjPvSZDD73w65hGg5948kcJUuIBjqDzgeVlyMhbTDjoSjVErGJpa2ptOxukw0Njxgm6hWSmb4e0"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-primary border-2 border-surface rounded-full"></span>
+</div>
+<div class="flex-1">
+<h4 class="font-body-lg text-body-lg font-semibold text-on-surface">Nguyễn Văn An</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="bg-primary/10 text-primary px-2 py-0.5 rounded-md text-[11px] font-semibold uppercase tracking-wider">Nghỉ phép năm</span>
+<span class="text-label-md font-label-md text-on-surface-variant">Cả ngày</span>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Employee Card 2 -->
+<div class="p-md bg-surface-container-lowest rounded-xl border border-outline-variant/50 shadow-sm hover:shadow-md transition-shadow group">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="A portrait of a female software engineer in a stylish office environment, soft warm lighting, clean and professional look, corporate minimalist style for an HR application dashboard. The image is crisp, modern, and friendly." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2bAWz0lELP1ZYd36DAYAtViKxrzLg56mOaJhnPCL-LGFvfZOsBm4UWNGVC1DDGmRQw1FKJW8oSunwx-bjr95U577cCykuPPddkd9pum0IjgTxPt6Gs9FcK5a_3uCpSw0mJW9IpbXgUTAWI-rlosN-b5m-QXWQow_ZVbIhR5VkXCH1eqqIWQncHBF8IKz0bje4zaMvWd0THzpI3tzT3RsmiKR13HO-q64h7mikFOYQuFpaelWJQaFdOLfcyvsZDfLb6PdGMELZjmU"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-tertiary border-2 border-surface rounded-full"></span>
+</div>
+<div class="flex-1">
+<h4 class="font-body-lg text-body-lg font-semibold text-on-surface">Trần Thị Bích</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="bg-tertiary/10 text-tertiary px-2 py-0.5 rounded-md text-[11px] font-semibold uppercase tracking-wider">Nghỉ ốm</span>
+<span class="text-label-md font-label-md text-on-surface-variant">Sáng (08:00 - 12:00)</span>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Employee Card 3 -->
+<div class="p-md bg-surface-container-lowest rounded-xl border border-outline-variant/50 shadow-sm hover:shadow-md transition-shadow group">
+<div class="flex items-center gap-4">
+<div class="relative">
+<img class="w-12 h-12 rounded-full object-cover" data-alt="A portrait of a mid-thirties project manager with a cheerful expression, minimalist white background, soft professional lighting, modern corporate style suitable for an enterprise SaaS HR platform." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAh_0X-CCCcdt2Ewb2Axsqzd-MQBiXhXhx8O0mw8fOygk6IBMTNX5cF7VsDGGz4epBrJfZt3AA3KDEcZEoJqIUJUsnPG8e5lb8lzk8zOGCysHY94ZhwD3_I8UJK5rei3f1RpashYAn0V8ntz_UiaG3OqlqkSGNeLZmZtbIZ87bjD6oNMTj6Bf78yM-Sg2aVbdWISDr8BhBEzrZOPYV6UF-teEpImuXicRCrm1-yh9r24k2P0anTfSb1Uq0jpcH8lKy2hhQXVwZurAo"/>
+<span class="absolute bottom-0 right-0 w-3 h-3 bg-primary border-2 border-surface rounded-full"></span>
+</div>
+<div class="flex-1">
+<h4 class="font-body-lg text-body-lg font-semibold text-on-surface">Lê Hoàng Nam</h4>
+<div class="flex items-center gap-2 mt-1">
+<span class="bg-primary/10 text-primary px-2 py-0.5 rounded-md text-[11px] font-semibold uppercase tracking-wider">Nghỉ phép năm</span>
+<span class="text-label-md font-label-md text-on-surface-variant">Chiều (13:30 - 17:30)</span>
+</div>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+<div class="bg-secondary-container/30 p-4 rounded-xl border border-secondary-container/50">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary text-[20px] mt-0.5">info</span>
+<div>
+<p class="text-label-md font-label-md text-on-secondary-container leading-snug">
+                                Bạn còn <b>12 ngày</b> nghỉ phép năm. Hãy lên kế hoạch nghỉ ngơi hợp lý nhé!
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-24 right-6 w-14 h-14 bg-primary text-on-primary rounded-full shadow-lg shadow-primary/30 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50">
+<span class="material-symbols-outlined text-[32px]">add</span>
+</button>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-sm pb-safe pt-xs bg-surface border-t border-outline-variant shadow-lg h-20">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md mt-1">Tổng quan</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-md text-label-md mt-1">Nhân viên</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">fingerprint</span>
+<span class="font-label-md text-label-md mt-1">Chấm công</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined">event_busy</span>
+<span class="font-label-md text-label-md mt-1 font-semibold">Nghỉ phép</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md mt-1">Cài đặt</span>
+</a>
+</nav>
+<script>
+        // Simple interactive demo for day selection
+        const dayButtons = document.querySelectorAll('.calendar-grid button');
+        dayButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active classes from all
+                dayButtons.forEach(b => {
+                    b.classList.remove('bg-primary', 'text-on-primary', 'shadow-md', 'shadow-primary/30');
+                    b.classList.add('hover:bg-surface-variant');
+                });
+                
+                // Add active to clicked
+                btn.classList.remove('hover:bg-surface-variant');
+                btn.classList.add('bg-primary', 'text-on-primary', 'shadow-md', 'shadow-primary/30');
+            });
+        });
+
+        // Add subtle hover animations for employee cards
+        const cards = document.querySelectorAll('.group');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-2px)';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body></html>

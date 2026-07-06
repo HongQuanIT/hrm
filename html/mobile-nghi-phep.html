@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed-dim": "#ffb596",
+                    "surface-tint": "#0053db",
+                    "surface-dim": "#d9d9e5",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "on-primary-container": "#eeefff",
+                    "on-primary-fixed": "#00174b",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "on-surface-variant": "#434655",
+                    "outline": "#737686",
+                    "on-secondary": "#ffffff",
+                    "surface-variant": "#e1e2ed",
+                    "error": "#ba1a1a",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "tertiary-container": "#bc4800",
+                    "inverse-surface": "#2e3039",
+                    "error-container": "#ffdad6",
+                    "on-error": "#ffffff",
+                    "surface": "#faf8ff",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "tertiary": "#943700",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-container-high": "#e7e7f3",
+                    "on-tertiary": "#ffffff",
+                    "primary": "#004ac6",
+                    "on-surface": "#191b23",
+                    "tertiary-fixed": "#ffdbcd",
+                    "on-secondary-container": "#54647a",
+                    "background": "#faf8ff",
+                    "on-background": "#191b23",
+                    "secondary-container": "#d0e1fb",
+                    "on-tertiary-container": "#ffede6",
+                    "on-error-container": "#93000a",
+                    "secondary": "#505f76",
+                    "surface-container-highest": "#e1e2ed",
+                    "on-secondary-fixed": "#0b1c30",
+                    "surface-bright": "#faf8ff",
+                    "on-tertiary-fixed": "#360f00",
+                    "inverse-primary": "#b4c5ff",
+                    "outline-variant": "#c3c6d7",
+                    "surface-container": "#ededf9",
+                    "inverse-on-surface": "#f0f0fb",
+                    "surface-container-low": "#f3f3fe",
+                    "secondary-fixed": "#d3e4fe",
+                    "primary-fixed": "#dbe1ff",
+                    "primary-container": "#2563eb",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#7d2d00"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sm": "12px",
+                    "xl": "32px",
+                    "lg": "24px",
+                    "container-max": "1280px",
+                    "md": "16px",
+                    "sidebar-width": "260px",
+                    "base": "4px",
+                    "xs": "8px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-md": ["Inter"],
+                    "display-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-tab-indicator {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col pb-24">
+<!-- Top AppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-md py-sm bg-surface shadow-sm">
+<div class="flex items-center gap-sm">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a smiling female HR manager in a clean, modern corporate office environment. The lighting is bright and natural, coming from large windows. The image has a soft focus background to keep the subject prominent. The aesthetic is clean and professional, using a palette of soft blues and whites." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0j6sg-TaWJXaV0_R9ImobVUdll2sIW8J8OsfQlg3JRzsuqzciZTm_TA88oxkHpMCzVvCJbLHX75-N4oDqTO-uWBLFb9p7gDaEKa5-3svGjR1h9I51Px0jyIctzYgv-XUW-SUdt0LPhYIUokqwHyrd7Cb75aXC1EBkjl0-xTFDutGMZN2Z66hlZNmMewa70XMGy62kahIYN4v5vpjNNY6kL3qLmo98kIhYAbI-hw6CQAss-EVs40gO5tN11KxCTdnycorJRroJNgE"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Nghỉ phép</h1>
+</div>
+<div class="flex items-center gap-xs">
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-variant transition-colors active:scale-95 duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-on-primary shadow-md active:scale-90 transition-transform duration-150">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="mt-16 flex-1 px-md py-lg overflow-y-auto">
+<!-- Leave Balance Bento Section -->
+<section class="grid grid-cols-2 gap-md mb-xl">
+<div class="col-span-2 p-lg bg-primary-container text-on-primary-container rounded-xl shadow-sm">
+<p class="font-label-md text-label-md opacity-80 mb-xs">Số ngày nghỉ còn lại</p>
+<div class="flex items-end justify-between">
+<span class="text-[32px] font-bold leading-tight">12.5</span>
+<span class="font-label-md text-label-md pb-1">Ngày phép năm</span>
+</div>
+</div>
+<div class="p-md bg-surface-container rounded-xl flex flex-col justify-between h-24 border border-outline-variant/30">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">medical_services</span>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Nghỉ ốm</p>
+<p class="font-headline-md text-headline-md font-bold">5/10</p>
+</div>
+</div>
+<div class="p-md bg-surface-container rounded-xl flex flex-col justify-between h-24 border border-outline-variant/30">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">event_available</span>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant">Đã dùng</p>
+<p class="font-headline-md text-headline-md font-bold">4.5</p>
+</div>
+</div>
+</section>
+<!-- Tabs Container -->
+<div class="sticky top-[64px] z-40 bg-background/95 backdrop-blur-md mb-md">
+<div class="relative flex border-b border-outline-variant">
+<button class="flex-1 py-md font-body-md text-body-md font-medium text-primary transition-colors text-center" id="tab-waiting" onclick="switchTab('waiting')">
+                    Đang chờ
+                </button>
+<button class="flex-1 py-md font-body-md text-body-md font-medium text-on-surface-variant transition-colors text-center" id="tab-history" onclick="switchTab('history')">
+                    Lịch sử
+                </button>
+<div class="absolute bottom-0 left-0 w-1/2 h-[3px] bg-primary rounded-t-full active-tab-indicator" id="tab-indicator"></div>
+</div>
+</div>
+<!-- Leave Requests List -->
+<div class="space-y-md" id="requests-list">
+<!-- Waiting Request 1 -->
+<div class="bg-surface p-md rounded-xl shadow-sm border border-outline-variant/20 flex flex-col gap-sm request-item waiting">
+<div class="flex justify-between items-start">
+<div class="flex gap-sm">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a male employee with glasses, wearing a casual business shirt, in a creative studio background with soft bokeh. The style is modern corporate, emphasizing friendliness and accessibility. The color palette is composed of warm earth tones and soft whites." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZziqyMJYcSmFDsXiPfOswnQUKOpjYw0fky4DCX_bWVCjScdgCuU6hWhbHie6fcdu0dI-_hfczOSoMPix5oIupesUYZWOb_1pfAIXNjCCClhbQoRQsrVhGtfsXx2INYS055BdpbbSvVADE_2yaCD8Ln09Bdx0U_ss348DTGPtU_b-vwB7sMmOtOzGqmf1T-42fddyDhdWNv0OUJkInpKtJ9J55tBUzKj7bDMjKXiXgtyStFmHEgrlCP297Uhq7ClwMYbU8zDl_09U"/>
+</div>
+<div>
+<h3 class="font-body-md text-body-md font-semibold">Trần Minh Quân</h3>
+<p class="font-label-md text-label-md text-on-surface-variant">Nghỉ phép năm</p>
+</div>
+</div>
+<span class="px-xs py-[2px] rounded-md bg-yellow-100 text-yellow-800 text-[10px] font-bold uppercase tracking-wider">Chờ duyệt</span>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span class="font-label-md text-label-md">20/05 - 22/05</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span class="font-label-md text-label-md">3 ngày</span>
+</div>
+</div>
+</div>
+<!-- Approved Request 1 -->
+<div class="bg-surface p-md rounded-xl shadow-sm border border-outline-variant/20 flex flex-col gap-sm request-item history hidden">
+<div class="flex justify-between items-start">
+<div class="flex gap-sm">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a young female professional in a modern tech office setting. She has a confident smile and is wearing a stylish blazer. The background is slightly blurred showing glass partitions and indoor plants. The overall feel is crisp, professional, and corporate modern." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJd8QqPAeuoG7hjuDS3kHfZ5rAjsco2j-jEPmiaAgJA69eKuShMkSTNGbC-u-u2IQ7QTGFYoKabBKGREV6aVCbLCAofHBmdWfWlNT7He074cPTnjfO_lJrHhRWJlNXGBW88IuvdNShcQ5fQ6Wtvz4mMPqX7IPICvhQHk-QGxiuDxeTWQDqQoaRbdAZGeLni4N7SBizVqq6GigId2A627uGQKG6TQeuJzZWWWYMGYjjTzW1yb4oj4t_HDmo4ObcvBCo-8ARDm-ud9E"/>
+</div>
+<div>
+<h3 class="font-body-md text-body-md font-semibold">Lê Thị Mai</h3>
+<p class="font-label-md text-label-md text-on-surface-variant">Nghỉ ốm</p>
+</div>
+</div>
+<span class="px-xs py-[2px] rounded-md bg-green-100 text-green-800 text-[10px] font-bold uppercase tracking-wider">Đã duyệt</span>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span class="font-label-md text-label-md">15/05 - 16/05</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span class="font-label-md text-label-md">1.5 ngày</span>
+</div>
+</div>
+</div>
+<!-- Rejected Request 1 -->
+<div class="bg-surface p-md rounded-xl shadow-sm border border-outline-variant/20 flex flex-col gap-sm request-item history hidden">
+<div class="flex justify-between items-start">
+<div class="flex gap-sm">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a male professional looking focused in a minimalist co-working space. He is wearing a dark grey sweater. The environment is lit with soft overhead office lights. The design is sleek, modern and corporate with a cool blue and grey color scheme." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnnhxDJlvPJQ7DzMljYhvJR5rwmz86ZplOzH3UqKEQ5yn5RhkruJJLjBP8Kr_38U931AIluCYxCKGOVL7sxGUh3Yo33Vds6k-VoQvMnsYiPirdag24ibN0TcJcfPfzbPkpi0P3XRhronsPK1YIk4sRz5HWAEW7sZyR45Ir7H5-E7fE2vIrcIHrmN56mW2LJs3FT0doGW2wKdgCPBl8AenXxqfrJxijw4-6jDITRQ1HKXKU_iHkYprtbKAuPd2k8HxAZoML5WpK-ZQ"/>
+</div>
+<div>
+<h3 class="font-body-md text-body-md font-semibold">Nguyễn Văn An</h3>
+<p class="font-label-md text-label-md text-on-surface-variant">Nghỉ phép năm</p>
+</div>
+</div>
+<span class="px-xs py-[2px] rounded-md bg-red-100 text-red-800 text-[10px] font-bold uppercase tracking-wider">Từ chối</span>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span class="font-label-md text-label-md">10/05 - 11/05</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span class="font-label-md text-label-md">2 ngày</span>
+</div>
+</div>
+</div>
+<!-- More placeholders to show scroll -->
+<div class="bg-surface p-md rounded-xl shadow-sm border border-outline-variant/20 flex flex-col gap-sm request-item waiting">
+<div class="flex justify-between items-start">
+<div class="flex gap-sm">
+<div class="w-12 h-12 rounded-lg bg-surface-container-highest flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of an Asian male HR executive in a high-rise office building. He is wearing a white dress shirt and a professional watch. The background shows a panoramic city view through a glass wall. The aesthetic is clean, high-end corporate, and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYpNHyhLU6BJie3hLD-aT9k6fy151w3oUUeJeIRAtcT4E5x2yr4p8iJPCgtCcpwfqi-0ox_JKgxlb2UQRJHfiIfvGmQbPD-PgCg28fGoec7thXnsdi3kzi_T2q_swKpPjuhtkDXWhZ3La1OrBbM-L2zvwgheZLcD9k96DRkJ9DWlRAPIf9F-y1smQWkfkw0idqhzBhXX5joyiNK5f26Na0eWeQBGwHBQhpNTNBrpzXE2Q3daYWe0JThJs5Lt36oa0QH168hypd8ao"/>
+</div>
+<div>
+<h3 class="font-body-md text-body-md font-semibold">Phạm Hùng</h3>
+<p class="font-label-md text-label-md text-on-surface-variant">Nghỉ phép năm</p>
+</div>
+</div>
+<span class="px-xs py-[2px] rounded-md bg-yellow-100 text-yellow-800 text-[10px] font-bold uppercase tracking-wider">Chờ duyệt</span>
+</div>
+<div class="flex justify-between items-center text-on-surface-variant">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">calendar_today</span>
+<span class="font-label-md text-label-md">25/05 - 25/05</span>
+</div>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span class="font-label-md text-label-md">1 ngày</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-sm pb-safe pt-xs bg-surface border-t border-outline-variant shadow-lg rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Tổng quan</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-md text-label-md">Nhân viên</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="fingerprint">fingerprint</span>
+<span class="font-label-md text-label-md">Chấm công</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1 active:scale-90 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="event_busy" style="font-variation-settings: 'FILL' 1;">event_busy</span>
+<span class="font-label-md text-label-md">Nghỉ phép</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-high transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Cài đặt</span>
+</a>
+</nav>
+<script>
+        function switchTab(tab) {
+            const indicator = document.getElementById('tab-indicator');
+            const waitingTab = document.getElementById('tab-waiting');
+            const historyTab = document.getElementById('tab-history');
+            const items = document.querySelectorAll('.request-item');
+
+            if (tab === 'waiting') {
+                indicator.style.transform = 'translateX(0%)';
+                waitingTab.classList.add('text-primary');
+                waitingTab.classList.remove('text-on-surface-variant');
+                historyTab.classList.remove('text-primary');
+                historyTab.classList.add('text-on-surface-variant');
+
+                items.forEach(item => {
+                    if (item.classList.contains('waiting')) {
+                        item.classList.remove('hidden');
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+            } else {
+                indicator.style.transform = 'translateX(100%)';
+                historyTab.classList.add('text-primary');
+                historyTab.classList.remove('text-on-surface-variant');
+                waitingTab.classList.remove('text-primary');
+                waitingTab.classList.add('text-on-surface-variant');
+
+                items.forEach(item => {
+                    if (item.classList.contains('history')) {
+                        item.classList.remove('hidden');
+                    } else {
+                        item.classList.add('hidden');
+                    }
+                });
+            }
+        }
+
+        // Add micro-interaction for cards
+        document.querySelectorAll('.request-item').forEach(card => {
+            card.addEventListener('touchstart', () => {
+                card.style.transform = 'scale(0.98)';
+                card.style.transition = 'transform 0.1s ease';
+            });
+            card.addEventListener('touchend', () => {
+                card.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

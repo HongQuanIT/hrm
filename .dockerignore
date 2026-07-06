@@ -1,0 +1,8 @@
+.git
+.cursor
+.env
+node_modules
+vendor
+storage/logs/*.log
+bootstrap/cache/*.php
+docker-compose.yml

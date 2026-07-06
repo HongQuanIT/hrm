@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Danh sách nhân viên | PeoplePulse</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#003ea8",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-secondary": "#ffffff",
+                        "primary": "#004ac6",
+                        "outline": "#737686",
+                        "on-secondary-container": "#54647a",
+                        "primary-fixed": "#dbe1ff",
+                        "on-surface": "#191b23",
+                        "surface-variant": "#e1e2ed",
+                        "on-tertiary-fixed": "#360f00",
+                        "primary-container": "#2563eb",
+                        "inverse-on-surface": "#f0f0fb",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-background": "#191b23",
+                        "secondary-fixed": "#d3e4fe",
+                        "outline-variant": "#c3c6d7",
+                        "error": "#ba1a1a",
+                        "surface": "#faf8ff",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#bc4800",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e1e2ed",
+                        "on-primary-container": "#eeefff",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#943700",
+                        "surface-tint": "#0053db",
+                        "surface-dim": "#d9d9e5",
+                        "on-tertiary-container": "#ffede6",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "background": "#faf8ff",
+                        "secondary-container": "#d0e1fb",
+                        "secondary": "#505f76",
+                        "surface-bright": "#faf8ff",
+                        "surface-container": "#ededf9",
+                        "inverse-primary": "#b4c5ff",
+                        "on-tertiary-fixed-variant": "#7d2d00",
+                        "inverse-surface": "#2e3039",
+                        "surface-container-low": "#f3f3fe",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#ffdbcd",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#434655",
+                        "on-primary-fixed": "#00174b",
+                        "surface-container-high": "#e7e7f3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "md": "16px",
+                        "sm": "12px",
+                        "sidebar-width": "260px",
+                        "base": "4px",
+                        "xs": "8px",
+                        "lg": "24px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased overflow-hidden h-screen flex">
+<!-- Desktop Sidebar -->
+<aside class="hidden md:flex flex-col w-[260px] h-full bg-surface border-r border-outline-variant z-40">
+<div class="px-lg py-xl flex items-center gap-xs">
+<div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined text-on-primary">bolt</span>
+</div>
+<span class="font-headline-lg text-headline-lg text-primary tracking-tight">PeoplePulse</span>
+</div>
+<nav class="flex-1 px-sm space-y-base overflow-y-auto scrollbar-hide">
+<div class="px-md py-xs text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">Trình điều khiển</div>
+<a class="flex items-center gap-md px-md py-sm rounded-xl text-on-surface-variant hover:bg-surface-container transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">dashboard</span>
+<span class="font-body-md text-body-md">Tổng quan</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-xl bg-secondary-container text-on-secondary-container transition-all shadow-sm" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+<span class="font-body-md text-body-md font-semibold">Nhân viên</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-xl text-on-surface-variant hover:bg-surface-container transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">fingerprint</span>
+<span class="font-body-md text-body-md">Chấm công</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-xl text-on-surface-variant hover:bg-surface-container transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">event_busy</span>
+<span class="font-body-md text-body-md">Nghỉ phép</span>
+</a>
+<div class="pt-lg px-md py-xs text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">Hệ thống</div>
+<a class="flex items-center gap-md px-md py-sm rounded-xl text-on-surface-variant hover:bg-surface-container transition-all group" href="#">
+<span class="material-symbols-outlined group-hover:text-primary">settings</span>
+<span class="font-body-md text-body-md">Cài đặt</span>
+</a>
+</nav>
+<div class="p-md border-t border-outline-variant">
+<div class="flex items-center gap-md p-xs rounded-xl bg-surface-container-low">
+<img class="w-10 h-10 rounded-full border-2 border-primary-fixed" data-alt="A professional headshot of a corporate manager, clean lighting, soft background, modern executive style. The lighting is bright and airy to match the light-mode UI, with subtle blue and white tones that align with the brand identity. High resolution digital photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEejW-d76eMbPfSQxNO-kj7HIpO-T98TPbd_3A_DwOiCFwScXej5P_K1KBd8CkQWNHLbKpvp65gx0kygRhikpxC9GPbmgEXddIQxmh4OQPqhBfiTA_0THkWwL-yLmSlEIUj3IrCMbr9FAMImtVjayrMjkf-hKlybDV63KmfVdI5VH4gnf6_-oI6VRbu6EX2OCpW4MERPnOLRetSz9F72qbUpoMgXrqBDjS2rLQZaKDLaJaeKgbjXV-GCBf4uhj5DLd53iEz8zfUyM"/>
+<div class="flex-1 overflow-hidden">
+<p class="font-body-md text-body-md font-bold truncate">Admin User</p>
+<p class="text-[12px] text-on-surface-variant truncate">Quản trị viên</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-screen overflow-hidden relative">
+<!-- Top App Bar (As per JSON hierarchy) -->
+<header class="h-16 flex items-center justify-between px-xl bg-surface shadow-sm z-30">
+<div class="flex items-center gap-md md:hidden">
+<span class="material-symbols-outlined text-on-surface cursor-pointer">menu</span>
+<span class="font-headline-md text-headline-md text-primary">PeoplePulse</span>
+</div>
+<div class="hidden md:block">
+<h1 class="font-headline-md text-headline-md text-on-surface">Danh sách nhân viên</h1>
+</div>
+<div class="flex items-center gap-lg">
+<div class="relative group hidden sm:block">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pl-xl pr-md py-xs bg-surface-container-low border-none rounded-full w-64 focus:ring-2 focus:ring-primary/20 text-body-md transition-all" placeholder="Tìm nhanh..." type="text"/>
+</div>
+<div class="flex items-center gap-sm">
+<button class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container transition-all relative">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border border-surface"></span>
+</button>
+<button class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-surface-container transition-all">
+<span class="material-symbols-outlined text-on-surface-variant">help</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Scrollable Area -->
+<section class="flex-1 overflow-y-auto p-lg scrollbar-hide">
+<div class="max-w-[1280px] mx-auto space-y-lg">
+<!-- Toolbar Section -->
+<div class="bg-surface-container-lowest p-md rounded-2xl shadow-sm flex flex-col md:flex-row gap-md items-center justify-between border border-outline-variant/30">
+<div class="flex flex-wrap items-center gap-sm w-full md:w-auto">
+<div class="relative flex-1 md:flex-none">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="pl-xl pr-md py-sm bg-surface rounded-xl border border-outline-variant w-full md:w-[320px] focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-body-md" placeholder="Tìm kiếm nhân viên..." type="text"/>
+</div>
+<select class="bg-surface border border-outline-variant rounded-xl py-sm pl-md pr-xl text-body-md focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer">
+<option value="">Tất cả phòng ban</option>
+<option>Phòng Công nghệ</option>
+<option>Phòng Nhân sự</option>
+<option>Phòng Kinh doanh</option>
+<option>Phòng Marketing</option>
+</select>
+<select class="bg-surface border border-outline-variant rounded-xl py-sm pl-md pr-xl text-body-md focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer">
+<option value="">Trạng thái</option>
+<option>Đang làm việc</option>
+<option>Nghỉ phép</option>
+<option>Đã nghỉ việc</option>
+</select>
+</div>
+<button class="flex items-center gap-xs bg-primary text-on-primary px-lg py-sm rounded-xl font-semibold shadow-md shadow-primary/20 hover:bg-on-primary-fixed-variant active:scale-95 transition-all w-full md:w-auto justify-center">
+<span class="material-symbols-outlined text-[20px]">person_add</span>
+<span class="text-body-md">Thêm nhân viên</span>
+</button>
+</div>
+<!-- Table Content -->
+<div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-high/50 border-b border-outline-variant">
+<th class="px-lg py-md font-semibold text-label-md uppercase tracking-wider text-on-surface-variant">Nhân viên</th>
+<th class="px-md py-md font-semibold text-label-md uppercase tracking-wider text-on-surface-variant">Mã NV</th>
+<th class="px-md py-md font-semibold text-label-md uppercase tracking-wider text-on-surface-variant">Email</th>
+<th class="px-md py-md font-semibold text-label-md uppercase tracking-wider text-on-surface-variant">Phòng ban</th>
+<th class="px-md py-md font-semibold text-label-md uppercase tracking-wider text-on-surface-variant">Chức vụ</th>
+<th class="px-md py-md font-semibold text-label-md uppercase tracking-wider text-on-surface-variant">Trạng thái</th>
+<th class="px-lg py-md"></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant/30">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A portrait of a young female professional in a bright corporate office setting. Her expression is friendly and confident. The image has a clean, airy aesthetic with soft daylight and high-key tones, maintaining a professional SaaS look with primary blue accents. 8k resolution, cinematic lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDK1YYEPnZbA6uClk4DkvV2TljGIO0RtDKnq__5_ysZ0kkFjHLw1E8t67NbKAGZ9KbYUnQQKYioShO2vyvhlphpPp21ifwao6JM8q3kjDAR8oU1YktC-A_K6-GXEInSUCS2j11n7MC7AthslBb4AwIUCnYOgH7ltUZLvKL6YC21B_qIsWcUDha8aYK09uPGSrNMN85Z2NLvFckFK2z7X6vWVX3iRlDMKRVsibRTalvS9q2OYnRaB0KtTjR70OG1c5aF5vuVXaooR7w"/>
+<span class="font-body-md font-semibold text-on-surface">Nguyễn Thu Hà</span>
+</div>
+</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">NV-2024-001</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">ha.nt@peoplepulse.vn</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">Phòng Công nghệ</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">UI/UX Designer</td>
+<td class="px-md py-md">
+<span class="inline-flex items-center px-sm py-xs rounded-full bg-green-100 text-green-700 font-label-md text-[11px] font-bold">ĐANG LÀM VIỆC</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="material-symbols-outlined text-outline hover:text-primary transition-colors">more_vert</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A portrait of a male tech professional in a modern workspace, wearing smart casual attire. The background is a blurred office with glass walls and indoor plants. Lighting is warm and natural, evoking a professional yet approachable corporate atmosphere. Coherent with the light-mode UI design system." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8RjEvZDOrPZH5yy-Xs0djQ1oULBESN3l_S_gRhfcRmi16A9WYuaw8iJlHTx4gCupHR2U9sO42dOU0QIx3pAtB9Tq9IsK9LlZA3UILsULS5rDMidpr3euz-CKLAXR1ts2Ka7sKSyfYG4PyphHmGMCAGKwInPxd9A6hVlfsDE2dcQ80gCvXQF9NgiIkg-L3ebpdXEhg7tnTtQfeRAm86v-4TC996_JRegpc_iWQuJT-wcY50eu05Q0oThUob0hJ4eDqCSHZgJg2m_A"/>
+<span class="font-body-md font-semibold text-on-surface">Lê Minh Tuấn</span>
+</div>
+</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">NV-2024-002</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">tuan.lm@peoplepulse.vn</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">Phòng Công nghệ</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">Senior Dev</td>
+<td class="px-md py-md">
+<span class="inline-flex items-center px-sm py-xs rounded-full bg-orange-100 text-orange-700 font-label-md text-[11px] font-bold">NGHỈ PHÉP</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="material-symbols-outlined text-outline hover:text-primary transition-colors">more_vert</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A corporate professional female headshot, wearing a blazer, minimalist professional style. Soft lighting against a neutral background. The image should look like a high-end business platform profile picture. Balanced color palette with light grays and whites, matching the SaaS UI guidelines." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLNp6kcnMQnT0dSjcY8qM9CseE3VEocdMkoUe5OQ1v9V5vzTwlcN_TJy4ir4GFDzW08vwqoTkl_Vnd4nf_oPkzMZiG2RByqgORrlVBI3EYRQ6JCytSxJz8xmiqR68qEVPKQ2KarJLPlSc-i6TSkY2Gw7J5F-ZzhHnCTVLSO3whuxTkzI2Mt7lXZ64icrcb2yKSvTa6FHhxwwCDi-2ZLX3NLqIY1X0RV2BKxp--8RlgVEU9LPUxMYjA07Q84lqWj21JUZok41Cs92w"/>
+<span class="font-body-md font-semibold text-on-surface">Phạm Mỹ Linh</span>
+</div>
+</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">NV-2024-003</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">linh.pm@peoplepulse.vn</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">Phòng Marketing</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">Content Manager</td>
+<td class="px-md py-md">
+<span class="inline-flex items-center px-sm py-xs rounded-full bg-green-100 text-green-700 font-label-md text-[11px] font-bold">ĐANG LÀM VIỆC</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="material-symbols-outlined text-outline hover:text-primary transition-colors">more_vert</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A portrait of a male accountant in a corporate setting, professional and trustworthy appearance. Modern minimalist background with clean lines. Lighting is crisp and bright, following a corporate light-mode theme with high clarity and professional polish." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkM0kPtlUzBtwAbhbf9HHqeO-8Anb_bA3-hWQR3VLa5x635R-u2XuIoDJ7lj4CBHUYVXA5Akgm7Kpo6zptE88X1joyf_2qfznHZuJ6Xo-oK1PE-LeduICrEy-GoCWFXeScumXslTypJL-3r40J-2WUgkvLzvsYjmCniM4xKpt6r2I8-f4HgCUvd1KkNjC5cz3xXMzBJHfnsAZpSlOKMsJ_uQ0DQZqk8Bd0q0shfAiB6atwrtyw82vilBBYoA9StBABZzzO2V7hw7E"/>
+<span class="font-body-md font-semibold text-on-surface">Trần Hoàng Nam</span>
+</div>
+</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">NV-2024-004</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">nam.th@peoplepulse.vn</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">Phòng Tài chính</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">Kế toán trưởng</td>
+<td class="px-md py-md">
+<span class="inline-flex items-center px-sm py-xs rounded-full bg-red-100 text-red-700 font-label-md text-[11px] font-bold">ĐÃ NGHỈ VIỆC</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="material-symbols-outlined text-outline hover:text-primary transition-colors">more_vert</button>
+</td>
+</tr>
+<!-- Repeatable rows for filler -->
+<tr class="hover:bg-surface-container transition-colors group">
+<td class="px-lg py-md">
+<div class="flex items-center gap-md">
+<img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A smiling female professional in a modern collaborative workspace environment. The composition is clean and focused. Soft corporate lighting with a bright background. Style is consistent with high-end SaaS dashboards. High quality photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAL9aN422oUKHhnLuQKTOXLHE0lHUWXhilhgKwuJgWswOLnygs8IHcn1WcVg-eIrasMI-B2yyEs9obMG4UPa1dwJZf-grczyj0dmbRfcE4nooGQIysEEcg34eupKa0pbY8ACx0wv8act_cZUkaP-lNFRXhU06XEQCF11RSQSn4Ryq0dMQB1ya0DVpyh9ndYFWu8AodFlpOYQpzfjquD41XKw2qWBEUobro0fpsX1YHXZ6h2AL5Lt8lYnj1EL4F6iUB3MS62PY17GlI"/>
+<span class="font-body-md font-semibold text-on-surface">Đặng Thảo Vy</span>
+</div>
+</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">NV-2024-005</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">vy.dt@peoplepulse.vn</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">Phòng Nhân sự</td>
+<td class="px-md py-md text-body-md text-on-surface-variant">Recruiter</td>
+<td class="px-md py-md">
+<span class="inline-flex items-center px-sm py-xs rounded-full bg-green-100 text-green-700 font-label-md text-[11px] font-bold">ĐANG LÀM VIỆC</span>
+</td>
+<td class="px-lg py-md text-right">
+<button class="material-symbols-outlined text-outline hover:text-primary transition-colors">more_vert</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="px-lg py-md flex items-center justify-between border-t border-outline-variant bg-surface-container-low/50">
+<div class="text-body-md text-on-surface-variant">Hiển thị <span class="font-bold">1-5</span> trong <span class="font-bold">128</span> nhân viên</div>
+<div class="flex items-center gap-xs">
+<button class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-container transition-all border border-outline-variant disabled:opacity-30" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center bg-primary text-on-primary font-bold text-body-md">1</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-container transition-all text-body-md">2</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-container transition-all text-body-md">3</button>
+<span class="text-outline">...</span>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-container transition-all text-body-md">26</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-surface-container transition-all border border-outline-variant">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Notification Toast (Microinteraction placeholder) -->
+<div class="fixed bottom-lg right-lg bg-inverse-surface text-inverse-on-surface px-lg py-sm rounded-xl shadow-xl flex items-center gap-md transform translate-y-24 transition-transform duration-300" id="toast">
+<span class="material-symbols-outlined text-green-400">check_circle</span>
+<p class="font-body-md">Thao tác thành công!</p>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Visible on Mobile only as per responsive pivot) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full h-16 bg-surface border-t border-outline-variant flex justify-around items-center px-sm z-50">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-[10px]">Tổng quan</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+<span class="font-label-md text-[10px]">Nhân viên</span>
+</a>
+<div class="relative -top-6">
+<button class="w-12 h-12 bg-primary text-on-primary rounded-full shadow-lg flex items-center justify-center active:scale-90 transition-transform">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">event_busy</span>
+<span class="font-label-md text-[10px]">Nghỉ phép</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-[10px]">Cài đặt</span>
+</a>
+</nav>
+<script>
+        // Simple Interaction logic
+        document.querySelectorAll('tbody tr').forEach(row => {
+            row.addEventListener('click', () => {
+                const toast = document.getElementById('toast');
+                toast.classList.remove('translate-y-24');
+                setTimeout(() => {
+                    toast.classList.add('translate-y-24');
+                }, 3000);
+            });
+        });
+
+        // Hover effects and micro-interactions
+        const buttons = document.querySelectorAll('button, a');
+        buttons.forEach(btn => {
+            btn.addEventListener('mouseenter', () => {
+                // Subtle hover logic if needed
+            });
+        });
+    </script>
+</body></html>

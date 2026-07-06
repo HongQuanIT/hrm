@@ -1,0 +1,520 @@
+<!DOCTYPE html><html class="light" lang="vi"><head>
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>PeoplePulse - Dashboard Tổng quan</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+  <script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed-variant": "#003ea8",
+                      "secondary-fixed-dim": "#b7c8e1",
+                      "on-secondary": "#ffffff",
+                      "primary": "#004ac6",
+                      "outline": "#737686",
+                      "on-secondary-container": "#54647a",
+                      "primary-fixed": "#dbe1ff",
+                      "on-surface": "#191b23",
+                      "surface-variant": "#e1e2ed",
+                      "on-tertiary-fixed": "#360f00",
+                      "primary-container": "#2563eb",
+                      "inverse-on-surface": "#f0f0fb",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "on-background": "#191b23",
+                      "secondary-fixed": "#d3e4fe",
+                      "outline-variant": "#c3c6d7",
+                      "error": "#ba1a1a",
+                      "surface": "#faf8ff",
+                      "error-container": "#ffdad6",
+                      "tertiary-container": "#bc4800",
+                      "on-secondary-fixed": "#0b1c30",
+                      "on-error": "#ffffff",
+                      "tertiary-fixed-dim": "#ffb596",
+                      "on-primary": "#ffffff",
+                      "surface-container-highest": "#e1e2ed",
+                      "on-primary-container": "#eeefff",
+                      "on-error-container": "#93000a",
+                      "tertiary": "#943700",
+                      "surface-tint": "#0053db",
+                      "surface-dim": "#d9d9e5",
+                      "on-tertiary-container": "#ffede6",
+                      "primary-fixed-dim": "#b4c5ff",
+                      "background": "#faf8ff",
+                      "secondary-container": "#d0e1fb",
+                      "secondary": "#505f76",
+                      "surface-bright": "#faf8ff",
+                      "surface-container": "#ededf9",
+                      "inverse-primary": "#b4c5ff",
+                      "on-tertiary-fixed-variant": "#7d2d00",
+                      "inverse-surface": "#2e3039",
+                      "surface-container-low": "#f3f3fe",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-fixed": "#ffdbcd",
+                      "surface-container-lowest": "#ffffff",
+                      "on-surface-variant": "#434655",
+                      "on-primary-fixed": "#00174b",
+                      "surface-container-high": "#e7e7f3"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xl": "32px",
+                      "md": "16px",
+                      "sm": "12px",
+                      "sidebar-width": "260px",
+                      "base": "4px",
+                      "xs": "8px",
+                      "lg": "24px",
+                      "container-max": "1280px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Inter"],
+                      "display-lg": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+      </script>
+  <style>
+        body {
+          font-family: 'Inter', sans-serif;
+          background-color: #faf8ff;
+        }
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .chart-bar {
+          transition: height 1s ease-in-out;
+        }
+        .glass-card {
+          background: rgba(255, 255, 255, 0.8);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(226, 232, 240, 0.5);
+        }
+        .sidebar-item-active {
+          background-color: #dbe1ff;
+          color: #00174b;
+        }
+      </style>
+  </head>
+  <body class="text-on-surface">
+  <!-- Top AppBar (JSON Mapping) -->
+  <header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-md py-sm bg-surface shadow-sm md:pl-[280px]">
+  <div class="flex items-center gap-sm">
+  <h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">PeoplePulse</h1>
+  </div>
+  <div class="flex items-center gap-md">
+  <button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-variant p-2 rounded-full transition-colors">notifications</button>
+  <div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
+  <img class="w-full h-full object-cover" data-alt="A professional corporate portrait of a modern HR manager with a friendly smile, set against a clean, minimalist office background with soft natural lighting. The style is bright and high-key, using a palette of soft whites and blues to match a premium SaaS interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWfhZLNcTg0rPNaGHdsYFxiLyTIOmYuehPnrKbAG1s-UK8SUX4Mcg01HrRJ7kbQSW71d97QEaIYAemx9Cyf4Hd63OkaM5u8g85QOtjUoDxscie5KBA7RoNlWbn2l0fT79_m4onhjk20spYk-9uf_7lHrpKPKfrXHJMYVkUeXGuMVHjWo3RvF14DgTn_WX5t4qeP99waw7aHpNkB7Qbnyz3sJYt_OjugkyBVITd9lXWhhkGSpOSQTC_8YG0TtYFglR6TkeZuD1PBI4">
+  </div>
+  </div>
+  </header>
+  <!-- Sidebar Navigation -->
+  <aside class="hidden md:flex fixed top-0 left-0 h-full w-[260px] flex-col bg-surface border-r border-outline-variant z-50">
+  <div class="p-lg">
+  <div class="flex items-center gap-xs text-primary mb-xl">
+  <span class="material-symbols-outlined text-[32px]" style="font-variation-settings: &quot;FILL&quot; 1;">bubble_chart</span>
+  <span class="font-headline-md text-headline-md">PeoplePulse</span>
+  </div>
+  <nav class="space-y-base">
+  <a class="flex items-center gap-sm px-md py-sm rounded-lg sidebar-item-active group transition-all" href="#">
+  <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+  <span class="font-body-md text-body-md">Tổng quan</span>
+  </a>
+  <a class="flex items-center gap-sm px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+  <span class="material-symbols-outlined" data-icon="groups">groups</span>
+  <span class="font-body-md text-body-md">Nhân viên</span>
+  </a>
+  <a class="flex items-center gap-sm px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+  <span class="material-symbols-outlined" data-icon="fingerprint">fingerprint</span>
+  <span class="font-body-md text-body-md">Chấm công</span>
+  </a>
+  <a class="flex items-center gap-sm px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+  <span class="material-symbols-outlined" data-icon="event_busy">event_busy</span>
+  <span class="font-body-md text-body-md">Nghỉ phép</span>
+  </a>
+  <a class="flex items-center gap-sm px-md py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+  <span class="material-symbols-outlined" data-icon="settings">settings</span>
+  <span class="font-body-md text-body-md">Cài đặt</span>
+  </a>
+  </nav>
+  </div>
+  <div class="mt-auto p-lg">
+  <div class="bg-primary-container/10 p-md rounded-xl">
+  <p class="font-label-md text-label-md text-primary font-bold mb-base">Nâng cấp Pro</p>
+  <p class="text-[11px] text-on-surface-variant leading-tight mb-sm">Mở khóa tính năng quản lý KPI nâng cao.</p>
+  <button class="w-full bg-primary text-on-primary py-xs rounded-lg font-label-md text-label-md active:scale-95 transition-transform">Nâng cấp ngay</button>
+  </div>
+  </div>
+  </aside>
+  <!-- Main Content Area -->
+  <main class="pt-[80px] pb-xl md:pl-[280px] md:pr-xl px-md">
+  <div class="max-w-container-max mx-auto">
+  <!-- Welcome Header -->
+  <div class="mb-lg flex flex-col md:flex-row md:items-center justify-between gap-md">
+  <div>
+  <h2 class="font-headline-lg text-headline-lg text-on-surface">Chào buổi sáng, Admin</h2>
+  <p class="font-body-md text-body-md text-on-surface-variant">Hôm nay là Thứ Tư, ngày 24 tháng 5, 2024</p>
+  </div>
+  <div class="flex gap-sm">
+  <button class="flex items-center gap-xs bg-surface border border-outline-variant px-md py-sm rounded-lg font-label-md text-label-md hover:bg-surface-container transition-colors">
+  <span class="material-symbols-outlined text-[20px]">calendar_today</span>
+  <span class="">Chọn ngày</span>
+  </button>
+  <button class="flex items-center gap-xs bg-primary text-on-primary px-md py-sm rounded-lg font-label-md text-label-md shadow-sm active:scale-95 transition-transform">
+  <span class="material-symbols-outlined text-[20px]">add</span>
+  <span class="">Tạo thông báo</span>
+  </button>
+  </div>
+  </div>
+  <!-- Stats Bento Grid -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-md mb-xl">
+  <!-- Total Employees -->
+  <div class="glass-card p-lg rounded-xl flex flex-col justify-between shadow-sm">
+  <div class="flex justify-between items-start mb-sm">
+  <div class="p-xs bg-primary-container/20 text-primary rounded-lg">
+  <span class="material-symbols-outlined">badge</span>
+  </div>
+  <span class="text-[11px] font-bold text-on-surface-variant">+2 tháng này</span>
+  </div>
+  <div>
+  <p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Tổng nhân viên</p>
+  <h3 class="font-display-lg text-display-lg text-on-surface">25</h3>
+  </div>
+  </div>
+  <!-- On-duty -->
+  <div class="glass-card p-lg rounded-xl flex flex-col justify-between shadow-sm">
+  <div class="flex justify-between items-start mb-sm">
+  <div class="p-xs bg-green-100 text-green-700 rounded-lg">
+  <span class="material-symbols-outlined">how_to_reg</span>
+  </div>
+  <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+  </div>
+  <div>
+  <p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Đi làm</p>
+  <h3 class="font-display-lg text-display-lg text-on-surface">22</h3>
+  </div>
+  </div>
+  <!-- Leave -->
+  <div class="glass-card p-lg rounded-xl flex flex-col justify-between shadow-sm border-l-4 border-l-tertiary">
+  <div class="flex justify-between items-start mb-sm">
+  <div class="p-xs bg-tertiary-fixed text-on-tertiary-fixed-variant rounded-lg">
+  <span class="material-symbols-outlined">event_busy</span>
+  </div>
+  </div>
+  <div>
+  <p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Nghỉ phép</p>
+  <h3 class="font-display-lg text-display-lg text-on-surface">2</h3>
+  </div>
+  </div>
+  <!-- Late -->
+  <div class="glass-card p-lg rounded-xl flex flex-col justify-between shadow-sm">
+  <div class="flex justify-between items-start mb-sm">
+  <div class="p-xs bg-error-container text-on-error-container rounded-lg">
+  <span class="material-symbols-outlined">schedule</span>
+  </div>
+  </div>
+  <div>
+  <p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Đi muộn</p>
+  <h3 class="font-display-lg text-display-lg text-on-surface">1</h3>
+  </div>
+  </div>
+  <!-- Avg KPI -->
+  <div class="bg-primary-container p-lg rounded-xl flex flex-col justify-between shadow-lg text-on-primary-container">
+  <div class="flex justify-between items-start mb-sm">
+  <div class="p-xs bg-white/20 rounded-lg">
+  <span class="material-symbols-outlined">trending_up</span>
+  </div>
+  </div>
+  <div>
+  <p class="font-label-md text-label-md opacity-80 uppercase tracking-wider">KPI trung bình</p>
+  <h3 class="font-display-lg text-display-lg">82%</h3>
+  </div>
+  </div>
+  </div>
+  <!-- Main Dashboard Area (Charts + Sidebar) -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-xl">
+  <!-- Left Column: Charts -->
+  <div class="lg:col-span-8 space-y-xl">
+  <!-- 7-Day Attendance Chart -->
+  <div class="glass-card p-lg rounded-xl shadow-sm" style="transform: translateY(0px); transition: transform 0.3s;">
+  <div class="flex items-center justify-between mb-xl">
+  <h4 class="font-headline-md text-headline-md text-on-surface">Chấm công 7 ngày</h4>
+  <select class="bg-surface border-none text-label-md font-label-md rounded-lg focus:ring-primary/20">
+  <option>Tuần này</option>
+  <option>Tuần trước</option>
+  </select>
+  </div>
+  <div class="h-64 flex items-end justify-between gap-base md:gap-md px-md relative"><!-- Grid Lines Background -->
+  <div class="absolute inset-0 flex flex-col justify-between pointer-events-none py-md px-md opacity-10">
+    <div class="border-t border-on-surface w-full"></div>
+    <div class="border-t border-on-surface w-full"></div>
+    <div class="border-t border-on-surface w-full"></div>
+    <div class="border-t border-on-surface w-full"></div>
+  </div>
+  
+  <!-- Day Bars -->
+  <div class="flex-1 flex flex-col items-center gap-sm h-full justify-end relative z-10">
+    <span class="text-[10px] font-bold text-on-surface-variant mb-xs">20</span>
+    <div class="w-full bg-primary rounded-t-lg chart-bar" style="height: 66%;"></div>
+    <span class="text-label-md text-on-surface-variant">T2</span>
+  </div>
+  <div class="flex-1 flex flex-col items-center gap-sm h-full justify-end relative z-10">
+    <span class="text-[10px] font-bold text-on-surface-variant mb-xs">23</span>
+    <div class="w-full bg-primary rounded-t-lg chart-bar" style="height: 76%;"></div>
+    <span class="text-label-md text-on-surface-variant">T3</span>
+  </div>
+  <div class="flex-1 flex flex-col items-center gap-sm h-full justify-end relative z-10">
+    <span class="text-[10px] font-bold text-primary mb-xs">22</span>
+    <div class="w-full bg-primary rounded-t-lg chart-bar" style="height: 73%;"></div>
+    <span class="text-label-md font-bold text-primary">T4</span>
+  </div>
+  <div class="flex-1 flex flex-col items-center gap-sm h-full justify-end relative z-10">
+    <span class="text-[10px] font-bold text-on-surface-variant mb-xs">24</span>
+    <div class="w-full bg-primary rounded-t-lg chart-bar" style="height: 80%;"></div>
+    <span class="text-label-md text-on-surface-variant">T5</span>
+  </div>
+  <div class="flex-1 flex flex-col items-center gap-sm h-full justify-end relative z-10">
+    <span class="text-[10px] font-bold text-on-surface-variant mb-xs">21</span>
+    <div class="w-full bg-primary rounded-t-lg chart-bar" style="height: 70%;"></div>
+    <span class="text-label-md text-on-surface-variant">T6</span>
+  </div>
+  <div class="flex-1 flex flex-col items-center gap-sm h-full justify-end relative z-10">
+    <span class="text-[10px] font-bold text-on-surface-variant mb-xs">8</span>
+    <div class="w-full bg-primary/40 rounded-t-lg chart-bar" style="height: 26%;"></div>
+    <span class="text-label-md text-on-surface-variant">T7</span>
+  </div>
+  <div class="flex-1 flex flex-col items-center gap-sm h-full justify-end relative z-10">
+    <span class="text-[10px] font-bold text-on-surface-variant mb-xs">4</span>
+    <div class="w-full bg-primary/40 rounded-t-lg chart-bar" style="height: 13%;"></div>
+    <span class="text-label-md text-on-surface-variant">CN</span>
+  </div></div>
+  </div>
+  <!-- Leave Ratio Circle Visualization -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
+  <div class="glass-card p-lg rounded-xl shadow-sm flex flex-col" style="transform: translateY(0px); transition: transform 0.3s;">
+  <h4 class="font-headline-md text-headline-md text-on-surface mb-lg">Tỷ lệ nghỉ phép</h4>
+  <div class="flex-1 flex items-center justify-center relative">
+  <!-- Donut Chart Placeholder -->
+  <svg class="w-40 h-40 transform -rotate-90">
+  <circle class="text-surface-container" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" stroke-width="12"></circle>
+  <circle class="text-tertiary" cx="80" cy="80" fill="transparent" r="70" stroke="currentColor" stroke-dasharray="440" stroke-dashoffset="390" stroke-width="12"></circle>
+  </svg>
+  <div class="absolute inset-0 flex flex-col items-center justify-center">
+  <span class="text-headline-lg font-bold">8%</span>
+  <span class="text-label-md text-on-surface-variant">Tháng này</span>
+  </div>
+  </div>
+  <div class="mt-lg space-y-sm">
+  <div class="flex items-center justify-between text-body-md">
+  <div class="flex items-center gap-xs">
+  <div class="w-3 h-3 rounded-full bg-tertiary"></div>
+  <span class="">Đã nghỉ</span>
+  </div>
+  <span class="font-bold">12 ngày</span>
+  </div>
+  <div class="flex items-center justify-between text-body-md">
+  <div class="flex items-center gap-xs">
+  <div class="w-3 h-3 rounded-full bg-surface-container"></div>
+  <span class="">Còn lại</span>
+  </div>
+  <span class="font-bold">148 ngày</span>
+  </div>
+  </div>
+  </div>
+  <!-- Mini Bento: Recent Activity -->
+  <div class="glass-card p-lg rounded-xl shadow-sm" style="transform: translateY(0px); transition: transform 0.3s;">
+  <h4 class="font-headline-md text-headline-md text-on-surface mb-lg">Giao dịch gần đây</h4>
+  <div class="space-y-md">
+  <div class="flex items-center gap-md">
+  <div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center">
+  <span class="material-symbols-outlined text-on-secondary-fixed-variant">payments</span>
+  </div>
+  <div class="flex-1">
+  <p class="font-body-md text-body-md font-bold">Thanh toán lương T5</p>
+  <p class="text-[12px] text-on-surface-variant">Thành công • 10 phút trước</p>
+  </div>
+  <span class="font-bold text-primary">+$4,250</span>
+  </div>
+  <div class="flex items-center gap-md">
+  <div class="w-10 h-10 rounded-full bg-tertiary-fixed flex items-center justify-center">
+  <span class="material-symbols-outlined text-on-tertiary-fixed-variant">description</span>
+  </div>
+  <div class="flex-1">
+  <p class="font-body-md text-body-md font-bold">Cập nhật Hợp đồng</p>
+  <p class="text-[12px] text-on-surface-variant">Lê Minh Tuấn • 2 giờ trước</p>
+  </div>
+  <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+  </div>
+  <div class="flex items-center gap-md">
+  <div class="w-10 h-10 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+  <span class="material-symbols-outlined">person_add</span>
+  </div>
+  <div class="flex-1">
+  <p class="font-body-md text-body-md font-bold">Thêm hồ sơ mới</p>
+  <p class="text-[12px] text-on-surface-variant">Nguyễn Thảo Anh • Hôm qua</p>
+  </div>
+  <span class="material-symbols-outlined text-on-surface-variant">chevron_right</span>
+  </div>
+  </div>
+  <button class="w-full mt-lg text-primary font-label-md text-label-md hover:underline">Xem tất cả hoạt động</button>
+  </div>
+  </div>
+  </div>
+  <!-- Right Column: Sidebar / Info -->
+  <div class="lg:col-span-4 space-y-xl">
+  <!-- Important Notifications -->
+  <div class="bg-surface-container-high p-lg rounded-xl shadow-sm border border-outline-variant/30">
+  <div class="flex items-center justify-between mb-lg">
+  <h4 class="font-headline-md text-headline-md text-on-surface">Thông báo quan trọng</h4>
+  <span class="px-2 py-0.5 bg-error text-on-error text-[10px] font-bold rounded-full">3 MỚI</span>
+  </div>
+  <div class="space-y-md">
+  <div class="p-md bg-surface rounded-lg border-l-4 border-l-error shadow-sm">
+  <p class="font-body-md text-body-md font-bold mb-xs">Hết hạn chứng chỉ an toàn</p>
+  <p class="text-[12px] text-on-surface-variant line-clamp-2">Nhóm sản xuất A có 3 nhân viên cần tái đào tạo trước ngày 30/05.</p>
+  <div class="mt-sm flex justify-end">
+  <button class="text-error font-label-md text-label-md font-bold">Xử lý ngay</button>
+  </div>
+  </div>
+  <div class="p-md bg-surface rounded-lg border-l-4 border-l-primary shadow-sm">
+  <p class="font-body-md text-body-md font-bold mb-xs">Cập nhật quy định nghỉ phép</p>
+  <p class="text-[12px] text-on-surface-variant">Chính sách nghỉ phép năm 2024 đã được phê duyệt bởi Ban Giám Đốc.</p>
+  </div>
+  </div>
+  </div>
+  <!-- New Employees -->
+  <div class="glass-card p-lg rounded-xl shadow-sm">
+  <h4 class="font-headline-md text-headline-md text-on-surface mb-lg">Nhân viên mới</h4>
+  <div class="space-y-lg">
+  <div class="flex items-center gap-md">
+  <div class="w-12 h-12 rounded-full overflow-hidden">
+  <img class="w-full h-full object-cover" data-alt="A close-up portrait of a young Vietnamese professional woman with a welcoming expression, wearing a stylish beige blazer. She is in a blurred modern co-working space with warm, inviting lighting. High-end photography style, soft focus background, corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDtx-QnJQ7waPNt_ANvlqyfZlFbSo2AYW65KmPuJCbhobbl89nDPyTny-z5lc4jVe9XR4LzUkZE8NAm0KTy7J8D21vaNMAfgIEhotYx3nVTLwYqHPmDsIw9zXYEVTsKDJ04QPizc0iJe6LPQppG2C__4-viEatOoLFtPguGWI7cO7XbzY8Gh9LIrWmwW9z1IYtqnreSA52qCCWPfxdReW9__006lhD7QOb8TNRdSoQ3SDSb943GncDqCT0nlm0HkYU7CJTdzmvwuds">
+  </div>
+  <div class="flex-1">
+  <p class="font-body-md text-body-md font-bold">Phạm Diệu Linh</p>
+  <p class="text-[12px] text-on-surface-variant">UX Designer • Team Product</p>
+  </div>
+  <div class="flex flex-col items-end">
+  <span class="text-[11px] text-on-surface-variant">Tham gia</span>
+  <span class="text-label-md font-bold text-primary">Hôm nay</span>
+  </div>
+  </div>
+  <div class="flex items-center gap-md opacity-80">
+  <div class="w-12 h-12 rounded-full overflow-hidden">
+  <img class="w-full h-full object-cover" data-alt="A portrait of a male software engineer with a confident smile, wearing a dark blue polo shirt. He is standing in a brightly lit, tech-oriented office with abstract architectural details in the background. Professional lighting, clean and modern corporate style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoDM_olippUHllrISEc8IbrqE9p2loS471JOwpq6tLdlJkutsXjf_LqnUcV14MyfRi_6jUphMdiRfUe_dkVQc2AZXfg_4wLHf-Q3LRJ2z2lZTFifQiQDmU02TxIQQq4Lgh99AUay21JURE1WiRRobF2oDdLz_QBvUAjYgy6ma13l5Qj8NHx9ye0nt-qH4y4N1501YfTZoKKcdZSXGegrdyDR88zp65aW9hgMTgFliQgJUsAwp2-YgVmE_Uj2TDW-ZWERS6LWq_VI8">
+  </div>
+  <div class="flex-1">
+  <p class="font-body-md text-body-md font-bold">Trần Hoàng Nam</p>
+  <p class="text-[12px] text-on-surface-variant">DevOps • Team Infra</p>
+  </div>
+  <div class="flex flex-col items-end">
+  <span class="text-[11px] text-on-surface-variant">Tham gia</span>
+  <span class="text-label-md font-bold">2 ngày trước</span>
+  </div>
+  </div>
+  <div class="flex items-center gap-md opacity-60">
+  <div class="w-12 h-12 rounded-full overflow-hidden">
+  <img class="w-full h-full object-cover" data-alt="A portrait of a cheerful human resources specialist in a modern office environment. She has a professional and approachable look, wearing a soft pastel blouse. The lighting is bright and airy, reflecting a positive workplace culture. Minimalist background with hints of indoor greenery." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAZ51WtWMIjCPvrqqkyR-sY24JYKCbUfGOtABmkxAy_PsmqKktWgAeQ3QbTjyKD8u3eKMLKsmvWIx_iiINFzqFIOKtEuYhN22tHoKIQ8flBBATQcyuCasXZ-pg1nnq3hQKCs9RahF6dGtNA3eWcoVzZ9ca0QvXxos3XkuurIrI6sEccr2yIXJv03m85P28xMgFt5xGk9Bv1T2T3WU_ogY-rEx93gV2i4KksjsEnaupM8iDupW3UCJPqPBL0tQVhN3-NIpXx8LuTGkw">
+  </div>
+  <div class="flex-1">
+  <p class="font-body-md text-body-md font-bold">Đặng Thu Hà</p>
+  <p class="text-[12px] text-on-surface-variant">HR Generalist • Team HR</p>
+  </div>
+  <div class="flex flex-col items-end">
+  <span class="text-[11px] text-on-surface-variant">Tham gia</span>
+  <span class="text-label-md font-bold">3 ngày trước</span>
+  </div>
+  </div>
+  </div>
+  <button class="w-full mt-lg border border-outline-variant py-sm rounded-lg font-label-md text-label-md hover:bg-surface-variant transition-colors">Tổ chức chào mừng</button>
+  </div>
+  <!-- Quick Actions -->
+  <div class="grid grid-cols-2 gap-md">
+  <div class="glass-card p-md rounded-xl text-center hover:bg-primary hover:text-on-primary transition-all cursor-pointer group">
+  <span class="material-symbols-outlined mb-xs block text-primary group-hover:text-on-primary">add_circle</span>
+  <span class="text-label-md font-bold">Tạo đơn</span>
+  </div>
+  <div class="glass-card p-md rounded-xl text-center hover:bg-primary hover:text-on-primary transition-all cursor-pointer group">
+  <span class="material-symbols-outlined mb-xs block text-primary group-hover:text-on-primary">cloud_download</span>
+  <span class="text-label-md font-bold">Xuất báo cáo</span>
+  </div>
+  </div>
+  </div>
+  </div>
+  </div>
+  </main>
+  <!-- Bottom Nav for Mobile (JSON Mapping) -->
+  <nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-sm pb-safe pt-xs bg-surface border-t border-outline-variant shadow-lg rounded-t-xl">
+  <div class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1">
+  <span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+  <span class="font-label-md text-label-md">Tổng quan</span>
+  </div>
+  <div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+  <span class="material-symbols-outlined" data-icon="groups">groups</span>
+  <span class="font-label-md text-label-md">Nhân viên</span>
+  </div>
+  <div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+  <span class="material-symbols-outlined" data-icon="fingerprint">fingerprint</span>
+  <span class="font-label-md text-label-md">Chấm công</span>
+  </div>
+  <div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+  <span class="material-symbols-outlined" data-icon="event_busy">event_busy</span>
+  <span class="font-label-md text-label-md">Nghỉ phép</span>
+  </div>
+  <div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+  <span class="material-symbols-outlined" data-icon="settings">settings</span>
+  <span class="font-label-md text-label-md">Cài đặt</span>
+  </div>
+  </nav>
+  <script>
+        // Simple interaction for cards
+        document.querySelectorAll('.glass-card').forEach(card => {
+          card.addEventListener('mouseenter', () => {
+            card.style.transform = 'translateY(-4px)';
+            card.style.transition = 'transform 0.3s ease';
+          });
+          card.addEventListener('mouseleave', () => {
+            card.style.transform = 'translateY(0)';
+          });
+        });
+  
+        // Animate charts on load
+        window.addEventListener('DOMContentLoaded', () => {
+          const bars = document.querySelectorAll('.chart-bar');
+          bars.forEach(bar => {
+            const finalHeight = bar.style.height;
+            bar.style.height = '0';
+            setTimeout(() => {
+              bar.style.height = finalHeight;
+            }, 100);
+          });
+        });
+      </script>
+  
+  
+  </body></html>

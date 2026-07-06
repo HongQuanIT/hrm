@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Thêm mục tiêu KPI mới - PeoplePulse</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#191b23",
+                    "background": "#faf8ff",
+                    "on-secondary-container": "#54647a",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "on-tertiary-fixed": "#360f00",
+                    "inverse-surface": "#2e3039",
+                    "surface-container-low": "#f3f3fe",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "tertiary-fixed": "#ffdbcd",
+                    "primary-fixed": "#dbe1ff",
+                    "on-primary-fixed": "#00174b",
+                    "error": "#ba1a1a",
+                    "on-primary-fixed-variant": "#003ea8",
+                    "surface-container": "#ededf9",
+                    "surface-tint": "#0053db",
+                    "surface": "#faf8ff",
+                    "inverse-on-surface": "#f0f0fb",
+                    "on-secondary-fixed": "#0b1c30",
+                    "tertiary-fixed-dim": "#ffb596",
+                    "surface-container-highest": "#e1e2ed",
+                    "surface-bright": "#faf8ff",
+                    "primary-container": "#2563eb",
+                    "on-tertiary-fixed-variant": "#7d2d00",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-container": "#eeefff",
+                    "error-container": "#ffdad6",
+                    "on-tertiary-container": "#ffede6",
+                    "primary": "#004ac6",
+                    "surface-container-high": "#e7e7f3",
+                    "primary-fixed-dim": "#b4c5ff",
+                    "on-surface-variant": "#434655",
+                    "on-error": "#ffffff",
+                    "tertiary-container": "#bc4800",
+                    "outline": "#737686",
+                    "on-primary": "#ffffff",
+                    "secondary": "#505f76",
+                    "secondary-container": "#d0e1fb",
+                    "on-background": "#191b23",
+                    "surface-dim": "#d9d9e5",
+                    "surface-variant": "#e1e2ed",
+                    "secondary-fixed": "#d3e4fe",
+                    "inverse-primary": "#b4c5ff",
+                    "on-error-container": "#93000a",
+                    "tertiary": "#943700",
+                    "outline-variant": "#c3c6d7",
+                    "on-secondary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "sidebar-width": "260px",
+                    "md": "16px",
+                    "xl": "32px",
+                    "sm": "12px",
+                    "lg": "24px",
+                    "container-max": "1280px",
+                    "base": "4px",
+                    "xs": "8px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "display-lg": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #faf8ff; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+        .glass-panel { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="bg-background text-on-surface antialiased min-h-screen">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-md py-sm bg-surface dark:bg-surface-dim shadow-sm">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-3xl">track_changes</span>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary dark:text-primary-fixed-dim">PeoplePulse</h1>
+</div>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined p-2 rounded-full hover:bg-surface-variant transition-colors text-on-surface-variant">notifications</button>
+<div class="w-8 h-8 rounded-full bg-secondary-container overflow-hidden ring-2 ring-primary/10">
+<img class="w-full h-full object-cover" data-alt="A professional corporate portrait of a smiling female HR manager in a bright, modern office setting. She has short dark hair and is wearing a stylish navy blue blazer. The background is slightly blurred, showing a clean, high-end SaaS company workspace with soft natural lighting and minimalist decor. High-quality photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYbARvZ2xKK1cSHHzLXGPjFcev-1oJm97t6KqK8bgtZejcP45cJmA_PJe8OiU7FnaJCH6poqh_625UkE978IO0yptHfgyC4vKR7dJ73UbWhDYxshZk5_02nguNS-hq16bTnyXCJU11g6QkugfahCruWdcGccPbF0KoJohq683WJevxov5xDN7pbspLX5RlkQ7uMUye9kQZTiAbIBojREg1PScrYpp283QKUthcFwbeZg4RdOtt94_bnKu7XnoyR8rMNaCKtKYmgFo"/>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="pt-24 pb-32 px-md md:px-xl max-w-container-max mx-auto">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-lg gap-md">
+<div>
+<a class="flex items-center text-primary font-label-md text-label-md mb-xs hover:underline gap-1" href="#">
+<span class="material-symbols-outlined text-sm">arrow_back</span> Quay lại danh sách
+                </a>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Thêm mục tiêu KPI mới</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Thiết lập mục tiêu chiến lược và các giai đoạn thực hiện cho nhân sự.</p>
+</div>
+<div class="flex gap-sm">
+<button class="px-lg py-2 border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-95">Lưu nháp</button>
+<button class="px-lg py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">save</span> Lưu mục tiêu
+                </button>
+</div>
+</div>
+<form class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+<!-- Left Column: Core Info -->
+<div class="lg:col-span-7 flex flex-col gap-lg">
+<!-- General Info Card -->
+<section class="glass-panel rounded-xl p-lg flex flex-col gap-md shadow-sm">
+<div class="flex items-center gap-xs mb-base">
+<span class="material-symbols-outlined text-primary">info</span>
+<h3 class="font-headline-md text-headline-md">Thông tin cơ bản</h3>
+</div>
+<div class="space-y-4">
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant">Tên mục tiêu</label>
+<input class="w-full px-md py-2.5 rounded-lg border border-outline-variant focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all outline-none bg-white" placeholder="Ví dụ: Hoàn thành website dự án" type="text"/>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant">Loại đo lường</label>
+<select class="w-full px-md py-2.5 rounded-lg border border-outline-variant focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all outline-none bg-white appearance-none">
+<option>Phần trăm (%)</option>
+<option>Số lượng (Count)</option>
+<option>Milestone (Cột mốc)</option>
+</select>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant">Đơn vị</label>
+<input class="w-full px-md py-2.5 rounded-lg border border-outline-variant focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all outline-none bg-white" placeholder="Ví dụ: %, Trang, VNĐ" type="text"/>
+</div>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant">Mục tiêu cần đạt</label>
+<input class="w-full px-md py-2.5 rounded-lg border border-outline-variant focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all outline-none bg-white" placeholder="Ví dụ: 100" type="number"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant">Mô tả chi tiết (Tùy chọn)</label>
+<textarea class="w-full px-md py-2.5 rounded-lg border border-outline-variant focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all outline-none bg-white" placeholder="Nhập mô tả chi tiết về mục tiêu này..." rows="3"></textarea>
+</div>
+</div>
+</section>
+<!-- Sub-tasks Section -->
+<section class="glass-panel rounded-xl p-lg flex flex-col gap-md shadow-sm">
+<div class="flex items-center justify-between mb-base">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary">account_tree</span>
+<h3 class="font-headline-md text-headline-md">Giai đoạn &amp; Công việc con</h3>
+</div>
+<button class="text-primary font-label-md text-label-md flex items-center gap-1 hover:bg-primary/5 px-2 py-1 rounded transition-colors" onclick="addTaskRow()" type="button">
+<span class="material-symbols-outlined text-sm">add</span> Thêm giai đoạn
+                        </button>
+</div>
+<div class="space-y-4" id="sub-tasks-container">
+<!-- Dynamic Row 1 -->
+<div class="p-md rounded-lg border border-outline-variant bg-surface-container-lowest flex flex-col gap-md relative group">
+<button class="absolute top-2 right-2 text-outline hover:text-error transition-colors" type="button">
+<span class="material-symbols-outlined text-lg">close</span>
+</button>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-md">
+<div class="md:col-span-12 lg:col-span-5 flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant">Tên giai đoạn</label>
+<input class="px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md" placeholder="Ví dụ: Thiết kế UI/UX" type="text"/>
+</div>
+<div class="md:col-span-6 lg:col-span-4 flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant">Người thực hiện</label>
+<div class="relative">
+<select class="w-full px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none appearance-none text-body-md bg-white">
+<option>Nguyễn Văn A</option>
+<option>Trần Thị B</option>
+<option>Lê Hoàng C</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 pointer-events-none text-outline">expand_more</span>
+</div>
+</div>
+<div class="md:col-span-6 lg:col-span-3 flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant">Hạn chót</label>
+<input class="px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md" type="date"/>
+</div>
+</div>
+</div>
+<!-- Dynamic Row 2 -->
+<div class="p-md rounded-lg border border-outline-variant bg-surface-container-lowest flex flex-col gap-md relative">
+<button class="absolute top-2 right-2 text-outline hover:text-error transition-colors" type="button">
+<span class="material-symbols-outlined text-lg">close</span>
+</button>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-md">
+<div class="md:col-span-12 lg:col-span-5 flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant">Tên giai đoạn</label>
+<input class="px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md" placeholder="Ví dụ: Phát triển Frontend" type="text"/>
+</div>
+<div class="md:col-span-6 lg:col-span-4 flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant">Người thực hiện</label>
+<div class="relative">
+<select class="w-full px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none appearance-none text-body-md bg-white">
+<option>Trần Thị B</option>
+<option>Nguyễn Văn A</option>
+<option>Lê Hoàng C</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 pointer-events-none text-outline">expand_more</span>
+</div>
+</div>
+<div class="md:col-span-6 lg:col-span-3 flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant">Hạn chót</label>
+<input class="px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md" type="date"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Column: Settings & Summary -->
+<div class="lg:col-span-5 flex flex-col gap-lg">
+<!-- Visibility & Priority Card -->
+<section class="glass-panel rounded-xl p-lg flex flex-col gap-md shadow-sm">
+<div class="flex items-center gap-xs mb-base">
+<span class="material-symbols-outlined text-primary">settings</span>
+<h3 class="font-headline-md text-headline-md">Thiết lập chung</h3>
+</div>
+<div class="space-y-4">
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant">Mức độ ưu tiên</label>
+<div class="flex gap-2">
+<label class="flex-1 cursor-pointer">
+<input class="hidden peer" name="priority" type="radio"/>
+<div class="text-center py-2 rounded-lg border border-outline-variant peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary transition-all text-body-md">Thấp</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input checked="" class="hidden peer" name="priority" type="radio"/>
+<div class="text-center py-2 rounded-lg border border-outline-variant peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary transition-all text-body-md">Trung bình</div>
+</label>
+<label class="flex-1 cursor-pointer">
+<input class="hidden peer" name="priority" type="radio"/>
+<div class="text-center py-2 rounded-lg border border-outline-variant peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary transition-all text-body-md">Cao</div>
+</label>
+</div>
+</div>
+<div class="pt-2">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">Tự động cập nhật tiến độ từ các công việc con</span>
+</label>
+</div>
+<div class="pt-1">
+<label class="flex items-center gap-3 cursor-pointer group">
+<input checked="" class="w-5 h-5 rounded border-outline-variant text-primary focus:ring-primary/20" type="checkbox"/>
+<span class="font-body-md text-body-md text-on-surface group-hover:text-primary transition-colors">Thông báo cho người thực hiện khi được giao</span>
+</label>
+</div>
+</div>
+</section>
+<!-- Helpful Tips Bento Card -->
+<section class="bg-primary text-on-primary rounded-xl p-lg flex flex-col gap-md shadow-lg relative overflow-hidden">
+<div class="absolute top-[-20px] right-[-20px] opacity-10">
+<span class="material-symbols-outlined text-[120px]" style="font-variation-settings: 'FILL' 1;">lightbulb</span>
+</div>
+<div class="relative z-10">
+<h3 class="font-headline-md text-headline-md mb-2">Mẹo thiết lập KPI</h3>
+<ul class="space-y-3 opacity-90">
+<li class="flex gap-2 text-body-md">
+<span class="material-symbols-outlined text-sm pt-1">check_circle</span>
+                                Sử dụng mô hình SMART (Cụ thể, Đo lường được, Khả thi, Liên quan, Thời hạn).
+                            </li>
+<li class="flex gap-2 text-body-md">
+<span class="material-symbols-outlined text-sm pt-1">check_circle</span>
+                                Chia nhỏ mục tiêu lớn thành ít nhất 3-5 giai đoạn để dễ quản lý.
+                            </li>
+<li class="flex gap-2 text-body-md">
+<span class="material-symbols-outlined text-sm pt-1">check_circle</span>
+                                Phân công rõ ràng trách nhiệm để tránh chồng chéo công việc.
+                            </li>
+</ul>
+</div>
+</section>
+<!-- Visualization Mockup -->
+<div class="glass-panel rounded-xl p-lg border-dashed border-2 flex flex-col items-center justify-center text-center gap-md min-h-[200px]">
+<span class="material-symbols-outlined text-4xl text-outline-variant">analytics</span>
+<div>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Xem trước biểu đồ</p>
+<p class="font-body-md text-body-md text-outline italic">Biểu đồ tiến độ dự kiến sẽ hiển thị ở đây sau khi bạn thêm các giai đoạn.</p>
+</div>
+</div>
+</div>
+</form>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-sm pb-safe pt-xs bg-surface dark:bg-surface-dim border-t border-outline-variant shadow-lg rounded-t-xl">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Tổng quan</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-full px-4 py-1" href="#">
+<span class="material-symbols-outlined">track_changes</span>
+<span class="font-label-md text-label-md">Mục tiêu</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-md text-label-md">Nhân viên</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-md text-label-md">Cài đặt</span>
+</a>
+</nav>
+<script>
+        function addTaskRow() {
+            const container = document.getElementById('sub-tasks-container');
+            const newRow = document.createElement('div');
+            newRow.className = 'p-md rounded-lg border border-outline-variant bg-surface-container-lowest flex flex-col gap-md relative animate-in fade-in slide-in-from-top-2 duration-300';
+            newRow.innerHTML = `
+                <button type="button" onclick="this.parentElement.remove()" class="absolute top-2 right-2 text-outline hover:text-error transition-colors">
+                    <span class="material-symbols-outlined text-lg">close</span>
+                </button>
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-md">
+                    <div class="md:col-span-12 lg:col-span-5 flex flex-col gap-xs">
+                        <label class="font-label-md text-label-md text-on-surface-variant">Tên giai đoạn</label>
+                        <input type="text" placeholder="Tên giai đoạn mới..." class="px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md">
+                    </div>
+                    <div class="md:col-span-6 lg:col-span-4 flex flex-col gap-xs">
+                        <label class="font-label-md text-label-md text-on-surface-variant">Người thực hiện</label>
+                        <div class="relative">
+                            <select class="w-full px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none appearance-none text-body-md bg-white">
+                                <option>Chọn nhân viên...</option>
+                                <option>Nguyễn Văn A</option>
+                                <option>Trần Thị B</option>
+                                <option>Lê Hoàng C</option>
+                            </select>
+                            <span class="material-symbols-outlined absolute right-2 top-2 pointer-events-none text-outline">expand_more</span>
+                        </div>
+                    </div>
+                    <div class="md:col-span-6 lg:col-span-3 flex flex-col gap-xs">
+                        <label class="font-label-md text-label-md text-on-surface-variant">Hạn chót</label>
+                        <input type="date" class="px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md">
+                    </div>
+                </div>
+            `;
+            container.appendChild(newRow);
+        }
+    </script>
+</body></html>

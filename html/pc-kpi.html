@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PeoplePulse - KPI Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .sidebar-active { background-color: #d0e1fb; color: #004ac6; }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c3c6d7; border-radius: 10px; }
+        .glass-card { backdrop-filter: blur(8px); background-color: rgba(255, 255, 255, 0.8); }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#003ea8",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-secondary": "#ffffff",
+                        "primary": "#004ac6",
+                        "outline": "#737686",
+                        "on-secondary-container": "#54647a",
+                        "primary-fixed": "#dbe1ff",
+                        "on-surface": "#191b23",
+                        "surface-variant": "#e1e2ed",
+                        "on-tertiary-fixed": "#360f00",
+                        "primary-container": "#2563eb",
+                        "inverse-on-surface": "#f0f0fb",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-background": "#191b23",
+                        "secondary-fixed": "#d3e4fe",
+                        "outline-variant": "#c3c6d7",
+                        "error": "#ba1a1a",
+                        "surface": "#faf8ff",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#bc4800",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e1e2ed",
+                        "on-primary-container": "#eeefff",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#943700",
+                        "surface-tint": "#0053db",
+                        "surface-dim": "#d9d9e5",
+                        "on-tertiary-container": "#ffede6",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "background": "#faf8ff",
+                        "secondary-container": "#d0e1fb",
+                        "secondary": "#505f76",
+                        "surface-bright": "#faf8ff",
+                        "surface-container": "#ededf9",
+                        "inverse-primary": "#b4c5ff",
+                        "on-tertiary-fixed-variant": "#7d2d00",
+                        "inverse-surface": "#2e3039",
+                        "surface-container-low": "#f3f3fe",
+                        "on-surface": "#ffffff",
+                        "tertiary-fixed": "#ffdbcd",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#434655",
+                        "on-primary-fixed": "#00174b",
+                        "surface-container-high": "#e7e7f3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "md": "16px",
+                        "sm": "12px",
+                        "sidebar-width": "260px",
+                        "base": "4px",
+                        "xs": "8px",
+                        "lg": "24px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface">
+<!-- Top AppBar (JSON Mapping) -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-md py-sm bg-surface shadow-sm md:pl-[280px]">
+<div class="flex items-center gap-sm">
+<span class="md:hidden material-symbols-outlined text-primary cursor-pointer">menu</span>
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary">KPI Dashboard</h1>
+</div>
+<div class="flex items-center gap-md">
+<div class="relative hidden md:block">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-outline">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container rounded-full border-none focus:ring-2 focus:ring-primary/20 w-64 text-body-md" placeholder="Tìm kiếm KPI..." type="text"/>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-variant transition-colors active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<div class="flex items-center gap-xs ml-xs bg-surface-container-high pr-md pl-xs py-xs rounded-full cursor-pointer hover:bg-surface-variant transition-colors">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-primary-fixed flex items-center justify-center text-on-primary-fixed-variant font-bold text-label-md">
+<img class="w-full h-full object-cover" data-alt="A professional corporate headshot of a smiling female HR director in a bright, modern office setting. She wears a navy blazer, and the background is softly blurred with clean white walls and green plants, following a Corporate Modern SaaS aesthetic with bright, airy lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBm-mPSNuI1yPBw7RWHRoAl4diA_MjSKp1mxGSrWhO58mBokBruQl9Y-X1tf6LC8SGXONz3GGVMHYx0Ymebdl1a3QssIp_CHnvPXQAfrBHb7eCpOfPC1NRfWjrRAmvFsEfrNq0yavVHstWFcCgZK_-iR5zOgBlGHSwy0F8kSmnmJkP4ub1B6BOwZOOb3SF5e7bFe8WznllqzeRF35heh2jbBSh0p4KnGSdxQVZ4bdoMyg_ewcbaOdZsyRb12sa9XDBtmuwWojILP0s"/>
+</div>
+<span class="text-body-md font-medium text-on-surface-variant hidden md:inline">Admin User</span>
+</div>
+</div>
+</header>
+<!-- Sidebar Navigation -->
+<aside class="fixed left-0 top-0 h-full w-[260px] bg-surface-container-lowest border-r border-outline-variant z-[60] hidden md:flex flex-col">
+<div class="px-lg py-xl">
+<h2 class="font-headline-lg text-headline-lg font-extrabold text-primary tracking-tight">PeoplePulse</h2>
+</div>
+<nav class="flex-1 px-sm space-y-1">
+<a class="flex items-center gap-md px-md py-sm rounded-xl text-on-surface-variant hover:bg-surface-variant transition-all" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md text-body-md">Tổng quan</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-xl sidebar-active font-semibold shadow-sm transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-md text-body-md">KPI &amp; Chỉ số</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-xl text-on-surface-variant hover:bg-surface-variant transition-all" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-body-md text-body-md">Nhân viên</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-xl text-on-surface-variant hover:bg-surface-variant transition-all" href="#">
+<span class="material-symbols-outlined">fingerprint</span>
+<span class="font-body-md text-body-md">Chấm công</span>
+</a>
+<a class="flex items-center gap-md px-md py-sm rounded-xl text-on-surface-variant hover:bg-surface-variant transition-all" href="#">
+<span class="material-symbols-outlined">event_busy</span>
+<span class="font-body-md text-body-md">Nghỉ phép</span>
+</a>
+<div class="pt-xl pb-xs px-md">
+<span class="text-label-md text-outline font-bold uppercase tracking-widest">Hệ thống</span>
+</div>
+<a class="flex items-center gap-md px-md py-sm rounded-xl text-on-surface-variant hover:bg-surface-variant transition-all" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md text-body-md">Cài đặt</span>
+</a>
+</nav>
+<div class="p-lg">
+<div class="p-md bg-primary-container rounded-xl text-on-primary-container flex flex-col gap-xs">
+<span class="font-bold text-label-md">Nâng cấp Pro</span>
+<p class="text-[11px] opacity-90 leading-tight">Mở khóa tính năng phân tích AI nâng cao.</p>
+<button class="mt-sm bg-white text-primary px-3 py-1.5 rounded-lg text-label-md font-bold hover:bg-primary-fixed transition-colors">Chi tiết</button>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="pt-24 md:pl-[260px] min-h-screen">
+<div class="max-w-[1280px] mx-auto px-md md:px-xl pb-xl">
+<!-- Bento Header Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-lg mb-xl">
+<!-- Average Company KPI -->
+<div class="bg-white p-lg rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-sm">
+<span class="text-label-md font-bold text-outline uppercase tracking-wider">KPI Toàn công ty</span>
+<span class="bg-green-100 text-green-700 px-2 py-0.5 rounded text-[10px] font-bold">+4.2%</span>
+</div>
+<div class="flex items-baseline gap-xs">
+<h3 class="text-display-lg font-display-lg text-primary">87.5%</h3>
+<span class="text-body-md text-outline">trên 100%</span>
+</div>
+</div>
+<div class="mt-lg h-16 w-full flex items-end gap-1">
+<!-- Tiny visual bar chart -->
+<div class="flex-1 bg-primary/10 h-1/2 rounded-t-sm"></div>
+<div class="flex-1 bg-primary/20 h-2/3 rounded-t-sm"></div>
+<div class="flex-1 bg-primary/30 h-1/2 rounded-t-sm"></div>
+<div class="flex-1 bg-primary/40 h-3/4 rounded-t-sm"></div>
+<div class="flex-1 bg-primary/60 h-2/3 rounded-t-sm"></div>
+<div class="flex-1 bg-primary h-full rounded-t-sm"></div>
+<div class="flex-1 bg-primary/80 h-4/5 rounded-t-sm"></div>
+</div>
+</div>
+<!-- Departmental Average -->
+<div class="bg-white p-lg rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+<div class="relative z-10">
+<span class="text-label-md font-bold text-outline uppercase tracking-wider">KPI Theo phòng ban</span>
+<div class="mt-md space-y-sm">
+<div class="flex items-center justify-between">
+<span class="text-body-md font-medium">Kỹ thuật</span>
+<span class="text-body-md font-bold">92%</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5">
+<div class="bg-primary h-1.5 rounded-full" style="width: 92%"></div>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-body-md font-medium">Marketing</span>
+<span class="text-body-md font-bold">78%</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5">
+<div class="bg-tertiary h-1.5 rounded-full" style="width: 78%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Personal High Achiever -->
+<div class="bg-primary p-lg rounded-xl border border-primary-container shadow-lg text-white">
+<span class="text-label-md font-bold opacity-80 uppercase tracking-wider">Cá nhân tiêu biểu</span>
+<div class="mt-lg flex items-center gap-md">
+<div class="w-14 h-14 rounded-full border-2 border-white/30 overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A high-quality studio portrait of a young professional male software engineer, smiling confidently. Bright studio lighting with blue and white accents, reflecting a clean Corporate Modern aesthetic. High resolution, high-end SaaS platform marketing style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBd3YQtXtFypaxzf0br7z2jv85uEyhod_FSDm41ODHzgPA09vQcTkiKrmV93yy7glhKXqm5lzMvLtYCoHad9W1kHrsuqgutmEfPotoyJnY_XkJJ_HzA_B9tDDXseC92Ft1LfGYr3Gmk3KT0bCLOoLUKpZZlZfpjEVWrlNLxgU0VAZ3ksfuW8ZxWPYT4dK6s8Zc8UWR_0R5gWHQgl4L3cp4e9kSpEGr2Jrvo5ut9R_owl2YS2GvsTev5nAJy5Ob5PYf2-tDJ5nd1V1o"/>
+</div>
+<div>
+<h4 class="font-headline-md text-headline-md leading-tight">Lê Hoàng Nam</h4>
+<p class="text-body-md opacity-90">Lead Developer</p>
+</div>
+</div>
+<div class="mt-lg flex items-center justify-between">
+<span class="text-body-md">KPI Cá nhân:</span>
+<span class="text-headline-md font-bold">98.2%</span>
+</div>
+</div>
+</div>
+<!-- Detailed KPI Charts Section -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-lg mb-xl">
+<!-- KPI Trend Chart Placeholder -->
+<div class="bg-white p-xl rounded-xl border border-outline-variant shadow-sm h-[400px] flex flex-col">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="font-headline-md text-headline-md text-on-surface-variant">Xu hướng KPI hàng tháng</h3>
+<div class="flex gap-xs">
+<button class="px-3 py-1 text-label-md border border-outline-variant rounded-lg hover:bg-surface-variant">2023</button>
+<button class="px-3 py-1 text-label-md bg-primary text-white rounded-lg">2024</button>
+</div>
+</div>
+<div class="flex-1 flex items-end justify-between gap-md relative">
+<!-- SVG Animation Background for Charting area -->
+
+<!-- Visual bars placeholder -->
+<div class="flex-1 flex flex-col items-center gap-xs">
+<div class="w-full bg-secondary-container rounded-t-md transition-all duration-700 hover:bg-primary" style="height: 60%"></div>
+<span class="text-[10px] text-outline font-bold">Th1</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-xs">
+<div class="w-full bg-secondary-container rounded-t-md transition-all duration-700 hover:bg-primary" style="height: 45%"></div>
+<span class="text-[10px] text-outline font-bold">Th2</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-xs">
+<div class="w-full bg-secondary-container rounded-t-md transition-all duration-700 hover:bg-primary" style="height: 80%"></div>
+<span class="text-[10px] text-outline font-bold">Th3</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-xs">
+<div class="w-full bg-secondary-container rounded-t-md transition-all duration-700 hover:bg-primary" style="height: 65%"></div>
+<span class="text-[10px] text-outline font-bold">Th4</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-xs">
+<div class="w-full bg-secondary-container rounded-t-md transition-all duration-700 hover:bg-primary" style="height: 90%"></div>
+<span class="text-[10px] text-outline font-bold">Th5</span>
+</div>
+<div class="flex-1 flex flex-col items-center gap-xs">
+<div class="w-full bg-primary rounded-t-md h-[95%]"></div>
+<span class="text-[10px] text-primary font-bold">Th6</span>
+</div>
+</div>
+</div>
+<!-- Department Distribution -->
+<div class="bg-white p-xl rounded-xl border border-outline-variant shadow-sm h-[400px] flex flex-col">
+<h3 class="font-headline-md text-headline-md text-on-surface-variant mb-lg">Phân phối hiệu suất phòng ban</h3>
+<div class="flex-1 flex items-center justify-center relative">
+<!-- Circle Progress Mockup -->
+<div class="relative w-56 h-56 rounded-full border-[16px] border-surface-container flex items-center justify-center">
+<div class="absolute inset-0 border-[16px] border-primary rounded-full border-t-transparent border-l-transparent -rotate-45"></div>
+<div class="text-center">
+<span class="block text-display-lg font-display-lg text-primary">Q2</span>
+<span class="text-label-md text-outline font-bold">Mục tiêu quý</span>
+</div>
+</div>
+<!-- Legend -->
+<div class="absolute right-0 top-0 space-y-md">
+<div class="flex items-center gap-sm">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<span class="text-body-md">Đã hoàn thành</span>
+</div>
+<div class="flex items-center gap-sm">
+<div class="w-3 h-3 rounded-full bg-tertiary"></div>
+<span class="text-body-md">Đang thực hiện</span>
+</div>
+<div class="flex items-center gap-sm">
+<div class="w-3 h-3 rounded-full bg-error"></div>
+<span class="text-body-md">Chậm tiến độ</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- KPI Target List -->
+<div class="bg-white rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+<div class="p-lg border-b border-outline-variant flex justify-between items-center bg-surface-container-lowest">
+<h3 class="font-headline-md text-headline-md text-on-surface-variant">Danh sách mục tiêu KPI hiện tại</h3>
+<button class="text-primary font-bold text-body-md flex items-center gap-xs hover:underline transition-all">
+                        Xem tất cả <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead class="bg-surface-container-low">
+<tr>
+<th class="px-lg py-md text-label-md font-bold text-outline uppercase">Mục tiêu</th>
+<th class="px-lg py-md text-label-md font-bold text-outline uppercase">Phòng ban</th>
+<th class="px-lg py-md text-label-md font-bold text-outline uppercase">Người phụ trách</th>
+<th class="px-lg py-md text-label-md font-bold text-outline uppercase">Tiến độ</th>
+<th class="px-lg py-md text-label-md font-bold text-outline uppercase">Trạng thái</th>
+<th class="px-lg py-md text-label-md font-bold text-outline uppercase text-right">Hành động</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-lg py-lg">
+<div class="flex flex-col">
+<span class="font-body-md font-semibold text-on-surface">Tăng trưởng doanh thu Q2</span>
+<span class="text-xs text-outline">Target: $2.5M</span>
+</div>
+</td>
+<td class="px-lg py-lg text-body-md">Sales</td>
+<td class="px-lg py-lg">
+<div class="flex items-center gap-xs">
+<div class="w-6 h-6 rounded-full bg-secondary-fixed flex items-center justify-center text-[10px] font-bold">TM</div>
+<span class="text-body-md">Trần Mạnh</span>
+</div>
+</td>
+<td class="px-lg py-lg w-48">
+<div class="flex items-center gap-sm">
+<div class="flex-1 bg-surface-container rounded-full h-1.5">
+<div class="bg-primary h-1.5 rounded-full" style="width: 75%"></div>
+</div>
+<span class="text-label-md font-bold">75%</span>
+</div>
+</td>
+<td class="px-lg py-lg">
+<span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-label-md font-bold">Đúng hạn</span>
+</td>
+<td class="px-lg py-lg text-right">
+<button class="p-2 rounded-lg hover:bg-surface-variant transition-colors group-hover:text-primary">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-lg py-lg">
+<div class="flex flex-col">
+<span class="font-body-md font-semibold text-on-surface">Cải thiện NPS Khách hàng</span>
+<span class="text-xs text-outline">Target: 45+ Score</span>
+</div>
+</td>
+<td class="px-lg py-lg text-body-md">CSKH</td>
+<td class="px-lg py-lg">
+<div class="flex items-center gap-xs">
+<div class="w-6 h-6 rounded-full bg-tertiary-fixed flex items-center justify-center text-[10px] font-bold">LN</div>
+<span class="text-body-md">Lan Ngọc</span>
+</div>
+</td>
+<td class="px-lg py-lg w-48">
+<div class="flex items-center gap-sm">
+<div class="flex-1 bg-surface-container rounded-full h-1.5">
+<div class="bg-tertiary h-1.5 rounded-full" style="width: 42%"></div>
+</div>
+<span class="text-label-md font-bold">42%</span>
+</div>
+</td>
+<td class="px-lg py-lg">
+<span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-label-md font-bold">Đang xử lý</span>
+</td>
+<td class="px-lg py-lg text-right">
+<button class="p-2 rounded-lg hover:bg-surface-variant transition-colors group-hover:text-primary">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="px-lg py-lg">
+<div class="flex flex-col">
+<span class="font-body-md font-semibold text-on-surface">Phát triển tính năng AI</span>
+<span class="text-xs text-outline">Deadline: 30/06</span>
+</div>
+</td>
+<td class="px-lg py-lg text-body-md">Engineering</td>
+<td class="px-lg py-lg">
+<div class="flex items-center gap-xs">
+<div class="w-6 h-6 rounded-full bg-primary-fixed flex items-center justify-center text-[10px] font-bold">HN</div>
+<span class="text-body-md">Hoàng Nam</span>
+</div>
+</td>
+<td class="px-lg py-lg w-48">
+<div class="flex items-center gap-sm">
+<div class="flex-1 bg-surface-container rounded-full h-1.5">
+<div class="bg-error h-1.5 rounded-full" style="width: 15%"></div>
+</div>
+<span class="text-label-md font-bold">15%</span>
+</div>
+</td>
+<td class="px-lg py-lg">
+<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-label-md font-bold">Chậm tiến độ</span>
+</td>
+<td class="px-lg py-lg text-right">
+<button class="p-2 rounded-lg hover:bg-surface-variant transition-colors group-hover:text-primary">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button Contextual Check -->
+<div class="fixed bottom-lg right-lg z-50">
+<button class="w-14 h-14 bg-primary text-white rounded-2xl shadow-xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+<!-- Micro-interaction Scripts -->
+<script>
+        // Active Sidebar Logic
+        const navLinks = document.querySelectorAll('aside nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                navLinks.forEach(l => {
+                    l.classList.remove('sidebar-active', 'font-semibold', 'shadow-sm');
+                    l.classList.add('text-on-surface-variant', 'hover:bg-surface-variant');
+                });
+                link.classList.add('sidebar-active', 'font-semibold', 'shadow-sm');
+                link.classList.remove('text-on-surface-variant', 'hover:bg-surface-variant');
+            });
+        });
+
+        // Simple Chart Animation Simulation
+        document.addEventListener('DOMContentLoaded', () => {
+            const bars = document.querySelectorAll('.bg-secondary-container');
+            bars.forEach((bar, index) => {
+                setTimeout(() => {
+                    bar.classList.add('transition-all');
+                }, index * 100);
+            });
+        });
+    </script>
+</body></html>

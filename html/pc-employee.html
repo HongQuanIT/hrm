@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#003ea8",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-secondary": "#ffffff",
+                        "primary": "#004ac6",
+                        "outline": "#737686",
+                        "on-secondary-container": "#54647a",
+                        "primary-fixed": "#dbe1ff",
+                        "on-surface": "#191b23",
+                        "surface-variant": "#e1e2ed",
+                        "on-tertiary-fixed": "#360f00",
+                        "primary-container": "#2563eb",
+                        "inverse-on-surface": "#f0f0fb",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-background": "#191b23",
+                        "secondary-fixed": "#d3e4fe",
+                        "outline-variant": "#c3c6d7",
+                        "error": "#ba1a1a",
+                        "surface": "#faf8ff",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#bc4800",
+                        "on-secondary-fixed": "#0b1c30",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#ffb596",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e1e2ed",
+                        "on-primary-container": "#eeefff",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#943700",
+                        "surface-tint": "#0053db",
+                        "surface-dim": "#d9d9e5",
+                        "on-tertiary-container": "#ffede6",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "background": "#faf8ff",
+                        "secondary-container": "#d0e1fb",
+                        "secondary": "#505f76",
+                        "surface-bright": "#faf8ff",
+                        "surface-container": "#ededf9",
+                        "inverse-primary": "#b4c5ff",
+                        "on-tertiary-fixed-variant": "#7d2d00",
+                        "inverse-surface": "#2e3039",
+                        "surface-container-low": "#f3f3fe",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed": "#ffdbcd",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#434655",
+                        "on-primary-fixed": "#00174b",
+                        "surface-container-high": "#e7e7f3"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "md": "16px",
+                        "sm": "12px",
+                        "sidebar-width": "260px",
+                        "base": "4px",
+                        "xs": "8px",
+                        "lg": "24px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "display-lg": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-lg": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                        "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-tab {
+            border-bottom: 2px solid #004ac6;
+            color: #004ac6;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e1e2ed;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-surface-container-low text-on-surface">
+<!-- Desktop Sidebar -->
+<aside class="fixed left-0 top-0 h-full w-[260px] bg-surface-container-lowest border-r border-outline-variant hidden md:flex flex-col z-40">
+<div class="p-lg">
+<h1 class="font-headline-lg text-primary tracking-tight">PeoplePulse</h1>
+</div>
+<nav class="flex-1 px-md overflow-y-auto custom-scrollbar">
+<div class="space-y-base">
+<a class="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-md">Tổng quan</span>
+</a>
+<a class="flex items-center gap-md p-md rounded-lg bg-secondary-container text-on-secondary-container" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
+<span class="font-body-md font-semibold">Nhân viên</span>
+</a>
+<a class="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">fingerprint</span>
+<span class="font-body-md">Chấm công</span>
+</a>
+<a class="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">event_busy</span>
+<span class="font-body-md">Nghỉ phép</span>
+</a>
+<div class="py-md px-md text-outline font-label-md uppercase tracking-wider">Hệ thống</div>
+<a class="flex items-center gap-md p-md rounded-lg text-on-surface-variant hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-md">Cài đặt</span>
+</a>
+</div>
+</nav>
+<div class="p-md border-t border-outline-variant">
+<div class="flex items-center gap-md p-sm">
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center text-on-primary-fixed font-bold">QT</div>
+<div>
+<p class="font-label-md text-on-surface font-semibold">Quản trị viên</p>
+<p class="text-[10px] text-on-surface-variant">admin@peoplepulse.com</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-[260px] min-h-screen flex flex-col">
+<!-- Top App Bar -->
+<header class="sticky top-0 z-30 bg-surface/80 backdrop-blur-md flex justify-between items-center px-xl py-md">
+<div class="flex items-center gap-sm text-on-surface-variant">
+<span class="material-symbols-outlined cursor-pointer">arrow_back</span>
+<span class="font-body-md">Quay lại danh sách</span>
+</div>
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined p-xs rounded-full hover:bg-surface-variant transition-colors">notifications</button>
+<button class="bg-primary text-on-primary px-lg py-sm rounded-full font-label-md font-semibold shadow-md active:scale-95 transition-all flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+                    Chỉnh sửa hồ sơ
+                </button>
+</div>
+</header>
+<!-- Content Body -->
+<div class="flex-1 px-xl pb-xl max-w-container-max mx-auto w-full">
+<!-- Profile Header Card -->
+<div class="bg-surface-container-lowest rounded-xl p-xl shadow-sm border border-outline-variant/30 mb-lg flex flex-col md:flex-row gap-xl items-start md:items-center">
+<div class="relative group">
+<div class="w-32 h-32 rounded-2xl overflow-hidden shadow-lg border-4 border-surface">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a confident Asian female executive in her early 30s wearing a modern tailored navy blazer. She has a warm, friendly smile and is posed against a soft, out-of-focus corporate office background. The lighting is bright and clean, typical of high-end SaaS marketing materials, emphasizing a professional and approachable brand identity." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0OpDAwsbV5mp4m2At1Ybz4umlmujISFitwVrgq5go2kPFoEVEHWKokJE-GNP7_CZMktZJoBYoiSFuRuaEnhP_Q_Ms8eJOvrHgOsZU_ztuMi0twGksvZsNMHGv-Z-y7TTqxhIbZveYjOxDJ5HEq0OxUePDL_NOMZ1be13xArh3vPLqOJ6TiMNXg00klDpASwgYAnv8xupSQjHarpbV2V8S1xWUwjDoeYxVigt2kt47qMUJeGY0MFV5SpyQL41SKMluQESiTEPv0Pk"/>
+</div>
+<div class="absolute -bottom-2 -right-2 bg-primary text-on-primary p-xs rounded-full shadow-lg border-2 border-surface cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[16px]">photo_camera</span>
+</div>
+</div>
+<div class="flex-1">
+<div class="flex items-center gap-sm mb-xs">
+<h2 class="font-headline-lg text-on-surface">Nguyễn Minh Anh</h2>
+<span class="bg-secondary-container text-on-secondary-container text-[10px] px-sm py-0.5 rounded-full font-bold uppercase tracking-widest">Active</span>
+</div>
+<p class="font-body-md text-on-surface-variant mb-md flex items-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">work</span>
+                        Chuyên viên Tuyển dụng Cao cấp (Senior HR Specialist)
+                    </p>
+<div class="flex flex-wrap gap-lg">
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">mail</span>
+<span class="font-label-md">minhanh.nguyen@company.com</span>
+</div>
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">call</span>
+<span class="font-label-md">090 123 4567</span>
+</div>
+<div class="flex items-center gap-xs text-on-surface-variant">
+<span class="material-symbols-outlined text-[18px]">location_on</span>
+<span class="font-label-md">Hồ Chí Minh, VN</span>
+</div>
+</div>
+</div>
+<div class="hidden lg:grid grid-cols-2 gap-md border-l border-outline-variant/30 pl-xl">
+<div>
+<p class="text-[10px] text-outline uppercase font-bold tracking-tighter">Mã nhân viên</p>
+<p class="font-body-md font-semibold">EMP-2023-089</p>
+</div>
+<div>
+<p class="text-[10px] text-outline uppercase font-bold tracking-tighter">Ngày gia nhập</p>
+<p class="font-body-md font-semibold">15/05/2021</p>
+</div>
+<div>
+<p class="text-[10px] text-outline uppercase font-bold tracking-tighter">Loại hợp đồng</p>
+<p class="font-body-md font-semibold">Chính thức</p>
+</div>
+<div>
+<p class="text-[10px] text-outline uppercase font-bold tracking-tighter">Cấp bậc</p>
+<p class="font-body-md font-semibold">L4 - Specialist</p>
+</div>
+</div>
+</div>
+<!-- Tab Navigation -->
+<div class="border-b border-outline-variant mb-lg flex gap-xl overflow-x-auto no-scrollbar">
+<button class="pb-md px-xs font-label-md active-tab font-semibold transition-all">Thông tin chung</button>
+<button class="pb-md px-xs font-label-md text-on-surface-variant hover:text-primary transition-all">Công việc</button>
+<button class="pb-md px-xs font-label-md text-on-surface-variant hover:text-primary transition-all">Ngân hàng</button>
+<button class="pb-md px-xs font-label-md text-on-surface-variant hover:text-primary transition-all">Tài liệu đính kèm</button>
+</div>
+<!-- Content Grid (Bento Style) -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg items-start">
+<!-- Left Column: Personal Info -->
+<div class="lg:col-span-2 space-y-lg">
+<!-- Info Card -->
+<div class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="font-headline-md text-on-surface">Thông tin cá nhân</h3>
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary transition-colors">edit_square</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-xl">
+<div class="space-y-md">
+<div>
+<p class="text-[11px] text-outline uppercase font-bold">Họ và tên</p>
+<p class="font-body-md border-b border-outline-variant/20 pb-xs mt-xs">Nguyễn Minh Anh</p>
+</div>
+<div>
+<p class="text-[11px] text-outline uppercase font-bold">Ngày sinh</p>
+<p class="font-body-md border-b border-outline-variant/20 pb-xs mt-xs">22/09/1992</p>
+</div>
+<div>
+<p class="text-[11px] text-outline uppercase font-bold">Giới tính</p>
+<p class="font-body-md border-b border-outline-variant/20 pb-xs mt-xs">Nữ</p>
+</div>
+</div>
+<div class="space-y-md">
+<div>
+<p class="text-[11px] text-outline uppercase font-bold">Số CCCD</p>
+<p class="font-body-md border-b border-outline-variant/20 pb-xs mt-xs">079192008888</p>
+</div>
+<div>
+<p class="text-[11px] text-outline uppercase font-bold">Tình trạng hôn nhân</p>
+<p class="font-body-md border-b border-outline-variant/20 pb-xs mt-xs">Độc thân</p>
+</div>
+<div>
+<p class="text-[11px] text-outline uppercase font-bold">Quốc tịch</p>
+<p class="font-body-md border-b border-outline-variant/20 pb-xs mt-xs">Việt Nam</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Address Card -->
+<div class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30">
+<div class="flex justify-between items-center mb-lg">
+<h3 class="font-headline-md text-on-surface">Địa chỉ &amp; Liên lạc</h3>
+<span class="material-symbols-outlined text-outline cursor-pointer hover:text-primary transition-colors">edit_square</span>
+</div>
+<div class="space-y-md">
+<div>
+<p class="text-[11px] text-outline uppercase font-bold">Địa chỉ thường trú</p>
+<p class="font-body-md border-b border-outline-variant/20 pb-xs mt-xs">123 Lê Lợi, Phường Bến Thành, Quận 1, TP. Hồ Chí Minh</p>
+</div>
+<div>
+<p class="text-[11px] text-outline uppercase font-bold">Địa chỉ tạm trú</p>
+<p class="font-body-md border-b border-outline-variant/20 pb-xs mt-xs">456 Nguyễn Thị Minh Khai, Quận 3, TP. Hồ Chí Minh</p>
+</div>
+<div class="grid grid-cols-2 gap-md">
+<div>
+<p class="text-[11px] text-outline uppercase font-bold">Email cá nhân</p>
+<p class="font-body-md border-b border-outline-variant/20 pb-xs mt-xs">minhanh.private@gmail.com</p>
+</div>
+<div>
+<p class="text-[11px] text-outline uppercase font-bold">Người liên hệ khẩn cấp</p>
+<p class="font-body-md border-b border-outline-variant/20 pb-xs mt-xs">Nguyễn Văn A (Bố) - 098 765 4321</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Sidebar Stats -->
+<div class="space-y-lg">
+<!-- Status Card -->
+<div class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30">
+<h3 class="font-label-md text-outline uppercase font-bold mb-md">Trạng thái làm việc</h3>
+<div class="space-y-md">
+<div class="flex items-center justify-between">
+<span class="font-body-md text-on-surface-variant">Phòng ban</span>
+<span class="font-body-md font-semibold text-primary">Human Resources</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-body-md text-on-surface-variant">Người quản lý</span>
+<div class="flex items-center gap-xs">
+<div class="w-6 h-6 rounded-full bg-secondary-fixed flex items-center justify-center text-[10px] font-bold">TL</div>
+<span class="font-body-md font-semibold">Trần Lan</span>
+</div>
+</div>
+<div class="flex items-center justify-between">
+<span class="font-body-md text-on-surface-variant">Thâm niên</span>
+<span class="font-body-md font-semibold">2 năm 4 tháng</span>
+</div>
+</div>
+</div>
+<!-- Documents Preview -->
+<div class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30">
+<div class="flex justify-between items-center mb-md">
+<h3 class="font-label-md text-outline uppercase font-bold">Tài liệu gần đây</h3>
+<span class="text-[11px] text-primary font-semibold cursor-pointer">Xem tất cả</span>
+</div>
+<div class="space-y-sm">
+<div class="flex items-center gap-md p-xs hover:bg-surface-container rounded-lg transition-colors cursor-pointer group">
+<div class="w-10 h-10 rounded bg-error-container/20 flex items-center justify-center text-error">
+<span class="material-symbols-outlined">description</span>
+</div>
+<div class="flex-1 overflow-hidden">
+<p class="font-body-md font-semibold truncate group-hover:text-primary transition-colors">Hop-dong-lao-dong-2023.pdf</p>
+<p class="text-[11px] text-outline">Cập nhật 2 ngày trước</p>
+</div>
+</div>
+<div class="flex items-center gap-md p-xs hover:bg-surface-container rounded-lg transition-colors cursor-pointer group">
+<div class="w-10 h-10 rounded bg-primary-container/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">image</span>
+</div>
+<div class="flex-1 overflow-hidden">
+<p class="font-body-md font-semibold truncate group-hover:text-primary transition-colors">Bang-cap-dai-hoc.jpg</p>
+<p class="text-[11px] text-outline">Cập nhật 1 tháng trước</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Skills / Tags -->
+<div class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30">
+<h3 class="font-label-md text-outline uppercase font-bold mb-md">Kỹ năng &amp; Chuyên môn</h3>
+<div class="flex flex-wrap gap-xs">
+<span class="px-sm py-1 bg-surface-variant text-on-surface-variant rounded-full text-[11px] font-semibold">Tuyển dụng</span>
+<span class="px-sm py-1 bg-surface-variant text-on-surface-variant rounded-full text-[11px] font-semibold">Phỏng vấn</span>
+<span class="px-sm py-1 bg-surface-variant text-on-surface-variant rounded-full text-[11px] font-semibold">Đào tạo nội bộ</span>
+<span class="px-sm py-1 bg-surface-variant text-on-surface-variant rounded-full text-[11px] font-semibold">Headhunting</span>
+<span class="px-sm py-1 bg-surface-variant text-on-surface-variant rounded-full text-[11px] font-semibold">Tiếng Anh (C1)</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Simple Interactivity -->
+<script>
+        document.querySelectorAll('button[class*="font-label-md"]').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('button[class*="font-label-md"]').forEach(b => {
+                    b.classList.remove('active-tab', 'font-semibold');
+                    b.classList.add('text-on-surface-variant');
+                });
+                button.classList.add('active-tab', 'font-semibold');
+                button.classList.remove('text-on-surface-variant');
+            });
+        });
+    </script>
+</body></html>
