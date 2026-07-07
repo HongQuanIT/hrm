@@ -21,7 +21,8 @@ class AttendanceController extends Controller
         $isAdmin = auth()->user()->isSuperAdmin();
 
         // Super Admin xem lịch sử toàn bộ nhân viên; user chỉ xem của mình.
-        $scope = $isAdmin ? null : $currentEmployee;
+        // Nếu tài khoản không (còn) gắn hồ sơ nhân viên, dùng id 0 để không lộ dữ liệu người khác.
+        $ownId = $currentEmployee?->id ?? 0;
 
         // Tháng đang xem (mặc định tháng hiện tại, không cho chọn tương lai).
         $selected = $this->selectedMonth($request);
@@ -30,7 +31,7 @@ class AttendanceController extends Controller
 
         // Lịch sử chỉ hiển thị trong tháng đang xem.
         $records = Attendance::with('employee')
-            ->when($scope, fn ($q) => $q->where('employee_id', $scope->id))
+            ->when(! $isAdmin, fn ($q) => $q->where('employee_id', $ownId))
             ->whereBetween('work_date', [$monthStart, $monthEnd])
             ->orderByDesc('work_date')
             ->paginate(15)
@@ -43,7 +44,7 @@ class AttendanceController extends Controller
         // Chỉ số cá nhân tính theo tháng đang xem, dựa trên hồ sơ người đăng nhập.
         $employee = $currentEmployee;
         $baseQuery = Attendance::query()
-            ->when($employee, fn ($q) => $q->where('employee_id', $employee->id))
+            ->where('employee_id', $ownId)
             ->whereBetween('work_date', [$monthStart, $monthEnd]);
 
         $workedDays = (clone $baseQuery)->whereIn('status', ['on_time', 'late', 'working'])->count();
@@ -83,7 +84,7 @@ class AttendanceController extends Controller
         for ($i = 5; $i >= 0; $i--) {
             $month = $selected->copy()->subMonths($i);
             $count = Attendance::query()
-                ->when($employee, fn ($q) => $q->where('employee_id', $employee->id))
+                ->where('employee_id', $ownId)
                 ->whereMonth('work_date', $month->month)
                 ->whereYear('work_date', $month->year)
                 ->whereIn('status', ['on_time', 'late', 'working'])
