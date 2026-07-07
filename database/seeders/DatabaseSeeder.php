@@ -33,9 +33,9 @@ class DatabaseSeeder extends Seeder
     private function seedSettings(): void
     {
         $settings = [
-            'company_name' => 'Công ty Cổ phần Giải pháp Công nghệ PeoplePulse',
+            'company_name' => 'Công ty Cổ phần Giải pháp Công nghệ HRM',
             'tax_code' => '0101234567',
-            'website' => 'www.peoplepulse.vn',
+            'website' => 'www.HRM.vn',
             'address' => 'Tòa nhà Innovation, Công viên Phần mềm Quang Trung, Quận 12, TP.HCM',
             'leave_days_per_month' => '1',
             'leave_days_per_year' => '12',
@@ -80,7 +80,7 @@ class DatabaseSeeder extends Seeder
         $admin = Employee::create([
             'code' => 'PP0001',
             'name' => 'Lê Minh Anh',
-            'email' => 'admin@peoplepulse.vn',
+            'email' => 'admin@HRM.vn',
             'personal_email' => 'minhanh.le@gmail.com',
             'phone' => '0901234567',
             'gender' => 'female',
@@ -106,18 +106,18 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $rows = [
-            ['Trần Thế Vinh', 'vinh.tran@peoplepulse.vn', 'male', 'DEV-01', 'Trưởng nhóm Kỹ thuật', 'Lead', 45000000, ['Laravel', 'Vue.js', 'AWS']],
-            ['Nguyễn Hoàng An', 'an.nguyen@peoplepulse.vn', 'male', 'DEV-01', 'Lập trình viên Frontend', 'Senior', 28000000, ['ReactJS', 'Tailwind', 'TypeScript']],
-            ['Phạm Đức Hùng', 'hung.pham@peoplepulse.vn', 'male', 'DEV-01', 'Lập trình viên Backend', 'Senior', 30000000, ['PHP', 'MySQL', 'Docker']],
-            ['Đỗ Lê Phương', 'phuong.do@peoplepulse.vn', 'female', 'DES-04', 'Trưởng nhóm Thiết kế', 'Lead', 32000000, ['Figma', 'UI/UX', 'Illustrator']],
-            ['Vũ Thị Lan', 'lan.vu@peoplepulse.vn', 'female', 'DES-04', 'Chuyên viên Thiết kế', 'Middle', 20000000, ['Figma', 'Photoshop']],
-            ['Nguyễn Thu Thủy', 'thuy.nguyen@peoplepulse.vn', 'female', 'SAL-05', 'Trưởng phòng Marketing', 'Manager', 38000000, ['SEO', 'Google Ads', 'Content']],
-            ['Bùi Minh Khôi', 'khoi.bui@peoplepulse.vn', 'male', 'SAL-05', 'Chuyên viên Sales', 'Middle', 18000000, ['B2B Sales', 'CRM']],
-            ['Phạm Quốc Bảo', 'bao.pham@peoplepulse.vn', 'male', 'FIN-03', 'Kế toán trưởng', 'Manager', 36000000, ['Kế toán', 'Thuế', 'Misa']],
-            ['Trần Thị Hồng', 'hong.tran@peoplepulse.vn', 'female', 'FIN-03', 'Nhân viên Kế toán', 'Junior', 15000000, ['Excel', 'Kế toán']],
-            ['Hoàng Văn Tài', 'tai.hoang@peoplepulse.vn', 'male', 'DEV-01', 'Kỹ sư QA', 'Middle', 22000000, ['Testing', 'Automation']],
-            ['Đặng Thùy Dung', 'dung.dang@peoplepulse.vn', 'female', 'HRM-02', 'Chuyên viên Tuyển dụng', 'Middle', 17000000, ['Tuyển dụng', 'Sourcing']],
-            ['Ngô Gia Bảo', 'bao.ngo@peoplepulse.vn', 'male', 'DEV-01', 'Thực tập sinh Lập trình', 'Intern', 6000000, ['JavaScript', 'HTML/CSS']],
+            ['Trần Thế Vinh', 'vinh.tran@HRM.vn', 'male', 'DEV-01', 'Trưởng nhóm Kỹ thuật', 'Lead', 45000000, ['Laravel', 'Vue.js', 'AWS']],
+            ['Nguyễn Hoàng An', 'an.nguyen@HRM.vn', 'male', 'DEV-01', 'Lập trình viên Frontend', 'Senior', 28000000, ['ReactJS', 'Tailwind', 'TypeScript']],
+            ['Phạm Đức Hùng', 'hung.pham@HRM.vn', 'male', 'DEV-01', 'Lập trình viên Backend', 'Senior', 30000000, ['PHP', 'MySQL', 'Docker']],
+            ['Đỗ Lê Phương', 'phuong.do@HRM.vn', 'female', 'DES-04', 'Trưởng nhóm Thiết kế', 'Lead', 32000000, ['Figma', 'UI/UX', 'Illustrator']],
+            ['Vũ Thị Lan', 'lan.vu@HRM.vn', 'female', 'DES-04', 'Chuyên viên Thiết kế', 'Middle', 20000000, ['Figma', 'Photoshop']],
+            ['Nguyễn Thu Thủy', 'thuy.nguyen@HRM.vn', 'female', 'SAL-05', 'Trưởng phòng Marketing', 'Manager', 38000000, ['SEO', 'Google Ads', 'Content']],
+            ['Bùi Minh Khôi', 'khoi.bui@HRM.vn', 'male', 'SAL-05', 'Chuyên viên Sales', 'Middle', 18000000, ['B2B Sales', 'CRM']],
+            ['Phạm Quốc Bảo', 'bao.pham@HRM.vn', 'male', 'FIN-03', 'Kế toán trưởng', 'Manager', 36000000, ['Kế toán', 'Thuế', 'Misa']],
+            ['Trần Thị Hồng', 'hong.tran@HRM.vn', 'female', 'FIN-03', 'Nhân viên Kế toán', 'Junior', 15000000, ['Excel', 'Kế toán']],
+            ['Hoàng Văn Tài', 'tai.hoang@HRM.vn', 'male', 'DEV-01', 'Kỹ sư QA', 'Middle', 22000000, ['Testing', 'Automation']],
+            ['Đặng Thùy Dung', 'dung.dang@HRM.vn', 'female', 'HRM-02', 'Chuyên viên Tuyển dụng', 'Middle', 17000000, ['Tuyển dụng', 'Sourcing']],
+            ['Ngô Gia Bảo', 'bao.ngo@HRM.vn', 'male', 'DEV-01', 'Thực tập sinh Lập trình', 'Intern', 6000000, ['JavaScript', 'HTML/CSS']],
         ];
 
         $employees = ['PP0001' => $admin];
@@ -303,8 +303,8 @@ class DatabaseSeeder extends Seeder
 
         $kpis = [
             [
-                'name' => 'Hoàn thành Website dự án PeoplePulse',
-                'description' => 'Xây dựng và triển khai nền tảng website mới tích hợp hệ thống quản lý nhân sự PeoplePulse, đảm bảo trải nghiệm người dùng tối ưu và hiệu năng cao.',
+                'name' => 'Hoàn thành Website dự án HRM',
+                'description' => 'Xây dựng và triển khai nền tảng website mới tích hợp hệ thống quản lý nhân sự HRM, đảm bảo trải nghiệm người dùng tối ưu và hiệu năng cao.',
                 'dept' => 'DEV-01', 'owner' => 'PP0002', 'measure_type' => 'percent', 'unit' => '%',
                 'target_value' => 100, 'progress' => 70, 'priority' => 'high', 'status' => 'in_progress',
                 'deadline' => Carbon::create(2026, 12, 30)->toDateString(),

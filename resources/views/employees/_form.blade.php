@@ -62,7 +62,7 @@
                     </div>
                     <div class="space-y-xs">
                         <label class="block font-label-md text-label-md text-on-surface-variant">Email công việc *</label>
-                        <input name="email" value="{{ $val('email') }}" required type="email" placeholder="name@peoplepulse.vn"
+                        <input name="email" value="{{ $val('email') }}" required type="email" placeholder="name@HRM.vn"
                                class="w-full h-12 px-md border border-outline-variant rounded-lg font-body-md form-input-ring transition-all">
                     </div>
                     <div class="space-y-xs">

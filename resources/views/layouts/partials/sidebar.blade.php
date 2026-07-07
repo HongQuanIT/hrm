@@ -20,7 +20,7 @@
         <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-on-primary">
             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">bolt</span>
         </div>
-        <span class="font-headline-lg text-headline-lg text-primary tracking-tight">PeoplePulse</span>
+        <span class="font-headline-lg text-headline-lg text-primary tracking-tight">HRM</span>
     </div>
     <nav class="flex-1 px-md space-y-base overflow-y-auto custom-scrollbar">
         <div class="px-md py-xs text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">Trình điều khiển</div>

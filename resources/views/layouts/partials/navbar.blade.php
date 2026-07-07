@@ -8,9 +8,9 @@
             <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
                 <span class="material-symbols-outlined text-on-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">bolt</span>
             </div>
-            <span class="font-headline-md text-headline-md text-primary">PeoplePulse</span>
+            <span class="font-headline-md text-headline-md text-primary">HRM</span>
         </div>
-        <h1 class="hidden md:block font-headline-md text-headline-md text-on-surface">@yield('page-title', View::getSection('title') ?? 'PeoplePulse')</h1>
+        <h1 class="hidden md:block font-headline-md text-headline-md text-on-surface">@yield('page-title', View::getSection('title') ?? 'HRM')</h1>
     </div>
     <div class="flex items-center gap-md">
         <div class="relative group hidden sm:block">

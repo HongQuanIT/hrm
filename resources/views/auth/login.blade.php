@@ -16,7 +16,7 @@
                     <span class="material-symbols-outlined text-white text-[32px]">hub</span>
                 </div>
                 <h1 class="font-display-lg text-display-lg text-on-surface tracking-tight">Chào mừng trở lại</h1>
-                <p class="font-body-md text-body-md text-on-surface-variant">Vui lòng nhập thông tin để truy cập PeoplePulse HRM</p>
+                <p class="font-body-md text-body-md text-on-surface-variant">Vui lòng nhập thông tin để truy cập HRM</p>
             </div>
 
             @if ($errors->any())
@@ -84,7 +84,7 @@
             </div>
 
             <div class="bg-surface-container-low rounded-lg px-md py-sm text-center">
-                <p class="font-label-md text-label-md text-on-surface-variant">Tài khoản demo: <span class="font-bold text-primary">admin@peoplepulse.vn</span> / <span class="font-bold text-primary">password</span></p>
+                <p class="font-label-md text-label-md text-on-surface-variant">Tài khoản demo: <span class="font-bold text-primary">admin@HRM.vn</span> / <span class="font-bold text-primary">password</span></p>
             </div>
         </div>
 
@@ -92,7 +92,7 @@
             <p class="font-body-md text-body-md text-outline">
                 Bạn chưa có tài khoản? <a class="text-primary font-semibold hover:underline" href="#">Liên hệ Admin</a>
             </p>
-            <p class="font-label-md text-label-md text-outline/60 mt-lg">© {{ date('Y') }} PeoplePulse HRM. Bản quyền thuộc về Enterprise Solutions Inc.</p>
+            <p class="font-label-md text-label-md text-outline/60 mt-lg">© {{ date('Y') }} HRM HRM. Bản quyền thuộc về Enterprise Solutions Inc.</p>
         </footer>
     </main>
 

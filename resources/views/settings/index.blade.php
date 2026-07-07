@@ -99,7 +99,7 @@
                             <div class="grid grid-cols-2 gap-lg">
                                 <div class="col-span-2">
                                     <label class="block text-label-md font-label-md text-on-surface-variant mb-xs">Tên chính thức (Tiếng Việt)</label>
-                                    <input name="company_name" value="{{ old('company_name', $settings['company_name'] ?? 'Công ty Cổ phần Giải pháp Công nghệ PeoplePulse') }}" class="w-full px-md py-sm rounded-lg border border-outline-variant focus:ring-primary/20 focus:border-primary transition-all text-body-md outline-none" type="text"/>
+                                    <input name="company_name" value="{{ old('company_name', $settings['company_name'] ?? 'Công ty Cổ phần Giải pháp Công nghệ HRM') }}" class="w-full px-md py-sm rounded-lg border border-outline-variant focus:ring-primary/20 focus:border-primary transition-all text-body-md outline-none" type="text"/>
                                 </div>
                                 <div>
                                     <label class="block text-label-md font-label-md text-on-surface-variant mb-xs">Mã số thuế</label>
@@ -107,7 +107,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-label-md font-label-md text-on-surface-variant mb-xs">Website</label>
-                                    <input name="website" value="{{ old('website', $settings['website'] ?? 'www.peoplepulse.vn') }}" class="w-full px-md py-sm rounded-lg border border-outline-variant focus:ring-primary/20 focus:border-primary transition-all text-body-md outline-none" type="text"/>
+                                    <input name="website" value="{{ old('website', $settings['website'] ?? 'www.HRM.vn') }}" class="w-full px-md py-sm rounded-lg border border-outline-variant focus:ring-primary/20 focus:border-primary transition-all text-body-md outline-none" type="text"/>
                                 </div>
                                 <div class="col-span-2">
                                     <label class="block text-label-md font-label-md text-on-surface-variant mb-xs">Địa chỉ trụ sở</label>
