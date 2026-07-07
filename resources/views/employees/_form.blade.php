@@ -194,12 +194,8 @@
                 <div class="p-xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
                     <div class="space-y-xs">
                         <label class="block font-label-md text-label-md text-on-surface-variant">Tên ngân hàng</label>
-                        <select name="bank_name" class="w-full h-12 px-md border border-outline-variant rounded-lg font-body-md form-input-ring transition-all bg-white">
-                            <option value="">Chọn ngân hàng</option>
-                            @foreach (['Vietcombank', 'Techcombank', 'MB Bank', 'TPBank', 'BIDV', 'ACB', 'VPBank'] as $bank)
-                                <option value="{{ $bank }}" @selected($val('bank_name') === $bank)>{{ $bank }}</option>
-                            @endforeach
-                        </select>
+                        <input name="bank_name" value="{{ $val('bank_name') }}" type="text" placeholder="Ví dụ: Vietcombank, Techcombank..."
+                               class="w-full h-12 px-md border border-outline-variant rounded-lg font-body-md form-input-ring transition-all">
                     </div>
                     <div class="space-y-xs">
                         <label class="block font-label-md text-label-md text-on-surface-variant">Số tài khoản</label>
