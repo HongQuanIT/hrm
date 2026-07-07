@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
         $departments = $this->seedDepartments();
         [$admin, $employees] = $this->seedEmployees($departments);
         $this->seedUsers($admin, $employees);
+        $this->linkDepartmentHeads($departments);
         $this->seedAttendances($employees);
         $this->seedLeaves($employees, $admin);
         $this->seedKpis($departments, $employees);
@@ -41,6 +42,7 @@ class DatabaseSeeder extends Seeder
             // Giờ làm việc & chính sách chấm công
             'work_start_time' => '08:00',
             'work_end_time' => '17:30',
+            'checkin_open_time' => '07:00',
             'late_grace_minutes' => '5',
             'late_level1_minutes' => '15',
             'late_level2_minutes' => '30',
@@ -172,25 +174,31 @@ class DatabaseSeeder extends Seeder
 
     private function seedUsers(Employee $admin, $employees): void
     {
-        User::create([
-            'name' => $admin->name,
-            'email' => $admin->email,
-            'password' => Hash::make('password'),
-            'role' => User::ROLE_SUPER_ADMIN,
-            'email_verified_at' => now(),
-        ]);
-
+        // Mỗi nhân viên gắn với một tài khoản đăng nhập (liên kết qua user_id).
         foreach ($employees as $emp) {
-            if ($emp->email === $admin->email) {
-                continue;
-            }
-            User::create([
+            $user = User::create([
                 'name' => $emp->name,
                 'email' => $emp->email,
                 'password' => Hash::make('password'),
-                'role' => User::ROLE_USER,
+                'role' => $emp->email === $admin->email ? User::ROLE_SUPER_ADMIN : User::ROLE_USER,
                 'email_verified_at' => now(),
             ]);
+
+            $emp->update(['user_id' => $user->id]);
+        }
+    }
+
+    private function linkDepartmentHeads(array $departments): void
+    {
+        foreach ($departments as $dept) {
+            if (! $dept->head_name) {
+                continue;
+            }
+
+            $head = Employee::where('name', $dept->head_name)->first();
+            if ($head) {
+                $dept->update(['head_employee_id' => $head->id]);
+            }
         }
     }
 

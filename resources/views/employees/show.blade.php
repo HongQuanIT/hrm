@@ -187,6 +187,49 @@
                         @endforelse
                     </div>
                 </div>
+
+                @if (auth()->id() === $employee->user_id)
+                <div id="doi-mat-khau" class="bg-surface-container-lowest rounded-xl p-lg shadow-sm border border-outline-variant/30">
+                    <div class="flex items-center gap-xs mb-md">
+                        <span class="material-symbols-outlined text-primary text-[20px]">lock</span>
+                        <h3 class="font-label-md text-outline uppercase font-bold">Bảo mật &middot; Đổi mật khẩu</h3>
+                    </div>
+
+                    @if ($errors->any())
+                        <div class="bg-error-container text-on-error-container px-md py-sm rounded-lg mb-md text-body-md">
+                            <ul class="list-disc list-inside">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('account.password') }}" class="space-y-md">
+                        @csrf @method('PUT')
+                        <div class="space-y-xs">
+                            <label class="block text-[11px] text-outline uppercase font-bold">Mật khẩu hiện tại</label>
+                            <input name="current_password" type="password" autocomplete="current-password" required
+                                   class="w-full h-11 px-md border border-outline-variant rounded-lg font-body-md form-input-ring transition-all">
+                        </div>
+                        <div class="space-y-xs">
+                            <label class="block text-[11px] text-outline uppercase font-bold">Mật khẩu mới</label>
+                            <input name="password" type="password" autocomplete="new-password" required
+                                   class="w-full h-11 px-md border border-outline-variant rounded-lg font-body-md form-input-ring transition-all">
+                            <p class="text-[11px] text-outline">Tối thiểu 6 ký tự.</p>
+                        </div>
+                        <div class="space-y-xs">
+                            <label class="block text-[11px] text-outline uppercase font-bold">Xác nhận mật khẩu mới</label>
+                            <input name="password_confirmation" type="password" autocomplete="new-password" required
+                                   class="w-full h-11 px-md border border-outline-variant rounded-lg font-body-md form-input-ring transition-all">
+                        </div>
+                        <button type="submit" class="w-full h-11 bg-primary text-on-primary rounded-lg font-label-md font-semibold shadow-md active:scale-95 transition-all flex items-center justify-center gap-xs">
+                            <span class="material-symbols-outlined text-[18px]">save</span>
+                            Cập nhật mật khẩu
+                        </button>
+                    </form>
+                </div>
+                @endif
             </div>
         </div>
     </div>

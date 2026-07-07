@@ -303,6 +303,8 @@ class LeaveController extends Controller
 
     private function currentEmployee(): ?Employee
     {
-        return Employee::where('email', auth()->user()->email)->first();
+        $user = auth()->user();
+
+        return $user->employee ?? Employee::where('email', $user->email)->first();
     }
 }

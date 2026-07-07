@@ -11,6 +11,7 @@
         'absent' => 'bg-error-container text-on-error-container',
         'leave' => 'bg-error-container text-on-error-container',
         'working' => 'bg-secondary-container text-on-secondary-fixed-variant',
+        'missing_checkout' => 'bg-amber-100 text-amber-700',
         // leave / generic
         'pending' => 'bg-tertiary-fixed text-on-tertiary-fixed-variant',
         'approved' => 'bg-secondary-container text-on-secondary-container',

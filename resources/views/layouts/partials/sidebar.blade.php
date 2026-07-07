@@ -10,6 +10,10 @@
         ['label' => 'Cài đặt', 'icon' => 'settings', 'route' => 'settings.index', 'pattern' => 'settings.*'],
     ];
     $user = auth()->user();
+    // Ưu tiên trang hồ sơ nhân viên của chính mình; nếu tài khoản không gắn nhân viên thì dùng trang tài khoản riêng.
+    $myProfileUrl = $user?->employee ? route('employees.show', $user->employee) : route('account.edit');
+    $isMyProfile = ($user?->employee && request()->routeIs('employees.show') && (int) request()->route('employee')?->id === (int) $user->employee->id)
+        || request()->routeIs('account.*');
 @endphp
 <aside class="hidden md:flex flex-col w-[260px] h-screen bg-surface-container-lowest border-r border-outline-variant fixed left-0 top-0 z-40">
     <div class="px-lg py-xl flex items-center gap-sm">
@@ -48,12 +52,12 @@
                 <span class="font-body-md text-body-md">Đăng xuất</span>
             </button>
         </form>
-        <div class="flex items-center gap-md p-xs rounded-xl bg-surface-container-low">
+        <a href="{{ $myProfileUrl }}" class="flex items-center gap-md p-xs rounded-xl bg-surface-container-low hover:bg-surface-container transition-all">
             <x-avatar :name="$user?->name ?? 'Admin'" class="w-10 h-10 border-2 border-primary-fixed" />
             <div class="flex-1 overflow-hidden">
                 <p class="font-body-md text-body-md font-bold truncate">{{ $user?->name ?? 'Admin User' }}</p>
                 <p class="text-[12px] text-on-surface-variant truncate">{{ $user?->role_label ?? 'Người dùng' }}</p>
             </div>
-        </div>
+        </a>
     </div>
 </aside>

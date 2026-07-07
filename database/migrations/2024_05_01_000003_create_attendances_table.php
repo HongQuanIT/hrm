@@ -16,7 +16,7 @@ return new class extends Migration
             $table->time('check_out')->nullable();
             $table->integer('total_minutes')->default(0);
             $table->unsignedSmallInteger('late_minutes')->default(0);
-            $table->enum('status', ['on_time', 'late', 'absent', 'leave', 'working'])->default('on_time');
+            $table->enum('status', ['on_time', 'late', 'absent', 'leave', 'working', 'missing_checkout'])->default('on_time');
             $table->string('note')->nullable();
             $table->timestamps();
 

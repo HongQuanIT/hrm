@@ -1,4 +1,7 @@
-@php $user = auth()->user(); @endphp
+@php
+    $user = auth()->user();
+    $myProfileUrl = $user?->employee ? route('employees.show', $user->employee) : route('account.edit');
+@endphp
 <header class="h-16 flex items-center justify-between px-md md:px-xl bg-surface/80 backdrop-blur-md border-b border-outline-variant sticky top-0 z-30">
     <div class="flex items-center gap-md">
         <div class="flex items-center gap-sm md:hidden">
@@ -19,6 +22,8 @@
             <span class="material-symbols-outlined text-on-surface-variant">notifications</span>
             <span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border border-surface"></span>
         </button>
-        <x-avatar :name="$user?->name ?? 'Admin'" class="w-9 h-9 border border-outline-variant" />
+        <a href="{{ $myProfileUrl }}" title="Hồ sơ của tôi">
+            <x-avatar :name="$user?->name ?? 'Admin'" class="w-9 h-9 border border-outline-variant hover:ring-2 hover:ring-primary/30 transition-all" />
+        </a>
     </div>
 </header>

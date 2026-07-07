@@ -75,6 +75,7 @@ class AttendanceController extends Controller
         // Mốc giờ để hiển thị trên thẻ chấm công.
         $workStart = (string) CompanySetting::get('work_start_time', '08:00');
         $workEnd = (string) CompanySetting::get('work_end_time', '17:30');
+        $checkinOpen = (string) CompanySetting::get('checkin_open_time', '07:00');
         $checkinDeadline = (string) CompanySetting::get('checkin_deadline', '10:00');
 
         // 6-month trend (kết thúc ở tháng đang xem)
@@ -104,7 +105,7 @@ class AttendanceController extends Controller
             'records', 'workedDays', 'standardDays', 'lateCount',
             'overtimeHours', 'leaveBalance', 'todayRecord', 'employee', 'trend', 'showAllHistory',
             'selectedValue', 'selectedLabel', 'currentMonthValue',
-            'todayOnLeave', 'workStart', 'workEnd', 'checkinDeadline'
+            'todayOnLeave', 'workStart', 'workEnd', 'checkinOpen', 'checkinDeadline'
         ));
     }
 
@@ -140,6 +141,12 @@ class AttendanceController extends Controller
         // Ngày nghỉ đã được duyệt: không cần chấm công.
         if ($this->onApprovedLeave($employee, $today)) {
             return back()->with('error', 'Hôm nay bạn đang trong kỳ nghỉ phép đã được duyệt, không cần chấm công.');
+        }
+
+        // Chưa tới giờ mở check-in.
+        $openTime = $this->timeOn($today, 'checkin_open_time', '07:00');
+        if ($now->lessThan($openTime)) {
+            return back()->with('error', 'Chưa đến giờ mở check-in (' . $openTime->format('H:i') . ').');
         }
 
         $record = Attendance::firstOrNew([
@@ -245,7 +252,7 @@ class AttendanceController extends Controller
             return null;
         }
 
-        return Employee::where('email', $user->email)->first();
+        return $user->employee ?? Employee::where('email', $user->email)->first();
     }
 
     private function onApprovedLeave(Employee $employee, Carbon $date): bool

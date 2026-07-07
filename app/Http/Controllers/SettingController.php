@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CompanySetting;
 use App\Models\Department;
+use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -13,10 +14,11 @@ class SettingController extends Controller
     public function index()
     {
         $settings = CompanySetting::pairs();
-        $departments = Department::withCount('employees')->orderBy('name')->get();
+        $departments = Department::with('head')->withCount('employees')->orderBy('name')->get();
         $users = User::orderByRaw("role = 'super_admin' DESC")->orderBy('name')->get();
+        $employees = Employee::orderBy('name')->get(['id', 'name']);
 
-        return view('settings.index', compact('settings', 'departments', 'users'));
+        return view('settings.index', compact('settings', 'departments', 'users', 'employees'));
     }
 
     public function update(Request $request)
@@ -31,11 +33,14 @@ class SettingController extends Controller
             // Giờ làm việc & chính sách chấm công
             'work_start_time' => ['nullable', 'date_format:H:i'],
             'work_end_time' => ['nullable', 'date_format:H:i'],
+            'checkin_open_time' => ['nullable', 'date_format:H:i', 'before:work_start_time'],
             'late_grace_minutes' => ['nullable', 'integer', 'min:0', 'max:120'],
             'late_level1_minutes' => ['nullable', 'integer', 'min:1', 'max:240'],
             'late_level2_minutes' => ['nullable', 'integer', 'min:1', 'max:480'],
             'checkin_deadline' => ['nullable', 'date_format:H:i'],
             'checkout_deadline' => ['nullable', 'date_format:H:i'],
+        ], [
+            'checkin_open_time.before' => 'Giờ mở check-in phải sớm hơn giờ bắt đầu làm việc.',
         ]);
 
         foreach ($data as $key => $value) {
@@ -50,12 +55,29 @@ class SettingController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'code' => ['required', 'string', 'max:50', 'unique:departments,code'],
-            'head_name' => ['nullable', 'string', 'max:255'],
+            'head_employee_id' => ['nullable', 'exists:employees,id'],
         ]);
+
+        $data['head_name'] = $this->headName($data['head_employee_id'] ?? null);
 
         Department::create($data);
 
         return back()->with('status', 'Đã thêm phòng ban mới.');
+    }
+
+    public function updateDepartment(Request $request, Department $department)
+    {
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'code' => ['required', 'string', 'max:50', Rule::unique('departments', 'code')->ignore($department->id)],
+            'head_employee_id' => ['nullable', 'exists:employees,id'],
+        ]);
+
+        $data['head_name'] = $this->headName($data['head_employee_id'] ?? null);
+
+        $department->update($data);
+
+        return back()->with('status', 'Đã cập nhật phòng ban ' . $department->name . '.');
     }
 
     public function destroyDepartment(Department $department)
@@ -63,6 +85,11 @@ class SettingController extends Controller
         $department->delete();
 
         return back()->with('status', 'Đã xóa phòng ban.');
+    }
+
+    private function headName(?int $employeeId): ?string
+    {
+        return $employeeId ? Employee::find($employeeId)?->name : null;
     }
 
     public function updateUserRole(Request $request, User $user)

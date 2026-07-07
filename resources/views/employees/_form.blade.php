@@ -160,6 +160,19 @@
                         </select>
                     </div>
                     <div class="space-y-xs">
+                        <label class="block font-label-md text-label-md text-on-surface-variant">Mật khẩu đăng nhập{{ $e ? ' mới' : '' }}</label>
+                        <input name="password" type="password" autocomplete="new-password"
+                               placeholder="{{ $e ? 'Để trống nếu giữ nguyên' : 'Bỏ trống: dùng "password"' }}"
+                               class="w-full h-12 px-md border border-outline-variant rounded-lg font-body-md form-input-ring transition-all">
+                        <p class="text-[11px] text-outline">
+                            @if ($e)
+                                Chỉ điền khi muốn đặt lại mật khẩu cho tài khoản của nhân viên này.
+                            @else
+                                Tài khoản đăng nhập dùng email công việc. Bỏ trống sẽ dùng mật khẩu mặc định "password".
+                            @endif
+                        </p>
+                    </div>
+                    <div class="space-y-xs">
                         <label class="block font-label-md text-label-md text-on-surface-variant">Quốc tịch</label>
                         <input name="nationality" value="{{ $val('nationality', 'Việt Nam') }}" type="text"
                                class="w-full h-12 px-md border border-outline-variant rounded-lg font-body-md form-input-ring transition-all">

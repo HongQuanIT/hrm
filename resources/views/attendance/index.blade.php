@@ -63,6 +63,10 @@
                                 <span class="font-label-md text-label-md">Giờ làm: {{ $workStart }}–{{ $workEnd }}</span>
                             </span>
                             <span class="flex items-center gap-xs bg-white/10 px-md py-xs rounded-full">
+                                <span class="material-symbols-outlined text-[16px]">lock_open</span>
+                                <span class="font-label-md text-label-md">Mở check-in: {{ $checkinOpen }}</span>
+                            </span>
+                            <span class="flex items-center gap-xs bg-white/10 px-md py-xs rounded-full">
                                 <span class="material-symbols-outlined text-[16px]">timer_off</span>
                                 <span class="font-label-md text-label-md">Hạn check-in: {{ $checkinDeadline }}</span>
                             </span>
@@ -97,6 +101,10 @@
                             @else
                                 <p class="text-[12px] italic">Bạn chưa chấm công hôm nay.</p>
                             @endif
+                            <p class="text-[11px] text-on-primary/60 flex items-center gap-xs">
+                                <span class="material-symbols-outlined text-[14px]">info</span>
+                                Quên check-out sẽ không được tính công; sang ngày mới cần check-in lại.
+                            </p>
                         </div>
                     </div>
                 </div>

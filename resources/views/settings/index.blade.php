@@ -52,6 +52,16 @@
 
         <!-- Detail -->
         <section class="flex-1 min-w-0">
+            @if ($errors->any())
+                <div class="mb-lg bg-error-container text-on-error-container px-lg py-md rounded-xl">
+                    <ul class="list-disc list-inside text-body-md">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <!-- COMPANY -->
             <div id="section-company">
                 <form method="POST" action="{{ route('settings.update') }}">
@@ -153,7 +163,14 @@
                             <span class="material-symbols-outlined text-primary">work_history</span>
                             <h4 class="font-headline-md text-headline-md text-on-surface">Khung giờ làm việc</h4>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
+                            <div>
+                                <label class="block text-label-md font-label-md text-on-surface-variant mb-xs">Giờ mở check-in</label>
+                                <input name="checkin_open_time" type="time"
+                                       value="{{ old('checkin_open_time', $settings['checkin_open_time'] ?? '07:00') }}"
+                                       class="w-full px-md py-sm rounded-lg border border-outline-variant focus:ring-primary/20 focus:border-primary transition-all text-body-md outline-none"/>
+                                <p class="text-[12px] text-outline mt-xs">Bắt đầu cho phép check-in. Phải <span class="font-medium">sớm hơn</span> giờ bắt đầu làm việc.</p>
+                            </div>
                             <div>
                                 <label class="block text-label-md font-label-md text-on-surface-variant mb-xs">Giờ bắt đầu làm việc</label>
                                 <input name="work_start_time" type="time"
@@ -253,7 +270,12 @@
                         </div>
                         <div>
                             <label class="block text-label-md font-label-md text-on-surface-variant mb-xs">Trưởng bộ phận</label>
-                            <input name="head_name" type="text" class="w-full px-md py-sm rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md"/>
+                            <select name="head_employee_id" class="w-full px-md py-sm rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md bg-white">
+                                <option value="">— Chưa chọn —</option>
+                                @foreach ($employees as $emp)
+                                    <option value="{{ $emp->id }}" @selected(old('head_employee_id') == $emp->id)>{{ $emp->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <button type="submit" class="px-lg py-sm bg-primary text-on-primary rounded-lg font-label-md text-label-md h-fit">Lưu</button>
                     </div>
@@ -272,7 +294,7 @@
                         </thead>
                         <tbody class="divide-y divide-outline-variant">
                             @forelse ($departments as $dept)
-                                @php $c = $deptColors[$loop->index % count($deptColors)]; @endphp
+                                @php $c = $deptColors[$loop->index % count($deptColors)]; $headName = $dept->head_display; @endphp
                                 <tr class="hover:bg-surface-container transition-colors group">
                                     <td class="px-lg py-md">
                                         <div class="flex items-center gap-md">
@@ -283,19 +305,52 @@
                                     <td class="px-lg py-md font-body-md text-on-surface-variant">{{ $dept->code }}</td>
                                     <td class="px-lg py-md">
                                         <div class="flex items-center gap-xs">
-                                            <x-avatar :name="$dept->head_name ?: '—'" class="w-6 h-6 text-[10px]" />
-                                            <span class="font-body-md text-on-surface-variant">{{ $dept->head_name ?: '—' }}</span>
+                                            <x-avatar :name="$headName ?: '—'" class="w-6 h-6 text-[10px]" />
+                                            <span class="font-body-md text-on-surface-variant">{{ $headName ?: '—' }}</span>
                                         </div>
                                     </td>
                                     <td class="px-lg py-md">
                                         <span class="px-sm py-1 bg-secondary-container/50 text-on-secondary-container rounded-full text-xs font-bold">{{ $dept->employees_count }}</span>
                                     </td>
                                     <td class="px-lg py-md text-right">
-                                        <form method="POST" action="{{ route('settings.departments.destroy', $dept) }}" onsubmit="return confirm('Xóa phòng ban này?')" class="inline">
-                                            @csrf @method('DELETE')
-                                            <button class="p-xs text-outline hover:text-error transition-colors">
-                                                <span class="material-symbols-outlined text-[20px]">delete</span>
+                                        <div class="flex items-center justify-end gap-xs">
+                                            <button type="button" onclick="toggleDeptEdit({{ $dept->id }})" class="p-xs text-outline hover:text-primary transition-colors" title="Chỉnh sửa">
+                                                <span class="material-symbols-outlined text-[20px]">edit</span>
                                             </button>
+                                            <form method="POST" action="{{ route('settings.departments.destroy', $dept) }}" onsubmit="return confirm('Xóa phòng ban này?')" class="inline">
+                                                @csrf @method('DELETE')
+                                                <button class="p-xs text-outline hover:text-error transition-colors" title="Xoá">
+                                                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr id="dept-edit-{{ $dept->id }}" class="hidden bg-surface-container-low">
+                                    <td colspan="5" class="px-lg py-md">
+                                        <form method="POST" action="{{ route('settings.departments.update', $dept) }}" class="grid grid-cols-1 md:grid-cols-4 gap-md items-end">
+                                            @csrf @method('PUT')
+                                            <div>
+                                                <label class="block text-label-md font-label-md text-on-surface-variant mb-xs">Tên phòng ban *</label>
+                                                <input name="name" required type="text" value="{{ $dept->name }}" class="w-full px-md py-sm rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md"/>
+                                            </div>
+                                            <div>
+                                                <label class="block text-label-md font-label-md text-on-surface-variant mb-xs">Mã phòng *</label>
+                                                <input name="code" required type="text" value="{{ $dept->code }}" class="w-full px-md py-sm rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md"/>
+                                            </div>
+                                            <div>
+                                                <label class="block text-label-md font-label-md text-on-surface-variant mb-xs">Trưởng bộ phận</label>
+                                                <select name="head_employee_id" class="w-full px-md py-sm rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md bg-white">
+                                                    <option value="">— Chưa chọn —</option>
+                                                    @foreach ($employees as $emp)
+                                                        <option value="{{ $emp->id }}" @selected($dept->head_employee_id == $emp->id)>{{ $emp->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="flex gap-xs">
+                                                <button type="submit" class="px-lg py-sm bg-primary text-on-primary rounded-lg font-label-md text-label-md h-fit">Cập nhật</button>
+                                                <button type="button" onclick="toggleDeptEdit({{ $dept->id }})" class="px-lg py-sm border border-outline-variant rounded-lg font-label-md text-label-md h-fit text-on-surface-variant">Đóng</button>
+                                            </div>
                                         </form>
                                     </td>
                                 </tr>
@@ -422,6 +477,9 @@
         activeBtn.classList.add('active-tab');
         activeBtn.classList.remove('text-on-surface-variant');
         activeBtn.querySelector('.material-symbols-outlined').classList.add('text-primary');
+    }
+    function toggleDeptEdit(id) {
+        document.getElementById('dept-edit-' + id).classList.toggle('hidden');
     }
     @if ($errors->has('name') || $errors->has('code'))
         document.addEventListener('DOMContentLoaded', () => {

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
@@ -18,6 +19,10 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Tài khoản cá nhân: mọi người dùng đăng nhập đều đổi được mật khẩu của mình.
+    Route::get('/tai-khoan', [AccountController::class, 'edit'])->name('account.edit');
+    Route::put('/tai-khoan/mat-khau', [AccountController::class, 'updatePassword'])->name('account.password');
 
     // Ghi dữ liệu nhân viên: chỉ Super Admin.
     // Khai báo trước read-only để route literal (create) không bị "show/{employee}" nuốt mất.
@@ -65,6 +70,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/cai-dat', [SettingController::class, 'index'])->name('settings.index');
         Route::put('/cai-dat', [SettingController::class, 'update'])->name('settings.update');
         Route::post('/cai-dat/phong-ban', [SettingController::class, 'storeDepartment'])->name('settings.departments.store');
+        Route::put('/cai-dat/phong-ban/{department}', [SettingController::class, 'updateDepartment'])->name('settings.departments.update');
         Route::delete('/cai-dat/phong-ban/{department}', [SettingController::class, 'destroyDepartment'])->name('settings.departments.destroy');
         Route::put('/cai-dat/nguoi-dung/{user}/vai-tro', [SettingController::class, 'updateUserRole'])->name('settings.users.role');
     });

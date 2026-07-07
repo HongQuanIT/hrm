@@ -27,6 +27,7 @@ class Attendance extends Model
         'absent' => 'Vắng mặt',
         'leave' => 'Nghỉ phép',
         'working' => 'Đang làm việc',
+        'missing_checkout' => 'Quên check-out',
     ];
 
     // Nhãn cho từng mức cảnh báo đi muộn.

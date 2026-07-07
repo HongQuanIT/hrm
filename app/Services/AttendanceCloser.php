@@ -27,6 +27,10 @@ class AttendanceCloser
     public function run(): int
     {
         $today = Carbon::today();
+
+        // Chốt các ngày đã qua mà nhân viên có check-in nhưng quên check-out.
+        $this->resolveMissingCheckouts($today);
+
         $deadline = $this->timeOn($today, 'checkin_deadline', '10:00');
 
         // Hôm nay chỉ được chốt khi đã qua hạn check-in; nếu chưa thì chốt tới hôm qua.
@@ -109,6 +113,26 @@ class AttendanceCloser
         }
 
         return count($rows);
+    }
+
+    /**
+     * Với những ngày đã kết thúc (trước hôm nay), nếu nhân viên đã check-in nhưng
+     * quên check-out thì đánh dấu "Quên check-out" và không tính công (total = 0).
+     * Ngày hôm nay không xử lý vì vẫn đang trong ca làm việc ("Đang làm việc").
+     */
+    public function resolveMissingCheckouts(Carbon $today): int
+    {
+        return Attendance::whereDate('work_date', '<', $today->toDateString())
+            ->whereDate('work_date', '>=', $today->copy()->subDays(self::MAX_LOOKBACK_DAYS)->toDateString())
+            ->whereNotNull('check_in')
+            ->whereNull('check_out')
+            ->whereIn('status', ['working', 'late', 'on_time'])
+            ->update([
+                'status' => 'missing_checkout',
+                'total_minutes' => 0,
+                'note' => 'Quên check-out — không được tính công.',
+                'updated_at' => now(),
+            ]);
     }
 
     private function timeOn(Carbon $date, string $key, string $default): Carbon
