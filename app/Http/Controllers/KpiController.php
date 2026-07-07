@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Kpi;
+use App\Models\KpiPhase;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
 class KpiController extends Controller
@@ -79,7 +81,6 @@ class KpiController extends Controller
         $data = $this->validateData($request);
         $kpi->update($data);
 
-        $kpi->phases()->delete();
         $this->syncPhases($kpi, $request);
 
         return redirect()->route('kpis.show', $kpi)->with('status', 'Đã cập nhật mục tiêu KPI.');
@@ -90,6 +91,76 @@ class KpiController extends Controller
         $kpi->delete();
 
         return redirect()->route('kpis.index')->with('status', 'Đã xóa mục tiêu KPI.');
+    }
+
+    /**
+     * Người phụ trách (hoặc Super Admin) cập nhật trạng thái của một giai đoạn:
+     * nhận việc -> đang làm -> hoàn thành. Có thể trả về trạng thái trước đó.
+     */
+    public function updatePhaseStatus(Request $request, Kpi $kpi, KpiPhase $phase)
+    {
+        $user = Auth::user();
+        $employeeId = $user->employee?->id;
+        $isAssignee = $employeeId && $phase->assignee_employee_id === $employeeId;
+
+        abort_unless($user->isSuperAdmin() || $isAssignee, 403, 'Bạn không phụ trách giai đoạn này.');
+
+        $validated = $request->validate([
+            'status' => ['required', Rule::in(array_keys(KpiPhase::STATUS_LABELS))],
+        ]);
+
+        $status = $validated['status'];
+
+        // Ghi lại mốc thời gian tương ứng, giữ nguyên mốc cũ nếu đã có.
+        $updates = ['status' => $status];
+        if ($status === KpiPhase::STATUS_RECEIVED && ! $phase->received_at) {
+            $updates['received_at'] = now();
+        }
+        if ($status === KpiPhase::STATUS_IN_PROGRESS) {
+            $updates['received_at'] = $phase->received_at ?? now();
+            $updates['started_at'] = $phase->started_at ?? now();
+        }
+        if ($status === KpiPhase::STATUS_DONE) {
+            $updates['received_at'] = $phase->received_at ?? now();
+            $updates['started_at'] = $phase->started_at ?? now();
+            $updates['completed_at'] = now();
+        }
+        // Nếu mở lại giai đoạn đã xong thì bỏ mốc hoàn thành.
+        if ($status !== KpiPhase::STATUS_DONE) {
+            $updates['completed_at'] = null;
+        }
+
+        $phase->update($updates);
+
+        $this->refreshKpiProgress($kpi);
+
+        return back()->with('status', 'Đã cập nhật giai đoạn "' . $phase->name . '": ' . $phase->status_label . '.');
+    }
+
+    /**
+     * Tự động tính lại tiến độ KPI theo tỉ lệ giai đoạn đã hoàn thành.
+     */
+    private function refreshKpiProgress(Kpi $kpi): void
+    {
+        $total = $kpi->phases()->count();
+        if ($total === 0) {
+            return;
+        }
+
+        $done = $kpi->phases()->where('status', KpiPhase::STATUS_DONE)->count();
+        $progress = (int) round($done / $total * 100);
+
+        $status = $kpi->status;
+        if ($done === $total) {
+            $status = 'done';
+        } elseif ($kpi->phases()->where('status', '!=', KpiPhase::STATUS_DONE)
+            ->whereNotNull('deadline')
+            ->whereDate('deadline', '<', now()->toDateString())
+            ->exists()) {
+            $status = 'behind';
+        }
+
+        $kpi->update(['progress' => $progress, 'status' => $status]);
     }
 
     private function validateData(Request $request): array
@@ -112,21 +183,38 @@ class KpiController extends Controller
 
     private function syncPhases(Kpi $kpi, Request $request): void
     {
+        $ids = $request->input('phase_id', []);
         $names = $request->input('phase_name', []);
         $assignees = $request->input('phase_assignee', []);
         $deadlines = $request->input('phase_deadline', []);
-        $statuses = $request->input('phase_status', []);
+
+        $keptIds = [];
 
         foreach ($names as $i => $name) {
             if (! $name) {
                 continue;
             }
-            $kpi->phases()->create([
+
+            $attributes = [
                 'name' => $name,
                 'assignee_employee_id' => $assignees[$i] ?? null,
                 'deadline' => $deadlines[$i] ?? null,
-                'status' => $statuses[$i] ?? 'pending',
-            ]);
+            ];
+
+            $existingId = $ids[$i] ?? null;
+            $phase = $existingId ? $kpi->phases()->find($existingId) : null;
+
+            if ($phase) {
+                // Giữ nguyên trạng thái & mốc thời gian mà người phụ trách đã cập nhật.
+                $phase->update($attributes);
+            } else {
+                $phase = $kpi->phases()->create($attributes + ['status' => KpiPhase::STATUS_PENDING]);
+            }
+
+            $keptIds[] = $phase->id;
         }
+
+        // Xoá các giai đoạn đã bị gỡ khỏi form.
+        $kpi->phases()->whereNotIn('id', $keptIds ?: [0])->delete();
     }
 }

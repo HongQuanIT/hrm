@@ -11,8 +11,11 @@
     $phaseStyles = [
         'done' => ['icon' => 'check_circle', 'fill' => "'FILL' 1;", 'wrap' => 'bg-primary/10 text-primary', 'badge' => 'bg-green-100 text-green-700', 'card' => 'border-outline-variant'],
         'in_progress' => ['icon' => 'pending', 'fill' => '', 'wrap' => 'bg-primary/10 text-primary', 'badge' => 'bg-blue-100 text-blue-700', 'card' => 'border-primary/30 border-l-4 border-l-primary'],
+        'received' => ['icon' => 'assignment_turned_in', 'fill' => '', 'wrap' => 'bg-amber-100 text-amber-700', 'badge' => 'bg-amber-100 text-amber-700', 'card' => 'border-outline-variant'],
         'pending' => ['icon' => 'schedule', 'fill' => '', 'wrap' => 'bg-outline-variant/20 text-on-surface-variant', 'badge' => 'bg-surface-container-highest text-on-surface-variant', 'card' => 'border-outline-variant opacity-80'],
     ];
+    $myEmployeeId = auth()->user()->employee?->id;
+    $isAdmin = auth()->user()->isSuperAdmin();
 @endphp
 
 @section('content')
@@ -92,17 +95,20 @@
                 @endcan
             </div>
             @forelse ($kpi->phases as $phase)
-                @php $s = $phaseStyles[$phase->status] ?? $phaseStyles['pending']; @endphp
-                <div class="bg-surface-container-lowest border {{ $s['card'] }} p-md rounded-xl hover:shadow-md transition-shadow">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-md">
+                @php
+                    $s = $phaseStyles[$phase->status] ?? $phaseStyles['pending'];
+                    $canAct = $isAdmin || ($myEmployeeId && $phase->assignee_employee_id === $myEmployeeId);
+                @endphp
+                <div class="bg-surface-container-lowest border {{ $phase->is_overdue ? 'border-error/40 border-l-4 border-l-error' : $s['card'] }} p-md rounded-xl hover:shadow-md transition-shadow">
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-md">
                         <div class="flex items-start gap-md">
                             <div class="p-xs {{ $s['wrap'] }} rounded-lg mt-1">
                                 <span class="material-symbols-outlined {{ $phase->status === 'in_progress' ? 'animate-pulse' : '' }}" style="font-variation-settings: {{ $s['fill'] ?: "'FILL' 0;" }}">{{ $s['icon'] }}</span>
                             </div>
                             <div>
                                 <h3 class="font-body-lg text-body-lg font-semibold {{ $phase->status === 'in_progress' ? 'text-primary' : '' }}">{{ $phase->name }}</h3>
-                                <div class="flex items-center gap-md mt-sm">
-                                    <div class="flex items-center gap-xs">
+                                <div class="flex flex-wrap items-center gap-md mt-sm">
+                                    <div class="flex items-center gap-xs {{ $phase->is_overdue ? 'text-error font-semibold' : '' }}">
                                         <span class="material-symbols-outlined text-sm">calendar_today</span>
                                         <span class="text-xs">{{ $phase->deadline?->format('d/m/Y') ?? '—' }}</span>
                                     </div>
@@ -113,8 +119,30 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-lg sm:flex-col sm:items-end">
-                            <span class="px-3 py-1 {{ $s['badge'] }} rounded-full text-xs font-bold uppercase">{{ $phase->status_label }}</span>
+                        <div class="flex flex-col items-start sm:items-end gap-xs shrink-0">
+                            <div class="flex items-center gap-xs">
+                                @if ($phase->is_overdue)
+                                    <span class="px-3 py-1 bg-error-container text-on-error-container rounded-full text-xs font-bold uppercase flex items-center gap-1">
+                                        <span class="material-symbols-outlined text-sm">warning</span> Trễ hạn
+                                    </span>
+                                @elseif ($phase->completed_late)
+                                    <span class="px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold uppercase">Hoàn thành trễ</span>
+                                @endif
+                                <span class="px-3 py-1 {{ $s['badge'] }} rounded-full text-xs font-bold uppercase">{{ $phase->status_label }}</span>
+                            </div>
+                            @if ($canAct)
+                                <div class="flex flex-wrap gap-xs justify-end">
+                                    @if ($phase->status === 'pending')
+                                        <x-phase-action :kpi="$kpi" :phase="$phase" status="received" icon="assignment_turned_in" label="Nhận việc" />
+                                    @elseif ($phase->status === 'received')
+                                        <x-phase-action :kpi="$kpi" :phase="$phase" status="in_progress" icon="play_arrow" label="Bắt đầu" />
+                                    @elseif ($phase->status === 'in_progress')
+                                        <x-phase-action :kpi="$kpi" :phase="$phase" status="done" icon="check" label="Hoàn thành" primary />
+                                    @elseif ($phase->status === 'done')
+                                        <x-phase-action :kpi="$kpi" :phase="$phase" status="in_progress" icon="undo" label="Mở lại" muted />
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

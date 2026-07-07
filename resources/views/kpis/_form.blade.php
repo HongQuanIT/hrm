@@ -2,16 +2,16 @@
     $k = $kpi ?? null;
     $val = fn ($field, $default = '') => old($field, $k->{$field} ?? $default);
     $phases = old('phase_name') ? array_map(fn ($i) => [
+        'id' => old('phase_id')[$i] ?? '',
         'name' => old('phase_name')[$i] ?? '',
         'assignee_employee_id' => old('phase_assignee')[$i] ?? null,
         'deadline' => old('phase_deadline')[$i] ?? null,
-        'status' => old('phase_status')[$i] ?? 'pending',
     ], array_keys(old('phase_name'))) : ($k ? $k->phases->map(fn ($p) => [
+        'id' => $p->id,
         'name' => $p->name,
         'assignee_employee_id' => $p->assignee_employee_id,
         'deadline' => $p->deadline?->format('Y-m-d'),
-        'status' => $p->status,
-    ])->toArray() : [['name' => '', 'assignee_employee_id' => null, 'deadline' => null, 'status' => 'pending']]);
+    ])->toArray() : [['id' => '', 'name' => '', 'assignee_employee_id' => null, 'deadline' => null]]);
 @endphp
 <div class="px-md md:px-xl pt-lg pb-32">
     <div class="max-w-container-max mx-auto">
@@ -100,6 +100,7 @@
                                 <button type="button" onclick="this.closest('.phase-row').remove()" class="absolute top-2 right-2 text-outline hover:text-error transition-colors">
                                     <span class="material-symbols-outlined text-lg">close</span>
                                 </button>
+                                <input type="hidden" name="phase_id[]" value="{{ $phase['id'] ?? '' }}">
                                 <div class="grid grid-cols-1 md:grid-cols-12 gap-md">
                                     <div class="md:col-span-5 flex flex-col gap-xs">
                                         <label class="font-label-md text-label-md text-on-surface-variant">Tên giai đoạn</label>
@@ -121,7 +122,6 @@
                                                class="px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md">
                                     </div>
                                 </div>
-                                <input type="hidden" name="phase_status[]" value="{{ $phase['status'] ?? 'pending' }}">
                             </div>
                         @endforeach
                     </div>
@@ -216,6 +216,7 @@
             <button type="button" onclick="this.closest('.phase-row').remove()" class="absolute top-2 right-2 text-outline hover:text-error transition-colors">
                 <span class="material-symbols-outlined text-lg">close</span>
             </button>
+            <input type="hidden" name="phase_id[]" value="">
             <div class="grid grid-cols-1 md:grid-cols-12 gap-md">
                 <div class="md:col-span-5 flex flex-col gap-xs">
                     <label class="font-label-md text-label-md text-on-surface-variant">Tên giai đoạn</label>
@@ -232,7 +233,6 @@
                     <input name="phase_deadline[]" type="date" class="px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md">
                 </div>
             </div>
-            <input type="hidden" name="phase_status[]" value="pending">
         `;
         container.appendChild(row);
     }

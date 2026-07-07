@@ -64,6 +64,11 @@ Route::middleware('auth')->group(function () {
         ->parameters(['kpi' => 'kpi'])
         ->names('kpis')
         ->only(['index', 'show']);
+    // Người phụ trách giai đoạn tự cập nhật trạng thái (nhận / đang làm / hoàn thành).
+    // Quyền được kiểm tra trong controller: chỉ assignee của giai đoạn hoặc Super Admin.
+    Route::patch('/kpi/{kpi}/giai-doan/{phase}/trang-thai', [KpiController::class, 'updatePhaseStatus'])
+        ->scopeBindings()
+        ->name('kpis.phases.status');
 
     // Cài đặt hệ thống: chỉ Super Admin
     Route::middleware('can:admin')->group(function () {
