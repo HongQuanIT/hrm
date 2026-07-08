@@ -14,11 +14,16 @@ class KpiController extends Controller
 {
     public function index()
     {
-        $kpis = Kpi::with(['department', 'owner'])->latest()->get();
+        // User thường chỉ thấy KPI mình được assign (chủ trì hoặc phụ trách giai đoạn).
+        // Super Admin thấy tất cả.
+        $baseQuery = $this->accessibleKpiQuery();
 
-        $companyAvg = (int) round(Kpi::avg('progress') ?? 0);
+        $kpis = (clone $baseQuery)->with(['department', 'owner'])->latest()->get();
 
-        $departmentAvg = Kpi::selectRaw('department_id, AVG(progress) as avg_progress')
+        $companyAvg = (int) round((clone $baseQuery)->avg('progress') ?? 0);
+
+        $departmentAvg = (clone $baseQuery)
+            ->selectRaw('department_id, AVG(progress) as avg_progress')
             ->groupBy('department_id')
             ->with('department')
             ->get()
@@ -28,11 +33,7 @@ class KpiController extends Controller
             ])
             ->take(4);
 
-        $topPerformer = Employee::withCount([])
-            ->whereHas('department')
-            ->orderBy('name')
-            ->first();
-        $topKpi = Kpi::with('owner')->orderByDesc('progress')->first();
+        $topKpi = (clone $baseQuery)->with('owner')->orderByDesc('progress')->first();
 
         $trend = [];
         for ($i = 6; $i >= 1; $i--) {
@@ -62,9 +63,12 @@ class KpiController extends Controller
 
     public function show(Kpi $kpi)
     {
-        $kpi->load(['department', 'owner', 'phases.assignee']);
+        $this->authorizeAccess($kpi);
 
-        return view('kpis.show', compact('kpi'));
+        $kpi->load(['department', 'owner', 'phases.assignee']);
+        $employees = Employee::orderBy('name')->get();
+
+        return view('kpis.show', compact('kpi', 'employees'));
     }
 
     public function edit(Kpi $kpi)
@@ -91,6 +95,27 @@ class KpiController extends Controller
         $kpi->delete();
 
         return redirect()->route('kpis.index')->with('status', 'Đã xóa mục tiêu KPI.');
+    }
+
+    /**
+     * Thành viên dự án (chủ trì / người phụ trách giai đoạn) hoặc Super Admin
+     * thêm một giai đoạn con mới cho KPI.
+     */
+    public function storePhase(Request $request, Kpi $kpi)
+    {
+        $this->authorizeAccess($kpi);
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'assignee_employee_id' => ['nullable', 'exists:employees,id'],
+            'deadline' => ['nullable', 'date'],
+        ]);
+
+        $kpi->phases()->create($validated + ['status' => KpiPhase::STATUS_PENDING]);
+
+        $this->refreshKpiProgress($kpi);
+
+        return back()->with('status', 'Đã thêm giai đoạn "' . $validated['name'] . '".');
     }
 
     /**
@@ -135,6 +160,51 @@ class KpiController extends Controller
         $this->refreshKpiProgress($kpi);
 
         return back()->with('status', 'Đã cập nhật giai đoạn "' . $phase->name . '": ' . $phase->status_label . '.');
+    }
+
+    /**
+     * Query KPI theo quyền xem: Super Admin thấy tất cả; user thường chỉ thấy KPI
+     * mình chủ trì hoặc được giao một giai đoạn (tức nằm trong dự án).
+     */
+    private function accessibleKpiQuery()
+    {
+        $user = Auth::user();
+        $query = Kpi::query();
+
+        if ($user->isSuperAdmin()) {
+            return $query;
+        }
+
+        $employeeId = $user->employee?->id;
+
+        if (! $employeeId) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        return $query->where(function ($q) use ($employeeId) {
+            $q->where('owner_employee_id', $employeeId)
+                ->orWhereHas('phases', fn ($p) => $p->where('assignee_employee_id', $employeeId));
+        });
+    }
+
+    /**
+     * Chặn user thường xem/thao tác KPI không thuộc dự án của họ.
+     */
+    private function authorizeAccess(Kpi $kpi): void
+    {
+        $user = Auth::user();
+
+        if ($user->isSuperAdmin()) {
+            return;
+        }
+
+        $employeeId = $user->employee?->id;
+        $isMember = $employeeId && (
+            $kpi->owner_employee_id === $employeeId
+            || $kpi->phases()->where('assignee_employee_id', $employeeId)->exists()
+        );
+
+        abort_unless($isMember, 403, 'Bạn không có quyền truy cập KPI này.');
     }
 
     /**

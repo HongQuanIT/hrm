@@ -64,6 +64,10 @@ Route::middleware('auth')->group(function () {
         ->parameters(['kpi' => 'kpi'])
         ->names('kpis')
         ->only(['index', 'show']);
+    // Thành viên dự án (chủ trì / được giao giai đoạn) hoặc Super Admin thêm giai đoạn con.
+    // Quyền được kiểm tra trong controller.
+    Route::post('/kpi/{kpi}/giai-doan', [KpiController::class, 'storePhase'])
+        ->name('kpis.phases.store');
     // Người phụ trách giai đoạn tự cập nhật trạng thái (nhận / đang làm / hoàn thành).
     // Quyền được kiểm tra trong controller: chỉ assignee của giai đoạn hoặc Super Admin.
     Route::patch('/kpi/{kpi}/giai-doan/{phase}/trang-thai', [KpiController::class, 'updatePhaseStatus'])

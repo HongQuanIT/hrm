@@ -148,9 +148,49 @@
                 </div>
             @empty
                 <div class="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl text-center text-on-surface-variant">
-                    Chưa có giai đoạn nào.@can('admin') <a href="{{ route('kpis.edit', $kpi) }}" class="text-primary hover:underline">Thêm giai đoạn</a>@endcan
+                    Chưa có giai đoạn nào. Thêm giai đoạn con đầu tiên bên dưới.
                 </div>
             @endforelse
+
+            @if ($errors->any())
+                <div class="bg-error-container text-on-error-container px-md py-sm rounded-lg text-body-md">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
+            <details class="group bg-surface-container-lowest border border-dashed border-outline-variant rounded-xl" @if ($errors->any()) open @endif>
+                <summary class="flex items-center gap-xs p-md cursor-pointer text-primary font-label-md text-label-md select-none list-none">
+                    <span class="material-symbols-outlined text-lg transition-transform group-open:rotate-45">add_circle</span>
+                    Thêm giai đoạn con
+                </summary>
+                <form method="POST" action="{{ route('kpis.phases.store', $kpi) }}" class="px-md pb-md grid grid-cols-1 md:grid-cols-12 gap-md items-end">
+                    @csrf
+                    <div class="md:col-span-5 flex flex-col gap-xs">
+                        <label class="font-label-md text-label-md text-on-surface-variant">Tên giai đoạn *</label>
+                        <input name="name" value="{{ old('name') }}" required type="text" placeholder="Ví dụ: Thu thập yêu cầu"
+                               class="px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md bg-white">
+                    </div>
+                    <div class="md:col-span-4 flex flex-col gap-xs">
+                        <label class="font-label-md text-label-md text-on-surface-variant">Người thực hiện</label>
+                        <select name="assignee_employee_id" class="px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md bg-white">
+                            <option value="">Chọn nhân viên</option>
+                            @foreach ($employees as $emp)
+                                <option value="{{ $emp->id }}" @selected(old('assignee_employee_id') == $emp->id)>{{ $emp->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="md:col-span-3 flex flex-col gap-xs">
+                        <label class="font-label-md text-label-md text-on-surface-variant">Hạn chót</label>
+                        <input name="deadline" value="{{ old('deadline') }}" type="date"
+                               class="px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md bg-white">
+                    </div>
+                    <div class="md:col-span-12 flex justify-end">
+                        <button type="submit" class="flex items-center gap-1 px-lg py-2 bg-primary text-on-primary rounded-lg font-label-md text-label-md shadow-sm hover:shadow-md active:scale-95 transition-all">
+                            <span class="material-symbols-outlined text-sm">add</span> Thêm giai đoạn
+                        </button>
+                    </div>
+                </form>
+            </details>
         </div>
 
         <!-- Right Sidebar -->
