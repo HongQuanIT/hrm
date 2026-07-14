@@ -8,8 +8,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class LeaveRequest extends Model
 {
     protected $fillable = [
-        'employee_id', 'type', 'start_date', 'end_date', 'days',
+        'employee_id', 'type', 'start_date', 'end_date', 'days', 'half_day',
         'reason', 'status', 'approver_name', 'attachment',
+    ];
+
+    public const HALF_DAY_LABELS = [
+        'morning' => 'Buổi sáng',
+        'afternoon' => 'Buổi chiều',
     ];
 
     protected function casts(): array
@@ -50,5 +55,10 @@ class LeaveRequest extends Model
     public function getStatusLabelAttribute(): string
     {
         return self::STATUS_LABELS[$this->status] ?? $this->status;
+    }
+
+    public function getHalfDayLabelAttribute(): ?string
+    {
+        return $this->half_day ? (self::HALF_DAY_LABELS[$this->half_day] ?? null) : null;
     }
 }

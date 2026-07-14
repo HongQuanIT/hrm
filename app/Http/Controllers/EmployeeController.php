@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreEmployeeRequest;
+use App\Http\Requests\UpdateEmployeeRequest;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class EmployeeController extends Controller
 {
@@ -48,30 +50,37 @@ class EmployeeController extends Controller
         return view('employees.create', compact('departments', 'managers', 'nextCode'));
     }
 
-    public function store(Request $request)
+    public function store(StoreEmployeeRequest $request)
     {
-        $data = $this->validateData($request);
+        $data = $request->validated();
+        $password = $data['password'] ?? null;
+        unset($data['password']);
         $data['skills'] = $this->parseSkills($request->input('skills'));
-        $password = $this->validatePassword($request);
 
-        // Mỗi nhân viên gắn với một tài khoản đăng nhập (tạo mới nếu chưa có).
-        $employee = DB::transaction(function () use ($data, $password) {
-            $user = User::firstOrCreate(
-                ['email' => $data['email']],
-                [
-                    'name' => $data['name'],
-                    'password' => Hash::make($password ?: 'password'),
-                    'role' => User::ROLE_USER,
-                    'email_verified_at' => now(),
-                ]
-            );
+        // F06: không dùng mật khẩu mặc định "password". Nếu admin không đặt mật khẩu,
+        // sinh mật khẩu tạm ngẫu nhiên và buộc nhân viên đổi khi đăng nhập lần đầu.
+        $generatedPassword = null;
+
+        $employee = DB::transaction(function () use (&$generatedPassword, $data, $password) {
+            $user = User::where('email', $data['email'])->first();
+            if (! $user) {
+                $plain = $password ?: ($generatedPassword = Str::password(12));
+                $user = new User(['name' => $data['name'], 'email' => $data['email']]);
+                $user->password = Hash::make($plain);
+                $user->role = User::ROLE_USER; // F11: gán role qua property, không mass-assign.
+                $user->email_verified_at = now();
+                $user->must_change_password = ($password === null);
+                $user->save();
+            }
 
             $data['user_id'] = $user->id;
 
             return Employee::create($data);
         });
 
-        $passwordNote = $password ? 'mật khẩu do bạn đặt' : 'mật khẩu mặc định: "password"';
+        $passwordNote = $generatedPassword
+            ? 'mật khẩu tạm "' . $generatedPassword . '" — nhân viên bắt buộc đổi khi đăng nhập lần đầu'
+            : 'mật khẩu do bạn đặt';
 
         return redirect()->route('employees.index')->with(
             'status',
@@ -94,24 +103,31 @@ class EmployeeController extends Controller
         return view('employees.edit', compact('employee', 'departments', 'managers'));
     }
 
-    public function update(Request $request, Employee $employee)
+    public function update(UpdateEmployeeRequest $request, Employee $employee)
     {
-        $data = $this->validateData($request, $employee->id);
+        $data = $request->validated();
+        $password = $data['password'] ?? null;
+        unset($data['password']);
         $data['skills'] = $this->parseSkills($request->input('skills'));
-        $password = $this->validatePassword($request);
 
-        DB::transaction(function () use ($employee, $data, $password) {
+        $generatedPassword = null;
+
+        DB::transaction(function () use (&$generatedPassword, $employee, $data, $password) {
             // Đồng bộ tài khoản đăng nhập liên kết (tạo nếu nhân viên chưa có).
             $user = $employee->user ?? new User();
             $user->name = $data['name'];
             $user->email = $data['email'];
             if (! $user->exists) {
-                $user->password = Hash::make($password ?: 'password');
-                $user->role = User::ROLE_USER;
+                // F06: tài khoản mới không có mật khẩu do admin đặt ⇒ dùng mật khẩu tạm + buộc đổi.
+                $plain = $password ?: ($generatedPassword = Str::password(12));
+                $user->password = Hash::make($plain);
+                $user->role = User::ROLE_USER; // F11: gán role qua property.
                 $user->email_verified_at = now();
+                $user->must_change_password = ($password === null);
             } elseif ($password) {
-                // Super Admin đặt lại mật khẩu cho tài khoản nhân viên.
+                // Super Admin đặt lại mật khẩu cho tài khoản nhân viên (không buộc đổi tiếp).
                 $user->password = Hash::make($password);
+                $user->must_change_password = false;
             }
             $user->save();
 
@@ -119,7 +135,11 @@ class EmployeeController extends Controller
             $employee->update($data);
         });
 
-        return redirect()->route('employees.show', $employee)->with('status', 'Đã cập nhật hồ sơ nhân viên và tài khoản liên kết.');
+        $note = $generatedPassword
+            ? ' Mật khẩu tạm: "' . $generatedPassword . '" (nhân viên bắt buộc đổi khi đăng nhập lần đầu).'
+            : '';
+
+        return redirect()->route('employees.show', $employee)->with('status', 'Đã cập nhật hồ sơ nhân viên và tài khoản liên kết.' . $note);
     }
 
     public function destroy(Employee $employee)
@@ -142,44 +162,6 @@ class EmployeeController extends Controller
         });
 
         return redirect()->route('employees.index')->with('status', 'Đã xóa nhân viên và tài khoản đăng nhập liên kết.');
-    }
-
-    private function validateData(Request $request, ?int $id = null): array
-    {
-        return $request->validate([
-            'code' => ['required', 'string', 'max:50', Rule::unique('employees', 'code')->ignore($id)],
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('employees', 'email')->ignore($id)],
-            'personal_email' => ['nullable', 'email', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:50'],
-            'gender' => ['nullable', Rule::in(['male', 'female', 'other'])],
-            'dob' => ['nullable', 'date'],
-            'national_id' => ['nullable', 'string', 'max:50'],
-            'marital_status' => ['nullable', 'string', 'max:50'],
-            'nationality' => ['nullable', 'string', 'max:100'],
-            'permanent_address' => ['nullable', 'string', 'max:255'],
-            'temporary_address' => ['nullable', 'string', 'max:255'],
-            'department_id' => ['nullable', 'exists:departments,id'],
-            'position' => ['nullable', 'string', 'max:150'],
-            'level' => ['nullable', 'string', 'max:100'],
-            'contract_type' => ['nullable', 'string', 'max:100'],
-            'join_date' => ['nullable', 'date'],
-            'manager_id' => ['nullable', 'exists:employees,id'],
-            'status' => ['required', Rule::in(['active', 'on_leave', 'resigned'])],
-            'bank_name' => ['nullable', 'string', 'max:100'],
-            'bank_account' => ['nullable', 'string', 'max:100'],
-            'bank_holder' => ['nullable', 'string', 'max:255'],
-            'base_salary' => ['nullable', 'numeric', 'min:0'],
-            'lunch_allowance' => ['nullable', 'numeric', 'min:0'],
-            'emergency_contact' => ['nullable', 'string', 'max:255'],
-        ]);
-    }
-
-    private function validatePassword(Request $request): ?string
-    {
-        return $request->validate([
-            'password' => ['nullable', 'string', 'min:6'],
-        ])['password'] ?? null;
     }
 
     private function parseSkills($skills): array

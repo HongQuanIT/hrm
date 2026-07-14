@@ -47,6 +47,13 @@
                         <p class="text-[11px] text-outline">Vai trò &amp; Quyền truy cập</p>
                     </div>
                 </button>
+                <button type="button" onclick="switchTab('holidays')" id="tab-holidays" class="settings-tab flex-shrink-0 w-full text-left flex items-center gap-md p-md rounded-xl transition-all hover:bg-surface-container-high group text-on-surface-variant">
+                    <span class="material-symbols-outlined">event</span>
+                    <div>
+                        <p class="font-body-md text-body-md font-semibold">Ngày nghỉ lễ</p>
+                        <p class="text-[11px] text-outline">Loại trừ khỏi ngày công</p>
+                    </div>
+                </button>
             </div>
         </nav>
 
@@ -457,6 +464,54 @@
                     </div>
                 </div>
             </div>
+
+            <!-- HOLIDAYS -->
+            <div class="hidden" id="section-holidays">
+                <div class="bg-surface border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+                    <div class="px-lg py-md border-b border-outline-variant flex items-center gap-sm bg-surface-container-low">
+                        <span class="material-symbols-outlined text-primary">event</span>
+                        <div>
+                            <h2 class="font-headline-md text-headline-md text-on-surface">Ngày nghỉ lễ</h2>
+                            <p class="text-[12px] text-outline">Các ngày này được loại trừ khỏi ngày công chuẩn và không bị chốt vắng mặt.</p>
+                        </div>
+                    </div>
+
+                    <form method="POST" action="{{ route('settings.holidays.store') }}" class="p-lg grid grid-cols-1 md:grid-cols-[180px_1fr_auto] gap-md items-end border-b border-outline-variant bg-surface-container-lowest">
+                        @csrf
+                        <div class="space-y-xs">
+                            <label class="block font-label-md text-label-md text-on-surface-variant">Ngày</label>
+                            <input name="date" type="date" required class="w-full h-11 px-md border border-outline-variant rounded-lg font-body-md form-input-ring">
+                        </div>
+                        <div class="space-y-xs">
+                            <label class="block font-label-md text-label-md text-on-surface-variant">Tên ngày lễ</label>
+                            <input name="name" type="text" required placeholder="VD: Tết Dương lịch" class="w-full h-11 px-md border border-outline-variant rounded-lg font-body-md form-input-ring">
+                        </div>
+                        <button type="submit" class="h-11 px-lg bg-primary text-on-primary rounded-lg font-medium hover:bg-on-primary-fixed-variant active:scale-95 transition-all flex items-center gap-sm">
+                            <span class="material-symbols-outlined text-[20px]">add</span> Thêm
+                        </button>
+                    </form>
+
+                    <div class="divide-y divide-outline-variant">
+                        @forelse ($holidays as $holiday)
+                            <div class="px-lg py-md flex items-center justify-between">
+                                <div class="flex items-center gap-md">
+                                    <span class="w-10 h-10 rounded-lg bg-primary/10 text-primary flex items-center justify-center material-symbols-outlined text-[20px]">celebration</span>
+                                    <div>
+                                        <p class="font-body-md text-body-md text-on-surface font-semibold">{{ $holiday->name }}</p>
+                                        <p class="text-[12px] text-outline">{{ $holiday->date->format('d/m/Y') }}</p>
+                                    </div>
+                                </div>
+                                <form method="POST" action="{{ route('settings.holidays.destroy', $holiday) }}" onsubmit="return confirm('Xoá ngày lễ này?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="w-9 h-9 rounded-lg text-error hover:bg-error-container transition-colors flex items-center justify-center material-symbols-outlined text-[20px]">delete</button>
+                                </form>
+                            </div>
+                        @empty
+                            <p class="px-lg py-xl text-center text-on-surface-variant text-body-md">Chưa có ngày nghỉ lễ nào.</p>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
         </section>
     </div>
 </div>
@@ -465,7 +520,7 @@
 @push('scripts')
 <script>
     function switchTab(tabId) {
-        ['company', 'attendance', 'departments', 'permissions'].forEach(t => {
+        ['company', 'attendance', 'departments', 'permissions', 'holidays'].forEach(t => {
             document.getElementById('section-' + t).classList.add('hidden');
             const btn = document.getElementById('tab-' + t);
             btn.classList.remove('active-tab');

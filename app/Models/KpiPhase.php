@@ -4,10 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 class KpiPhase extends Model
 {
+    // F08: dùng soft-delete để không mất lịch sử/mốc thời gian khi giai đoạn bị gỡ khỏi form.
+    use SoftDeletes;
+
     protected $fillable = [
         'kpi_id', 'name', 'assignee_employee_id', 'deadline', 'status',
         'received_at', 'started_at', 'completed_at',

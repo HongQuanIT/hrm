@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use App\Models\CompanySetting;
 use App\Models\Employee;
+use App\Models\Holiday;
 use App\Models\LeaveRequest;
 use App\Services\AttendanceCloser;
 use Carbon\Carbon;
@@ -14,8 +15,8 @@ class AttendanceController extends Controller
 {
     public function index(Request $request, AttendanceCloser $closer)
     {
-        // Tự động chốt các ngày không chấm công thành vắng mặt (self-gated, ~1 lần/ngày).
-        $closer->run();
+        // F09: tự động chốt công nhưng có khoá throttle để không lặp truy vấn mỗi lần tải trang.
+        $closer->runThrottled();
 
         $currentEmployee = $this->currentEmployee();
         $isAdmin = auth()->user()->isSuperAdmin();
@@ -52,8 +53,9 @@ class AttendanceController extends Controller
         $overtimeHours = round((clone $baseQuery)->sum('total_minutes') / 60 - $workedDays * 8, 1);
         $overtimeHours = max($overtimeHours, 0);
 
-        // Ngày công chuẩn = số ngày trong tháng - số ngày nghỉ phép tháng.
-        $standardDays = max($selected->daysInMonth - $leavePerMonth, 0);
+        // Ngày công chuẩn = số ngày trong tháng - số ngày phép tháng - số ngày nghỉ lễ trong tháng (F15).
+        $holidaysInMonth = Holiday::whereBetween('date', [$monthStart->toDateString(), $monthEnd->toDateString()])->count();
+        $standardDays = max($selected->daysInMonth - $leavePerMonth - $holidaysInMonth, 0);
 
         // Số dư phép năm = quỹ phép năm - số ngày phép đã duyệt trong năm.
         $leaveUsedYear = $employee

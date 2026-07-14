@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreLeaveRequest;
 use App\Models\CompanySetting;
 use App\Models\Employee;
 use App\Models\LeaveRequest;
@@ -147,27 +148,67 @@ class LeaveController extends Controller
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreLeaveRequest $request)
     {
-        $data = $request->validate([
-            'type' => ['required', Rule::in(array_keys(LeaveRequest::TYPE_LABELS))],
-            'start_date' => ['required', 'date'],
-            'end_date' => ['required', 'date', 'after_or_equal:start_date'],
-            'reason' => ['nullable', 'string', 'max:500'],
-        ]);
+        $data = $request->validated();
+
+        // F01: chặn tạo đơn khi tài khoản không gắn hồ sơ nhân viên (không còn fallback Employee::first()).
+        $employee = $this->currentEmployee();
+        if (! $employee) {
+            return back()
+                ->with('error', 'Tài khoản chưa gắn với hồ sơ nhân viên nên không thể tạo đơn nghỉ phép.')
+                ->withInput();
+        }
+        $employeeId = $employee->id;
 
         $start = Carbon::parse($data['start_date']);
         $end = Carbon::parse($data['end_date']);
-        $days = (int) round($start->diffInDays($end, true)) + 1;
         $reason = $data['reason'] ?? null;
+        $halfDay = $data['half_day'] ?? null;
 
-        $employee = $this->currentEmployee() ?? Employee::first();
-        $employeeId = $employee?->id ?? 1;
+        // F16: nghỉ nửa ngày chỉ áp dụng cho đúng một ngày, tính 0.5 công.
+        if ($halfDay) {
+            if (! $start->isSameDay($end)) {
+                return back()
+                    ->with('error', 'Nghỉ nửa ngày chỉ áp dụng cho một ngày duy nhất.')
+                    ->withInput();
+            }
+            $days = 0.5;
+        } else {
+            $days = (int) round($start->diffInDays($end, true)) + 1;
+        }
+
+        // F07: chống trùng khoảng ngày với đơn đang chờ duyệt hoặc đã duyệt.
+        $overlap = LeaveRequest::where('employee_id', $employeeId)
+            ->whereIn('status', ['pending', 'approved'])
+            ->whereDate('start_date', '<=', $end->toDateString())
+            ->whereDate('end_date', '>=', $start->toDateString())
+            ->exists();
+        if ($overlap) {
+            return back()
+                ->with('error', 'Khoảng thời gian này trùng với một đơn nghỉ đang chờ duyệt hoặc đã được duyệt.')
+                ->withInput();
+        }
+
+        // F07: kiểm tra quỹ phép năm cho loại "Nghỉ phép năm".
+        if ($data['type'] === 'annual') {
+            $quotaYear = (int) CompanySetting::get('leave_days_per_year', 12);
+            $usedYear = (float) LeaveRequest::where('employee_id', $employeeId)
+                ->where('type', 'annual')
+                ->whereIn('status', ['pending', 'approved'])
+                ->whereYear('start_date', $start->year)
+                ->sum('days');
+            if ($usedYear + $days > $quotaYear) {
+                return back()
+                    ->with('error', 'Vượt quỹ phép năm (' . $quotaYear . ' ngày). Bạn đã dùng/đang chờ ' . rtrim(rtrim(number_format($usedYear, 1), '0'), '.') . ' ngày.')
+                    ->withInput();
+            }
+        }
 
         // Nghỉ phép tháng: nếu vượt quá quỹ phép tháng còn lại thì phần vượt
         // sẽ được ghi nhận là Nghỉ không lương.
         if ($data['type'] === 'monthly') {
-            return $this->storeMonthlyLeave($employeeId, $start, $end, $days, $reason);
+            return $this->storeMonthlyLeave($employeeId, $start, $end, $days, $reason, $halfDay);
         }
 
         LeaveRequest::create([
@@ -176,6 +217,7 @@ class LeaveController extends Controller
             'start_date' => $start->toDateString(),
             'end_date' => $end->toDateString(),
             'days' => $days,
+            'half_day' => $halfDay,
             'reason' => $reason,
             'status' => 'pending',
         ]);
@@ -186,11 +228,11 @@ class LeaveController extends Controller
     /**
      * Xử lý đơn "Nghỉ phép tháng": tách phần còn quỹ (monthly) và phần vượt (unpaid).
      */
-    private function storeMonthlyLeave(int $employeeId, Carbon $start, Carbon $end, int $days, ?string $reason)
+    private function storeMonthlyLeave(int $employeeId, Carbon $start, Carbon $end, float $days, ?string $reason, ?string $halfDay = null)
     {
         $quota = (int) CompanySetting::get('leave_days_per_month', 1);
         $used = $this->monthlyUsedDays($employeeId, $start);
-        $remaining = (int) floor(max($quota - $used, 0));
+        $remaining = max($quota - $used, 0);
 
         // Còn đủ quỹ: ghi nhận toàn bộ là nghỉ phép tháng.
         if ($remaining >= $days) {
@@ -200,6 +242,7 @@ class LeaveController extends Controller
                 'start_date' => $start->toDateString(),
                 'end_date' => $end->toDateString(),
                 'days' => $days,
+                'half_day' => $halfDay,
                 'reason' => $reason,
                 'status' => 'pending',
             ]);
@@ -207,14 +250,15 @@ class LeaveController extends Controller
             return redirect()->route('leaves.index')->with('status', 'Đã gửi đơn nghỉ phép tháng, đang chờ phê duyệt.');
         }
 
-        // Hết quỹ: toàn bộ tính nghỉ không lương.
-        if ($remaining <= 0) {
+        // Hết quỹ (còn dưới 1 ngày không đủ tách cho đơn nhiều ngày): toàn bộ tính nghỉ không lương.
+        if ($remaining < 1) {
             LeaveRequest::create([
                 'employee_id' => $employeeId,
                 'type' => 'unpaid',
                 'start_date' => $start->toDateString(),
                 'end_date' => $end->toDateString(),
                 'days' => $days,
+                'half_day' => $halfDay,
                 'reason' => $reason,
                 'status' => 'pending',
             ]);
@@ -223,6 +267,8 @@ class LeaveController extends Controller
         }
 
         // Vượt một phần: tách monthly (phần còn quỹ) + unpaid (phần vượt).
+        // Ở nhánh nhiều ngày này chỉ tách theo số ngày nguyên còn lại.
+        $remaining = (int) floor($remaining);
         $monthlyEnd = $start->copy()->addDays($remaining - 1);
         $unpaidStart = $monthlyEnd->copy()->addDay();
         $unpaidDays = $days - $remaining;

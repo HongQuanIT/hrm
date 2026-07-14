@@ -176,13 +176,15 @@ class DatabaseSeeder extends Seeder
     {
         // Mỗi nhân viên gắn với một tài khoản đăng nhập (liên kết qua user_id).
         foreach ($employees as $emp) {
-            $user = User::create([
+            // F11: role không còn nằm trong fillable ⇒ gán qua property.
+            $user = new User([
                 'name' => $emp->name,
                 'email' => $emp->email,
                 'password' => Hash::make('password'),
-                'role' => $emp->email === $admin->email ? User::ROLE_SUPER_ADMIN : User::ROLE_USER,
-                'email_verified_at' => now(),
             ]);
+            $user->role = $emp->email === $admin->email ? User::ROLE_SUPER_ADMIN : User::ROLE_USER;
+            $user->email_verified_at = now();
+            $user->save();
 
             $emp->update(['user_id' => $user->id]);
         }

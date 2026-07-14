@@ -11,10 +11,14 @@
         <!-- Profile summary -->
         <div class="bg-surface border border-outline-variant rounded-xl shadow-sm p-lg mb-lg flex items-center gap-md">
             <x-avatar :name="$user->name" class="w-14 h-14 !rounded-2xl text-[20px] shadow-sm" />
-            <div>
+            <div class="flex-1">
                 <p class="font-headline-md text-headline-md text-on-surface">{{ $user->name }}</p>
                 <p class="text-body-md text-on-surface-variant">{{ $user->email }} • {{ $user->role_label }}</p>
             </div>
+            <a href="{{ route('account.profile') }}" class="flex items-center gap-xs px-md py-sm rounded-lg border border-outline-variant text-body-md text-on-surface-variant hover:bg-surface-container transition-colors">
+                <span class="material-symbols-outlined text-[20px]">badge</span>
+                <span>Thông tin cá nhân</span>
+            </a>
         </div>
 
         <!-- Change password -->

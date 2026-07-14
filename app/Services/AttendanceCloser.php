@@ -5,8 +5,10 @@ namespace App\Services;
 use App\Models\Attendance;
 use App\Models\CompanySetting;
 use App\Models\Employee;
+use App\Models\Holiday;
 use App\Models\LeaveRequest;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Chốt công cuối ngày: nhân viên không chấm công (không bấm gì) trong ngày làm việc
@@ -19,6 +21,20 @@ class AttendanceCloser
 {
     // Giới hạn số ngày truy hồi ở lần chạy đầu để tránh xử lý toàn bộ lịch sử.
     private const MAX_LOOKBACK_DAYS = 31;
+
+    /**
+     * F09: gọi từ web request (dashboard/chấm công) nhưng chỉ chạy tối đa 1 lần / vài phút
+     * nhờ khoá cache, tránh lặp truy vấn ở mỗi lần tải trang. Scheduler vẫn gọi run() trực tiếp.
+     */
+    public function runThrottled(): int
+    {
+        // Cache::add trả về false nếu khoá đã tồn tại ⇒ bỏ qua lần chạy này.
+        if (! Cache::add('attendance_closer_gate', true, now()->addMinutes(5))) {
+            return 0;
+        }
+
+        return $this->run();
+    }
 
     /**
      * Chốt các ngày còn thiếu tính đến hôm nay (chỉ chốt hôm nay khi đã qua hạn check-in).
@@ -67,7 +83,8 @@ class AttendanceCloser
      */
     public function closeDay(Carbon $date): int
     {
-        if ($date->isWeekend()) {
+        // F15: bỏ qua cuối tuần và ngày nghỉ lễ đã cấu hình.
+        if ($date->isWeekend() || Holiday::whereDate('date', $date)->exists()) {
             return 0;
         }
 

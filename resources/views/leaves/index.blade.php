@@ -123,7 +123,12 @@
                                     <td class="px-lg py-md font-body-md text-body-md text-on-surface">{{ $leave->employee?->name }}</td>
                                     <td class="px-lg py-md font-body-md text-body-md text-on-surface">{{ $leave->type_label }}</td>
                                     <td class="px-lg py-md font-body-md text-body-md text-on-surface-variant">{{ $leave->start_date->format('d/m') }} - {{ $leave->end_date->format('d/m/Y') }}</td>
-                                    <td class="px-lg py-md font-body-md text-body-md text-on-surface">{{ rtrim(rtrim(number_format($leave->days, 1), '0'), '.') }} ngày</td>
+                                    <td class="px-lg py-md font-body-md text-body-md text-on-surface">
+                                        {{ rtrim(rtrim(number_format($leave->days, 1), '0'), '.') }} ngày
+                                        @if ($leave->half_day_label)
+                                            <span class="ml-1 text-[11px] text-outline">({{ $leave->half_day_label }})</span>
+                                        @endif
+                                    </td>
                                     <td class="px-lg py-md font-body-md text-body-md text-on-surface-variant italic">{{ $leave->reason ?? '—' }}</td>
                                     <td class="px-lg py-md">
                                         @can('admin')
@@ -182,7 +187,12 @@
                                     <td class="px-lg py-md font-body-md text-body-md text-on-surface">{{ $leave->employee?->name }}</td>
                                     <td class="px-lg py-md font-body-md text-body-md text-on-surface">{{ $leave->type_label }}</td>
                                     <td class="px-lg py-md font-body-md text-body-md text-on-surface-variant">{{ $leave->start_date->format('d/m') }} - {{ $leave->end_date->format('d/m/Y') }}</td>
-                                    <td class="px-lg py-md font-body-md text-body-md text-on-surface">{{ rtrim(rtrim(number_format($leave->days, 1), '0'), '.') }} ngày</td>
+                                    <td class="px-lg py-md font-body-md text-body-md text-on-surface">
+                                        {{ rtrim(rtrim(number_format($leave->days, 1), '0'), '.') }} ngày
+                                        @if ($leave->half_day_label)
+                                            <span class="ml-1 text-[11px] text-outline">({{ $leave->half_day_label }})</span>
+                                        @endif
+                                    </td>
                                     <td class="px-lg py-md font-body-md text-body-md text-on-surface-variant">{{ $leave->approver_name ?? '—' }}</td>
                                     <td class="px-lg py-md"><x-status-badge :status="$leave->status" :label="$leave->status_label" /></td>
                                 </tr>
@@ -238,6 +248,18 @@
                 </div>
             </div>
             <div class="flex flex-col gap-xs">
+                <label class="font-label-md text-label-md text-on-surface-variant px-1 flex items-center gap-xs">
+                    <input type="checkbox" id="halfDayToggle" onchange="toggleHalfDay(this)" class="rounded border-outline-variant text-primary focus:ring-primary/20">
+                    <span>Nghỉ nửa ngày (áp dụng cho 1 ngày, tính 0.5 công)</span>
+                </label>
+                <select name="half_day" id="halfDaySelect" disabled class="form-select rounded-lg border-outline-variant focus:ring-primary/20 focus:border-primary font-body-md text-body-md disabled:opacity-50">
+                    <option value="">— Chọn buổi —</option>
+                    @foreach (\App\Models\LeaveRequest::HALF_DAY_LABELS as $key => $label)
+                        <option value="{{ $key }}" @selected(old('half_day') === $key)>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="flex flex-col gap-xs">
                 <label class="font-label-md text-label-md text-on-surface-variant px-1">Lý do nghỉ</label>
                 <textarea name="reason" class="form-textarea rounded-lg border-outline-variant focus:ring-primary/20 focus:border-primary font-body-md text-body-md resize-none" placeholder="Nhập lý do chi tiết..." rows="3"></textarea>
             </div>
@@ -267,6 +289,29 @@
     document.getElementById('leaveModal').addEventListener('click', function (e) {
         if (e.target === this) closeLeaveModal();
     });
+    function toggleHalfDay(cb) {
+        const select = document.getElementById('halfDaySelect');
+        const start = document.querySelector('input[name="start_date"]');
+        const end = document.querySelector('input[name="end_date"]');
+        select.disabled = !cb.checked;
+        select.required = cb.checked;
+        // Nghỉ nửa ngày chỉ áp dụng 1 ngày: đồng bộ và khoá ngày kết thúc.
+        if (cb.checked) {
+            if (start.value) end.value = start.value;
+            end.readOnly = true;
+            start.addEventListener('change', syncEndDate);
+        } else {
+            select.value = '';
+            end.readOnly = false;
+            start.removeEventListener('change', syncEndDate);
+        }
+    }
+    function syncEndDate() {
+        const start = document.querySelector('input[name="start_date"]');
+        const end = document.querySelector('input[name="end_date"]');
+        end.value = start.value;
+    }
+    @if (old('half_day')) document.getElementById('halfDayToggle').checked = true; toggleHalfDay(document.getElementById('halfDayToggle')); @endif
     @if ($errors->any()) openLeaveModal(); @endif
 </script>
 @endpush

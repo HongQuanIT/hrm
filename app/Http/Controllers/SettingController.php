@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateCompanySettingsRequest;
 use App\Models\CompanySetting;
 use App\Models\Department;
 use App\Models\Employee;
+use App\Models\Holiday;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -17,37 +19,39 @@ class SettingController extends Controller
         $departments = Department::with('head')->withCount('employees')->orderBy('name')->get();
         $users = User::orderByRaw("role = 'super_admin' DESC")->orderBy('name')->get();
         $employees = Employee::orderBy('name')->get(['id', 'name']);
+        // F15: danh sách ngày nghỉ lễ để cấu hình.
+        $holidays = Holiday::orderBy('date')->get();
 
-        return view('settings.index', compact('settings', 'departments', 'users', 'employees'));
+        return view('settings.index', compact('settings', 'departments', 'users', 'employees', 'holidays'));
     }
 
-    public function update(Request $request)
+    public function update(UpdateCompanySettingsRequest $request)
     {
-        $data = $request->validate([
-            'company_name' => ['nullable', 'string', 'max:255'],
-            'tax_code' => ['nullable', 'string', 'max:50'],
-            'website' => ['nullable', 'string', 'max:255'],
-            'address' => ['nullable', 'string', 'max:255'],
-            'leave_days_per_month' => ['nullable', 'integer', 'min:0', 'max:31'],
-            'leave_days_per_year' => ['nullable', 'integer', 'min:0', 'max:365'],
-            // Giờ làm việc & chính sách chấm công
-            'work_start_time' => ['nullable', 'date_format:H:i'],
-            'work_end_time' => ['nullable', 'date_format:H:i'],
-            'checkin_open_time' => ['nullable', 'date_format:H:i', 'before:work_start_time'],
-            'late_grace_minutes' => ['nullable', 'integer', 'min:0', 'max:120'],
-            'late_level1_minutes' => ['nullable', 'integer', 'min:1', 'max:240'],
-            'late_level2_minutes' => ['nullable', 'integer', 'min:1', 'max:480'],
-            'checkin_deadline' => ['nullable', 'date_format:H:i'],
-            'checkout_deadline' => ['nullable', 'date_format:H:i'],
-        ], [
-            'checkin_open_time.before' => 'Giờ mở check-in phải sớm hơn giờ bắt đầu làm việc.',
-        ]);
-
-        foreach ($data as $key => $value) {
+        // F10: quy tắc kiểm tra tách sang UpdateCompanySettingsRequest.
+        foreach ($request->validated() as $key => $value) {
             CompanySetting::put($key, $value);
         }
 
         return back()->with('status', 'Đã lưu thông tin công ty.');
+    }
+
+    public function storeHoliday(Request $request)
+    {
+        $data = $request->validate([
+            'date' => ['required', 'date', 'unique:holidays,date'],
+            'name' => ['required', 'string', 'max:255'],
+        ]);
+
+        Holiday::create($data);
+
+        return back()->with('status', 'Đã thêm ngày nghỉ lễ.');
+    }
+
+    public function destroyHoliday(Holiday $holiday)
+    {
+        $holiday->delete();
+
+        return back()->with('status', 'Đã xoá ngày nghỉ lễ.');
     }
 
     public function storeDepartment(Request $request)
@@ -109,7 +113,9 @@ class SettingController extends Controller
             return back()->with('error', 'Phải có ít nhất một Super Admin trong hệ thống.');
         }
 
-        $user->update(['role' => $data['role']]);
+        // F11: gán role qua property (role không nằm trong fillable).
+        $user->role = $data['role'];
+        $user->save();
 
         return back()->with('status', 'Đã cập nhật vai trò cho ' . $user->name . '.');
     }

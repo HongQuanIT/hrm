@@ -12,7 +12,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'login'])->name('login.attempt');
+    // F05: giới hạn số lần thử đăng nhập để chống dò mật khẩu (brute force).
+    Route::post('/login', [AuthController::class, 'login'])
+        ->middleware('throttle:6,1')
+        ->name('login.attempt');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -23,6 +26,9 @@ Route::middleware('auth')->group(function () {
     // Tài khoản cá nhân: mọi người dùng đăng nhập đều đổi được mật khẩu của mình.
     Route::get('/tai-khoan', [AccountController::class, 'edit'])->name('account.edit');
     Route::put('/tai-khoan/mat-khau', [AccountController::class, 'updatePassword'])->name('account.password');
+    // F14: nhân viên tự cập nhật thông tin liên hệ cá nhân.
+    Route::get('/tai-khoan/ho-so', [AccountController::class, 'editProfile'])->name('account.profile');
+    Route::put('/tai-khoan/ho-so', [AccountController::class, 'updateProfile'])->name('account.profile.update');
 
     // Ghi dữ liệu nhân viên: chỉ Super Admin.
     // Khai báo trước read-only để route literal (create) không bị "show/{employee}" nuốt mất.
@@ -82,5 +88,8 @@ Route::middleware('auth')->group(function () {
         Route::put('/cai-dat/phong-ban/{department}', [SettingController::class, 'updateDepartment'])->name('settings.departments.update');
         Route::delete('/cai-dat/phong-ban/{department}', [SettingController::class, 'destroyDepartment'])->name('settings.departments.destroy');
         Route::put('/cai-dat/nguoi-dung/{user}/vai-tro', [SettingController::class, 'updateUserRole'])->name('settings.users.role');
+        // F15: quản lý ngày nghỉ lễ.
+        Route::post('/cai-dat/ngay-le', [SettingController::class, 'storeHoliday'])->name('settings.holidays.store');
+        Route::delete('/cai-dat/ngay-le/{holiday}', [SettingController::class, 'destroyHoliday'])->name('settings.holidays.destroy');
     });
 });

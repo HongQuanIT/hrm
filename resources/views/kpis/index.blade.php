@@ -133,6 +133,9 @@
                     </tbody>
                 </table>
             </div>
+            @if ($kpis->hasPages())
+                <div class="px-lg py-md border-t border-outline-variant bg-surface-container-lowest">{{ $kpis->links() }}</div>
+            @endif
         </div>
     </div>
 </div>

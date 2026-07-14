@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\KpiRequest;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Kpi;
@@ -18,7 +19,8 @@ class KpiController extends Controller
         // Super Admin thấy tất cả.
         $baseQuery = $this->accessibleKpiQuery();
 
-        $kpis = (clone $baseQuery)->with(['department', 'owner'])->latest()->get();
+        // F12: phân trang danh sách KPI thay vì lấy toàn bộ.
+        $kpis = (clone $baseQuery)->with(['department', 'owner'])->latest()->paginate(10);
 
         $companyAvg = (int) round((clone $baseQuery)->avg('progress') ?? 0);
 
@@ -35,10 +37,25 @@ class KpiController extends Controller
 
         $topKpi = (clone $baseQuery)->with('owner')->orderByDesc('progress')->first();
 
+        // F03: xu hướng thật = số giai đoạn hoàn thành theo từng tháng (6 tháng gần nhất),
+        // trong phạm vi KPI mà người dùng được xem. Thay cho dữ liệu giả trước đây.
+        $accessibleKpiIds = (clone $baseQuery)->pluck('id');
         $trend = [];
-        for ($i = 6; $i >= 1; $i--) {
-            $trend[] = ['label' => 'Th' . (7 - $i), 'pct' => min(100, 45 + $i * 7)];
+        $trendMax = 1;
+        for ($i = 5; $i >= 0; $i--) {
+            $month = now()->subMonths($i);
+            $count = KpiPhase::whereIn('kpi_id', $accessibleKpiIds)
+                ->whereNotNull('completed_at')
+                ->whereYear('completed_at', $month->year)
+                ->whereMonth('completed_at', $month->month)
+                ->count();
+            $trendMax = max($trendMax, $count);
+            $trend[] = ['label' => 'Th' . $month->format('m'), 'count' => $count];
         }
+        foreach ($trend as &$t) {
+            $t['pct'] = (int) round(($t['count'] / $trendMax) * 100);
+        }
+        unset($t);
 
         return view('kpis.index', compact('kpis', 'companyAvg', 'departmentAvg', 'topKpi', 'trend'));
     }
@@ -51,12 +68,13 @@ class KpiController extends Controller
         return view('kpis.create', compact('departments', 'employees'));
     }
 
-    public function store(Request $request)
+    public function store(KpiRequest $request)
     {
-        $data = $this->validateData($request);
-        $kpi = Kpi::create($data);
+        $kpi = Kpi::create($request->validated());
 
         $this->syncPhases($kpi, $request);
+        // F08: khi KPI có giai đoạn, tiến độ do hệ thống tính (bỏ giá trị nhập tay để tránh mâu thuẫn).
+        $this->refreshKpiProgress($kpi);
 
         return redirect()->route('kpis.show', $kpi)->with('status', 'Đã tạo mục tiêu KPI mới.');
     }
@@ -80,12 +98,13 @@ class KpiController extends Controller
         return view('kpis.edit', compact('kpi', 'departments', 'employees'));
     }
 
-    public function update(Request $request, Kpi $kpi)
+    public function update(KpiRequest $request, Kpi $kpi)
     {
-        $data = $this->validateData($request);
-        $kpi->update($data);
+        $kpi->update($request->validated());
 
         $this->syncPhases($kpi, $request);
+        // F08: tiến độ do hệ thống tính lại theo giai đoạn sau khi đồng bộ.
+        $this->refreshKpiProgress($kpi);
 
         return redirect()->route('kpis.show', $kpi)->with('status', 'Đã cập nhật mục tiêu KPI.');
     }
@@ -231,24 +250,6 @@ class KpiController extends Controller
         }
 
         $kpi->update(['progress' => $progress, 'status' => $status]);
-    }
-
-    private function validateData(Request $request): array
-    {
-        return $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'description' => ['nullable', 'string'],
-            'department_id' => ['nullable', 'exists:departments,id'],
-            'owner_employee_id' => ['nullable', 'exists:employees,id'],
-            'measure_type' => ['required', Rule::in(['percent', 'count', 'milestone'])],
-            'unit' => ['nullable', 'string', 'max:50'],
-            'target_value' => ['nullable', 'numeric'],
-            'current_value' => ['nullable', 'numeric'],
-            'progress' => ['nullable', 'integer', 'min:0', 'max:100'],
-            'priority' => ['required', Rule::in(['low', 'medium', 'high'])],
-            'status' => ['required', Rule::in(['on_track', 'in_progress', 'behind', 'done'])],
-            'deadline' => ['nullable', 'date'],
-        ]);
     }
 
     private function syncPhases(Kpi $kpi, Request $request): void
