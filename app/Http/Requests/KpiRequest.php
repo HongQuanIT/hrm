@@ -30,6 +30,11 @@ class KpiRequest extends FormRequest
             'priority' => ['required', Rule::in(['low', 'medium', 'high'])],
             'status' => ['required', Rule::in(['on_track', 'in_progress', 'behind', 'done'])],
             'deadline' => ['nullable', 'date'],
+            'attachments' => ['nullable', 'array'],
+            'attachments.*' => [
+                'file', 'max:10240',
+                'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,csv,txt,jpg,jpeg,png,gif,webp,zip,rar',
+            ],
         ];
     }
 }

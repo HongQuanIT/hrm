@@ -62,6 +62,11 @@
 | `employees` — `kpis` (chủ trì) | 1 — N | `kpis.owner_employee_id` | `nullOnDelete` |
 | `kpis` — `kpi_phases` | 1 — N | `kpi_phases.kpi_id` | `cascadeOnDelete` |
 | `employees` — `kpi_phases` (phụ trách) | 1 — N | `kpi_phases.assignee_employee_id` | `nullOnDelete` |
+| `kpis` / `kpi_phases` — `attachments` | 1 — N (đa hình) | `attachments.attachable_type` + `attachable_id` | xoá qua controller |
+| `kpi_phases` — `phase_checklist_items` | 1 — N | `phase_checklist_items.kpi_phase_id` | `cascadeOnDelete` |
+| `kpi_phases` — `phase_comments` | 1 — N | `phase_comments.kpi_phase_id` | `cascadeOnDelete` |
+| `users` — `phase_comments` | 1 — N | `phase_comments.user_id` | `nullOnDelete` |
+| `users` — `attachments` (người tải) | 1 — N | `attachments.uploaded_by` | `nullOnDelete` |
 | `finance_accounts` — `finance_transactions` | 1 — N | `finance_transactions.account_id` | `cascadeOnDelete` |
 | `finance_categories` — `finance_transactions` | 1 — N | `finance_transactions.category_id` | `nullOnDelete` |
 | `finance_debts` — `finance_transactions` | 1 — N | `finance_transactions.debt_id` | `nullOnDelete` |
@@ -190,17 +195,63 @@ Thuộc tính tính toán (model): `total_hours` (giờ = phút/60), `late_level
 | `id` | bigint | PK | Định danh |
 | `kpi_id` | bigint | FK→kpis, cascade | KPI cha |
 | `name` | string | not null | Tên giai đoạn |
+| `description` | text | nullable | Mô tả công việc (HTML đã làm sạch) |
+| `priority` | string | default `medium` | Độ ưu tiên (`low`/`medium`/`high`) |
 | `assignee_employee_id` | bigint | FK→employees, nullable | Người phụ trách |
+| `start_date` | date | nullable | Ngày bắt đầu dự kiến |
 | `deadline` | date | nullable | Hạn giai đoạn |
 | `status` | enum(`pending`,`received`,`in_progress`,`done`) | default `pending` | Trạng thái quy trình |
 | `received_at` | timestamp | nullable | Mốc nhận việc |
 | `started_at` | timestamp | nullable | Mốc bắt đầu |
 | `completed_at` | timestamp | nullable | Mốc hoàn thành |
+| `deleted_at` | timestamp | nullable | Soft delete |
 | `timestamps` | | | |
 
-> Trạng thái `received` và 3 cột mốc thời gian được bổ sung bởi migration `2024_05_02_000001_add_workflow_to_kpi_phases_table`.
+> Trạng thái `received` và 3 cột mốc thời gian được bổ sung bởi migration `2024_05_02_000001_add_workflow_to_kpi_phases_table`; soft delete bởi `2024_05_03_000002_add_soft_deletes_to_kpi_phases_table`; các cột `description`, `priority`, `start_date` bởi `2024_05_05_000001_add_ticket_fields_to_kpi_phases_table`.
 
-Thuộc tính tính toán (model): `is_overdue`, `completed_late`.
+Thuộc tính tính toán (model): `is_overdue`, `completed_late`, `priority_label`, `checklist_done_count`, `checklist_total`.
+
+### Bảng `phase_checklist_items` — Checklist của giai đoạn
+
+| Cột | Kiểu | Ràng buộc | Mô tả |
+|-----|------|-----------|-------|
+| `id` | bigint | PK | Định danh |
+| `kpi_phase_id` | bigint | FK→kpi_phases, cascade | Giai đoạn cha |
+| `title` | string | not null | Nội dung mục việc |
+| `is_done` | boolean | default false | Đã hoàn thành |
+| `position` | unsigned int | default 0 | Thứ tự hiển thị |
+| `timestamps` | | | |
+
+> Tạo bởi migration `2024_05_06_000001_create_phase_checklist_items_table`. Chỉ **assignee** của giai đoạn hoặc **Super Admin** được thêm/tick/xoá.
+
+### Bảng `phase_comments` — Bình luận trên giai đoạn
+
+| Cột | Kiểu | Ràng buộc | Mô tả |
+|-----|------|-----------|-------|
+| `id` | bigint | PK | Định danh |
+| `kpi_phase_id` | bigint | FK→kpi_phases, cascade | Giai đoạn cha |
+| `user_id` | bigint | FK→users, nullable, nullOnDelete | Người bình luận |
+| `body` | text | not null | Nội dung bình luận (thuần văn bản) |
+| `timestamps` | | | |
+
+> Tạo bởi migration `2024_05_06_000002_create_phase_comments_table`. Mọi thành viên KPI (chủ trì hoặc phụ trách một giai đoạn) và Super Admin đều được bình luận.
+
+### Bảng `attachments` — Tài liệu đính kèm (đa hình)
+
+| Cột | Kiểu | Ràng buộc | Mô tả |
+|-----|------|-----------|-------|
+| `id` | bigint | PK | Định danh |
+| `attachable_type` | string | not null | Lớp sở hữu (`App\Models\Kpi`, `App\Models\KpiPhase`, …) |
+| `attachable_id` | bigint | not null | Id bản ghi sở hữu |
+| `disk` | string | default `public` | Disk lưu trữ |
+| `path` | string | not null | Đường dẫn file trên disk |
+| `original_name` | string | not null | Tên gốc khi upload |
+| `mime_type` | string | nullable | Kiểu MIME |
+| `size` | bigint | default 0 | Kích thước (byte) |
+| `uploaded_by` | bigint | FK→users, nullable | Người tải lên |
+| `timestamps` | | | |
+
+> Tạo bởi migration `2024_05_05_000002_create_attachments_table`. Dùng chung cho nhiều module qua quan hệ `morphMany`/`morphTo`. Thuộc tính tính toán (model): `url`, `human_size`, `icon`.
 
 ### Bảng `company_settings` — Cấu hình hệ thống (key/value)
 

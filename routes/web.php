@@ -84,6 +84,29 @@ Route::middleware('auth')->group(function () {
     Route::patch('/kpi/{kpi}/giai-doan/{phase}/trang-thai', [KpiController::class, 'updatePhaseStatus'])
         ->scopeBindings()
         ->name('kpis.phases.status');
+    // Sửa / xoá một giai đoạn ngay trên trang chi tiết (drawer). Quyền kiểm tra trong controller.
+    Route::patch('/kpi/{kpi}/giai-doan/{phase}', [KpiController::class, 'updatePhase'])
+        ->scopeBindings()->name('kpis.phases.update');
+    Route::delete('/kpi/{kpi}/giai-doan/{phase}', [KpiController::class, 'destroyPhase'])
+        ->scopeBindings()->name('kpis.phases.destroy');
+    // Tài liệu đính kèm KPI / giai đoạn. Thành viên dự án hoặc Super Admin (kiểm tra trong controller).
+    Route::post('/kpi/{kpi}/tai-lieu', [KpiController::class, 'storeAttachment'])
+        ->name('kpis.attachments.store');
+    Route::delete('/kpi/{kpi}/tai-lieu/{attachment}', [KpiController::class, 'destroyAttachment'])
+        ->name('kpis.attachments.destroy');
+
+    // Checklist của giai đoạn (assignee hoặc admin, kiểm tra trong controller).
+    Route::post('/kpi/{kpi}/giai-doan/{phase}/checklist', [KpiController::class, 'addChecklistItem'])
+        ->scopeBindings()->name('kpis.phases.checklist.store');
+    // Không dùng scopeBindings ở đây vì quan hệ tên là `checklistItems` (Laravel sẽ đoán nhầm `items`);
+    // quyền sở hữu item↔phase đã được kiểm tra thủ công trong controller.
+    Route::patch('/kpi/{kpi}/giai-doan/{phase}/checklist/{item}', [KpiController::class, 'toggleChecklistItem'])
+        ->name('kpis.phases.checklist.toggle');
+    Route::delete('/kpi/{kpi}/giai-doan/{phase}/checklist/{item}', [KpiController::class, 'deleteChecklistItem'])
+        ->name('kpis.phases.checklist.destroy');
+    // Bình luận giai đoạn (mọi thành viên KPI).
+    Route::post('/kpi/{kpi}/giai-doan/{phase}/binh-luan', [KpiController::class, 'addComment'])
+        ->scopeBindings()->name('kpis.phases.comments.store');
 
     // Cài đặt hệ thống: chỉ Super Admin
     Route::middleware('can:admin')->group(function () {

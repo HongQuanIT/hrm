@@ -3,12 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\KpiRequest;
+use App\Models\Attachment;
 use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Kpi;
 use App\Models\KpiPhase;
+use App\Models\PhaseChecklistItem;
+use App\Models\PhaseComment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class KpiController extends Controller
@@ -70,9 +74,9 @@ class KpiController extends Controller
 
     public function store(KpiRequest $request)
     {
-        $kpi = Kpi::create($request->validated());
+        $kpi = Kpi::create($this->cleanKpiData($request->validated()));
 
-        $this->syncPhases($kpi, $request);
+        $this->saveUploadedAttachments($kpi, $request);
         // F08: khi KPI có giai đoạn, tiến độ do hệ thống tính (bỏ giá trị nhập tay để tránh mâu thuẫn).
         $this->refreshKpiProgress($kpi);
 
@@ -83,7 +87,10 @@ class KpiController extends Controller
     {
         $this->authorizeAccess($kpi);
 
-        $kpi->load(['department', 'owner', 'phases.assignee']);
+        $kpi->load([
+            'department', 'owner', 'attachments.uploader',
+            'phases.assignee', 'phases.checklistItems', 'phases.comments.user',
+        ]);
         $employees = Employee::orderBy('name')->get();
 
         return view('kpis.show', compact('kpi', 'employees'));
@@ -91,7 +98,7 @@ class KpiController extends Controller
 
     public function edit(Kpi $kpi)
     {
-        $kpi->load('phases');
+        $kpi->load(['phases', 'attachments.uploader']);
         $departments = Department::orderBy('name')->get();
         $employees = Employee::orderBy('name')->get();
 
@@ -100,9 +107,9 @@ class KpiController extends Controller
 
     public function update(KpiRequest $request, Kpi $kpi)
     {
-        $kpi->update($request->validated());
+        $kpi->update($this->cleanKpiData($request->validated()));
 
-        $this->syncPhases($kpi, $request);
+        $this->saveUploadedAttachments($kpi, $request);
         // F08: tiến độ do hệ thống tính lại theo giai đoạn sau khi đồng bộ.
         $this->refreshKpiProgress($kpi);
 
@@ -126,15 +133,66 @@ class KpiController extends Controller
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'priority' => ['nullable', Rule::in(array_keys(KpiPhase::PRIORITY_LABELS))],
             'assignee_employee_id' => ['nullable', 'exists:employees,id'],
+            'start_date' => ['nullable', 'date'],
             'deadline' => ['nullable', 'date'],
         ]);
+
+        if (! empty($validated['description'])) {
+            $validated['description'] = clean($validated['description']);
+        }
+        $validated['priority'] = $validated['priority'] ?? 'medium';
 
         $kpi->phases()->create($validated + ['status' => KpiPhase::STATUS_PENDING]);
 
         $this->refreshKpiProgress($kpi);
 
         return back()->with('status', 'Đã thêm giai đoạn "' . $validated['name'] . '".');
+    }
+
+    /**
+     * Chỉnh sửa thông tin một giai đoạn ngay trong drawer trên trang chi tiết.
+     * Không đụng tới trạng thái/mốc thời gian (do luồng Kanban quản lý riêng).
+     */
+    public function updatePhase(Request $request, Kpi $kpi, KpiPhase $phase)
+    {
+        $this->authorizePhaseAction($kpi, $phase);
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['nullable', 'string'],
+            'priority' => ['nullable', Rule::in(array_keys(KpiPhase::PRIORITY_LABELS))],
+            'assignee_employee_id' => ['nullable', 'exists:employees,id'],
+            'start_date' => ['nullable', 'date'],
+            'deadline' => ['nullable', 'date'],
+        ]);
+
+        $validated['description'] = ! empty($validated['description']) ? clean($validated['description']) : null;
+        $validated['priority'] = $validated['priority'] ?? 'medium';
+
+        $phase->update($validated);
+
+        $this->refreshKpiProgress($kpi);
+
+        return $this->backToPhase($phase);
+    }
+
+    /**
+     * Xoá một giai đoạn (soft delete). Chỉ Super Admin, có xác nhận ở giao diện.
+     */
+    public function destroyPhase(Kpi $kpi, KpiPhase $phase)
+    {
+        abort_unless(Auth::user()->isSuperAdmin(), 403);
+        abort_unless($phase->kpi_id === $kpi->id, 404);
+
+        $name = $phase->name;
+        $phase->delete();
+
+        $this->refreshKpiProgress($kpi);
+
+        return redirect()->route('kpis.show', $kpi)->with('status', 'Đã xoá giai đoạn "' . $name . '".');
     }
 
     /**
@@ -178,7 +236,103 @@ class KpiController extends Controller
 
         $this->refreshKpiProgress($kpi);
 
-        return back()->with('status', 'Đã cập nhật giai đoạn "' . $phase->name . '": ' . $phase->status_label . '.');
+        // Nếu gọi bằng fetch (kéo-thả Kanban) thì trả JSON để JS xử lý; ngược lại quay về và mở drawer.
+        if ($request->expectsJson() || $request->boolean('ajax')) {
+            return response()->json(['ok' => true, 'status' => $phase->status, 'progress' => $kpi->fresh()->progress]);
+        }
+
+        return redirect()->route('kpis.show', $kpi)
+            ->with('status', 'Đã cập nhật giai đoạn "' . $phase->name . '": ' . $phase->status_label . '.')
+            ->with('open_phase', $phase->id);
+    }
+
+    /**
+     * Thêm mục checklist cho giai đoạn (assignee hoặc admin).
+     */
+    public function addChecklistItem(Request $request, Kpi $kpi, KpiPhase $phase)
+    {
+        $this->authorizePhaseAction($kpi, $phase);
+
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+        ]);
+
+        $phase->checklistItems()->create([
+            'title' => $validated['title'],
+            'position' => (int) $phase->checklistItems()->max('position') + 1,
+        ]);
+
+        return $this->backToPhase($phase);
+    }
+
+    /**
+     * Bật/tắt trạng thái hoàn thành của một mục checklist.
+     */
+    public function toggleChecklistItem(Kpi $kpi, KpiPhase $phase, PhaseChecklistItem $item)
+    {
+        $this->authorizePhaseAction($kpi, $phase);
+        abort_unless($item->kpi_phase_id === $phase->id, 404);
+
+        $item->update(['is_done' => ! $item->is_done]);
+
+        return $this->backToPhase($phase);
+    }
+
+    /**
+     * Xoá một mục checklist.
+     */
+    public function deleteChecklistItem(Kpi $kpi, KpiPhase $phase, PhaseChecklistItem $item)
+    {
+        $this->authorizePhaseAction($kpi, $phase);
+        abort_unless($item->kpi_phase_id === $phase->id, 404);
+
+        $item->delete();
+
+        return $this->backToPhase($phase);
+    }
+
+    /**
+     * Thêm bình luận vào giai đoạn (mọi thành viên KPI hoặc admin).
+     */
+    public function addComment(Request $request, Kpi $kpi, KpiPhase $phase)
+    {
+        $this->authorizeAccess($kpi);
+        abort_unless($phase->kpi_id === $kpi->id, 404);
+
+        $validated = $request->validate([
+            'body' => ['required', 'string', 'max:2000'],
+        ]);
+
+        $phase->comments()->create([
+            'user_id' => Auth::id(),
+            'body' => $validated['body'],
+        ]);
+
+        return $this->backToPhase($phase);
+    }
+
+    /**
+     * Chỉ assignee của giai đoạn hoặc Super Admin mới được sửa checklist.
+     */
+    private function authorizePhaseAction(Kpi $kpi, KpiPhase $phase): void
+    {
+        abort_unless($phase->kpi_id === $kpi->id, 404);
+
+        $user = Auth::user();
+        $employeeId = $user->employee?->id;
+        $isAssignee = $employeeId && $phase->assignee_employee_id === $employeeId;
+
+        abort_unless($user->isSuperAdmin() || $isAssignee, 403, 'Bạn không phụ trách giai đoạn này.');
+    }
+
+    /**
+     * Quay lại trang KPI và mở lại drawer của giai đoạn vừa thao tác.
+     */
+    private function backToPhase(KpiPhase $phase)
+    {
+        return redirect()
+            ->route('kpis.show', $phase->kpi_id)
+            ->with('open_phase', $phase->id);
     }
 
     /**
@@ -252,40 +406,100 @@ class KpiController extends Controller
         $kpi->update(['progress' => $progress, 'status' => $status]);
     }
 
-    private function syncPhases(Kpi $kpi, Request $request): void
+    /**
+     * Tải tài liệu đính kèm cho KPI hoặc một giai đoạn con của KPI.
+     */
+    public function storeAttachment(Request $request, Kpi $kpi)
     {
-        $ids = $request->input('phase_id', []);
-        $names = $request->input('phase_name', []);
-        $assignees = $request->input('phase_assignee', []);
-        $deadlines = $request->input('phase_deadline', []);
+        $this->authorizeAccess($kpi);
 
-        $keptIds = [];
+        $validated = $request->validate([
+            'file' => [
+                'required', 'file', 'max:10240',
+                'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,csv,txt,jpg,jpeg,png,gif,webp,zip,rar',
+            ],
+            'phase_id' => ['nullable', 'integer'],
+        ]);
 
-        foreach ($names as $i => $name) {
-            if (! $name) {
+        // Mặc định đính kèm vào KPI; nếu có phase_id hợp lệ thì gắn vào giai đoạn.
+        $target = $kpi;
+        if (! empty($validated['phase_id'])) {
+            $phase = $kpi->phases()->find($validated['phase_id']);
+            if ($phase) {
+                $target = $phase;
+            }
+        }
+
+        $file = $request->file('file');
+        $path = $file->store('attachments/kpi/' . $kpi->id, 'public');
+
+        $target->attachments()->create([
+            'disk' => 'public',
+            'path' => $path,
+            'original_name' => $file->getClientOriginalName(),
+            'mime_type' => $file->getClientMimeType(),
+            'size' => $file->getSize(),
+            'uploaded_by' => Auth::id(),
+        ]);
+
+        return back()->with('status', 'Đã tải lên tài liệu "' . $file->getClientOriginalName() . '".');
+    }
+
+    /**
+     * Xoá tài liệu đính kèm (phải thuộc KPI hoặc giai đoạn con của KPI này).
+     */
+    public function destroyAttachment(Kpi $kpi, Attachment $attachment)
+    {
+        $this->authorizeAccess($kpi);
+
+        $belongsToKpi = $attachment->attachable_type === Kpi::class
+            && (int) $attachment->attachable_id === $kpi->id;
+        $belongsToPhase = $attachment->attachable_type === KpiPhase::class
+            && $kpi->phases()->whereKey($attachment->attachable_id)->exists();
+
+        abort_unless($belongsToKpi || $belongsToPhase, 404);
+
+        Storage::disk($attachment->disk)->delete($attachment->path);
+        $attachment->delete();
+
+        return back()->with('status', 'Đã xoá tài liệu đính kèm.');
+    }
+
+    /**
+     * Làm sạch HTML mô tả (chống XSS) trước khi lưu và bỏ trường không thuộc bảng kpis.
+     */
+    private function cleanKpiData(array $data): array
+    {
+        unset($data['attachments']);
+
+        if (! empty($data['description'])) {
+            $data['description'] = clean($data['description']);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Lưu các tệp tải lên (nếu có) kèm KPI khi tạo/cập nhật.
+     */
+    private function saveUploadedAttachments(Kpi $kpi, Request $request): void
+    {
+        foreach ((array) $request->file('attachments', []) as $file) {
+            if (! $file) {
                 continue;
             }
 
-            $attributes = [
-                'name' => $name,
-                'assignee_employee_id' => $assignees[$i] ?? null,
-                'deadline' => $deadlines[$i] ?? null,
-            ];
+            $path = $file->store('attachments/kpi/' . $kpi->id, 'public');
 
-            $existingId = $ids[$i] ?? null;
-            $phase = $existingId ? $kpi->phases()->find($existingId) : null;
-
-            if ($phase) {
-                // Giữ nguyên trạng thái & mốc thời gian mà người phụ trách đã cập nhật.
-                $phase->update($attributes);
-            } else {
-                $phase = $kpi->phases()->create($attributes + ['status' => KpiPhase::STATUS_PENDING]);
-            }
-
-            $keptIds[] = $phase->id;
+            $kpi->attachments()->create([
+                'disk' => 'public',
+                'path' => $path,
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getClientMimeType(),
+                'size' => $file->getSize(),
+                'uploaded_by' => Auth::id(),
+            ]);
         }
-
-        // Xoá các giai đoạn đã bị gỡ khỏi form.
-        $kpi->phases()->whereNotIn('id', $keptIds ?: [0])->delete();
     }
+
 }

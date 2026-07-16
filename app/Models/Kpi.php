@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class Kpi extends Model
 {
@@ -53,6 +54,11 @@ class Kpi extends Model
     public function phases(): HasMany
     {
         return $this->hasMany(KpiPhase::class);
+    }
+
+    public function attachments(): MorphMany
+    {
+        return $this->morphMany(Attachment::class, 'attachable')->latest();
     }
 
     public function getPriorityLabelAttribute(): string

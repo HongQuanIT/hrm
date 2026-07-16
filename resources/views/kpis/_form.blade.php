@@ -1,17 +1,6 @@
 @php
     $k = $kpi ?? null;
     $val = fn ($field, $default = '') => old($field, $k->{$field} ?? $default);
-    $phases = old('phase_name') ? array_map(fn ($i) => [
-        'id' => old('phase_id')[$i] ?? '',
-        'name' => old('phase_name')[$i] ?? '',
-        'assignee_employee_id' => old('phase_assignee')[$i] ?? null,
-        'deadline' => old('phase_deadline')[$i] ?? null,
-    ], array_keys(old('phase_name'))) : ($k ? $k->phases->map(fn ($p) => [
-        'id' => $p->id,
-        'name' => $p->name,
-        'assignee_employee_id' => $p->assignee_employee_id,
-        'deadline' => $p->deadline?->format('Y-m-d'),
-    ])->toArray() : [['id' => '', 'name' => '', 'assignee_employee_id' => null, 'deadline' => null]]);
 @endphp
 <div class="px-md md:px-xl pt-lg pb-32">
     <div class="max-w-container-max mx-auto">
@@ -33,7 +22,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ $action }}" class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
+        <form method="POST" action="{{ $action }}" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-12 gap-lg">
             @csrf
             @if (($method ?? 'POST') === 'PUT') @method('PUT') @endif
 
@@ -41,7 +30,7 @@
                 <section class="glass-card rounded-xl p-lg flex flex-col gap-md shadow-sm">
                     <div class="flex items-center gap-xs mb-base">
                         <span class="material-symbols-outlined text-primary">info</span>
-                        <h3 class="font-headline-md text-headline-md">Thông tin cơ bản</h3>
+                        <h3 class="font-headline-md text-headline-md">Thông tin KPI</h3>
                     </div>
                     <div class="space-y-4">
                         <div class="flex flex-col gap-xs">
@@ -78,52 +67,52 @@
                         </div>
                         <div class="flex flex-col gap-xs">
                             <label class="font-label-md text-label-md text-on-surface-variant">Mô tả chi tiết</label>
-                            <textarea name="description" rows="3" placeholder="Mô tả chi tiết về mục tiêu này..."
-                                      class="w-full px-md py-2.5 rounded-lg border border-outline-variant focus:border-primary outline-none bg-white">{{ $val('description') }}</textarea>
+                            <textarea id="kpi-description" name="description" rows="4" placeholder="Mô tả chi tiết về mục tiêu này..."
+                                      class="ck-editor w-full px-md py-2.5 rounded-lg border border-outline-variant focus:border-primary outline-none bg-white">{{ $val('description') }}</textarea>
+                        </div>
+
+                        <div class="flex flex-col gap-xs pt-sm border-t border-outline-variant/60">
+                            <label class="font-label-md text-label-md text-on-surface-variant flex items-center gap-xs">
+                                <span class="material-symbols-outlined text-primary text-lg">attach_file</span> Tài liệu đính kèm
+                            </label>
+                            @if ($k && $k->attachments->isNotEmpty())
+                                <div class="divide-y divide-outline-variant/40 mb-xs">
+                                    @foreach ($k->attachments as $file)
+                                        <div class="flex items-center justify-between gap-md py-sm">
+                                            <a href="{{ $file->url }}" target="_blank" rel="noopener" class="flex items-center gap-md min-w-0 group">
+                                                <span class="material-symbols-outlined text-on-surface-variant shrink-0">{{ $file->icon }}</span>
+                                                <div class="min-w-0">
+                                                    <p class="font-body-md text-body-md text-on-surface truncate group-hover:text-primary group-hover:underline">{{ $file->original_name }}</p>
+                                                    <p class="text-xs text-on-surface-variant">{{ $file->human_size }} • {{ $file->created_at->format('d/m/Y H:i') }}{{ $file->uploader ? ' • ' . $file->uploader->name : '' }}</p>
+                                                </div>
+                                            </a>
+                                            <button type="submit" form="del-att-{{ $file->id }}" onclick="return confirm('Xoá tài liệu này?')"
+                                                    class="text-outline hover:text-error transition-colors p-1 shrink-0" title="Xoá">
+                                                <span class="material-symbols-outlined text-lg">delete</span>
+                                            </button>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                            <input type="file" name="attachments[]" multiple
+                                   class="w-full text-body-md file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-primary file:text-on-primary file:cursor-pointer file:font-label-md">
+                            <p class="text-xs text-on-surface-variant">Hỗ trợ: PDF, Word, Excel, PowerPoint, ảnh, zip… tối đa 10MB. Tệp sẽ được lưu khi bấm “Lưu mục tiêu”.</p>
                         </div>
                     </div>
                 </section>
 
-                <section class="glass-card rounded-xl p-lg flex flex-col gap-md shadow-sm">
-                    <div class="flex items-center justify-between mb-base">
-                        <div class="flex items-center gap-xs">
-                            <span class="material-symbols-outlined text-primary">account_tree</span>
-                            <h3 class="font-headline-md text-headline-md">Giai đoạn &amp; Công việc con</h3>
-                        </div>
-                        <button type="button" onclick="addPhaseRow()" class="text-primary font-label-md text-label-md flex items-center gap-1 hover:bg-primary/5 px-2 py-1 rounded transition-colors">
-                            <span class="material-symbols-outlined text-sm">add</span> Thêm giai đoạn
-                        </button>
-                    </div>
-                    <div class="space-y-4" id="phases-container">
-                        @foreach ($phases as $phase)
-                            <div class="phase-row p-md rounded-lg border border-outline-variant bg-surface-container-lowest flex flex-col gap-md relative">
-                                <button type="button" onclick="this.closest('.phase-row').remove()" class="absolute top-2 right-2 text-outline hover:text-error transition-colors">
-                                    <span class="material-symbols-outlined text-lg">close</span>
-                                </button>
-                                <input type="hidden" name="phase_id[]" value="{{ $phase['id'] ?? '' }}">
-                                <div class="grid grid-cols-1 md:grid-cols-12 gap-md">
-                                    <div class="md:col-span-5 flex flex-col gap-xs">
-                                        <label class="font-label-md text-label-md text-on-surface-variant">Tên giai đoạn</label>
-                                        <input name="phase_name[]" value="{{ $phase['name'] }}" type="text" placeholder="Ví dụ: Thiết kế UI/UX"
-                                               class="px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md">
-                                    </div>
-                                    <div class="md:col-span-4 flex flex-col gap-xs">
-                                        <label class="font-label-md text-label-md text-on-surface-variant">Người thực hiện</label>
-                                        <select name="phase_assignee[]" class="px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md bg-white">
-                                            <option value="">Chọn nhân viên</option>
-                                            @foreach ($employees as $emp)
-                                                <option value="{{ $emp->id }}" @selected($phase['assignee_employee_id'] == $emp->id)>{{ $emp->name }}</option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="md:col-span-3 flex flex-col gap-xs">
-                                        <label class="font-label-md text-label-md text-on-surface-variant">Hạn chót</label>
-                                        <input name="phase_deadline[]" value="{{ $phase['deadline'] }}" type="date"
-                                               class="px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md">
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
+                <section class="glass-card rounded-xl p-lg flex items-start gap-md shadow-sm">
+                    <span class="material-symbols-outlined text-primary">account_tree</span>
+                    <div>
+                        <h3 class="font-headline-md text-headline-md">Giai đoạn &amp; Công việc con</h3>
+                        @if ($k)
+                            <p class="font-body-md text-body-md text-on-surface-variant mt-xs">Các giai đoạn được quản lý trực tiếp trên <strong>trang chi tiết KPI</strong> (bảng Kanban): thêm, kéo–thả đổi trạng thái, checklist, bình luận và chỉnh sửa/xoá từng giai đoạn ngay trong drawer.</p>
+                            <a href="{{ route('kpis.show', $k) }}" class="inline-flex items-center gap-1 mt-sm text-primary font-label-md text-label-md hover:underline">
+                                <span class="material-symbols-outlined text-sm">open_in_new</span> Mở bảng công việc
+                            </a>
+                        @else
+                            <p class="font-body-md text-body-md text-on-surface-variant mt-xs">Sau khi lưu mục tiêu, bạn sẽ được chuyển tới <strong>trang chi tiết KPI</strong> để thêm và quản lý các giai đoạn (bảng Kanban, checklist, bình luận).</p>
+                        @endif
                     </div>
                 </section>
             </div>
@@ -202,39 +191,29 @@
                 </div>
             </div>
         </form>
+
+        {{-- Form xoá tài liệu tách riêng (không lồng trong form KPI), kích hoạt qua thuộc tính form="" của nút xoá. --}}
+        @if ($k)
+            @foreach ($k->attachments as $file)
+                <form id="del-att-{{ $file->id }}" method="POST" action="{{ route('kpis.attachments.destroy', [$k, $file]) }}" class="hidden">
+                    @csrf @method('DELETE')
+                </form>
+            @endforeach
+        @endif
     </div>
 </div>
 
 @push('scripts')
+<script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
 <script>
-    function addPhaseRow() {
-        const container = document.getElementById('phases-container');
-        const employeeOptions = `{!! collect($employees)->map(fn ($e) => '<option value="' . $e->id . '">' . e($e->name) . '</option>')->implode('') !!}`;
-        const row = document.createElement('div');
-        row.className = 'phase-row p-md rounded-lg border border-outline-variant bg-surface-container-lowest flex flex-col gap-md relative';
-        row.innerHTML = `
-            <button type="button" onclick="this.closest('.phase-row').remove()" class="absolute top-2 right-2 text-outline hover:text-error transition-colors">
-                <span class="material-symbols-outlined text-lg">close</span>
-            </button>
-            <input type="hidden" name="phase_id[]" value="">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-md">
-                <div class="md:col-span-5 flex flex-col gap-xs">
-                    <label class="font-label-md text-label-md text-on-surface-variant">Tên giai đoạn</label>
-                    <input name="phase_name[]" type="text" placeholder="Tên giai đoạn mới..." class="px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md">
-                </div>
-                <div class="md:col-span-4 flex flex-col gap-xs">
-                    <label class="font-label-md text-label-md text-on-surface-variant">Người thực hiện</label>
-                    <select name="phase_assignee[]" class="px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md bg-white">
-                        <option value="">Chọn nhân viên</option>${employeeOptions}
-                    </select>
-                </div>
-                <div class="md:col-span-3 flex flex-col gap-xs">
-                    <label class="font-label-md text-label-md text-on-surface-variant">Hạn chót</label>
-                    <input name="phase_deadline[]" type="date" class="px-md py-2 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md">
-                </div>
-            </div>
-        `;
-        container.appendChild(row);
-    }
+    // Khởi tạo CKEditor cho ô mô tả KPI (đồng bộ vào textarea khi submit).
+    document.addEventListener('DOMContentLoaded', function () {
+        const el = document.querySelector('#kpi-description');
+        if (el && window.ClassicEditor) {
+            ClassicEditor.create(el, {
+                toolbar: ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 'blockQuote', 'insertTable', 'undo', 'redo']
+            }).catch(function (e) { console.error(e); });
+        }
+    });
 </script>
 @endpush

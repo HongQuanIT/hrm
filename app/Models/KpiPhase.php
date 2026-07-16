@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -13,13 +15,15 @@ class KpiPhase extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'kpi_id', 'name', 'assignee_employee_id', 'deadline', 'status',
+        'kpi_id', 'name', 'description', 'priority', 'assignee_employee_id',
+        'start_date', 'deadline', 'status',
         'received_at', 'started_at', 'completed_at',
     ];
 
     protected function casts(): array
     {
         return [
+            'start_date' => 'date',
             'deadline' => 'date',
             'received_at' => 'datetime',
             'started_at' => 'datetime',
@@ -39,6 +43,12 @@ class KpiPhase extends Model
         self::STATUS_DONE => 'Đã xong',
     ];
 
+    public const PRIORITY_LABELS = [
+        'low' => 'Thấp',
+        'medium' => 'Trung bình',
+        'high' => 'Cao',
+    ];
+
     public function kpi(): BelongsTo
     {
         return $this->belongsTo(Kpi::class);
@@ -47,6 +57,39 @@ class KpiPhase extends Model
     public function assignee(): BelongsTo
     {
         return $this->belongsTo(Employee::class, 'assignee_employee_id');
+    }
+
+    public function attachments(): MorphMany
+    {
+        return $this->morphMany(Attachment::class, 'attachable')->latest();
+    }
+
+    public function checklistItems(): HasMany
+    {
+        return $this->hasMany(PhaseChecklistItem::class)->orderBy('position')->orderBy('id');
+    }
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(PhaseComment::class)->oldest();
+    }
+
+    public function getPriorityLabelAttribute(): string
+    {
+        return self::PRIORITY_LABELS[$this->priority] ?? ($this->priority ?? '—');
+    }
+
+    /**
+     * Số mục checklist đã xong / tổng, phục vụ hiển thị tiến độ trên thẻ Kanban.
+     */
+    public function getChecklistDoneCountAttribute(): int
+    {
+        return $this->checklistItems->where('is_done', true)->count();
+    }
+
+    public function getChecklistTotalAttribute(): int
+    {
+        return $this->checklistItems->count();
     }
 
     public function getStatusLabelAttribute(): string
