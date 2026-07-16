@@ -5,6 +5,11 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\Finance\FinanceAccountController;
+use App\Http\Controllers\Finance\FinanceCategoryController;
+use App\Http\Controllers\Finance\FinanceDebtController;
+use App\Http\Controllers\Finance\FinanceOverviewController;
+use App\Http\Controllers\Finance\FinanceTransactionController;
 use App\Http\Controllers\KpiController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\SettingController;
@@ -91,5 +96,38 @@ Route::middleware('auth')->group(function () {
         // F15: quản lý ngày nghỉ lễ.
         Route::post('/cai-dat/ngay-le', [SettingController::class, 'storeHoliday'])->name('settings.holidays.store');
         Route::delete('/cai-dat/ngay-le/{holiday}', [SettingController::class, 'destroyHoliday'])->name('settings.holidays.destroy');
+    });
+
+    // M10 — Quản lý tài chính: chỉ Super Admin (dữ liệu nhạy cảm).
+    Route::middleware('can:admin')->prefix('tai-chinh')->name('finance.')->group(function () {
+        Route::get('/', [FinanceOverviewController::class, 'index'])->name('overview');
+
+        // Quỹ tiền
+        Route::get('/quy', [FinanceAccountController::class, 'index'])->name('accounts.index');
+        Route::post('/quy', [FinanceAccountController::class, 'store'])->name('accounts.store');
+        Route::put('/quy/{account}', [FinanceAccountController::class, 'update'])->name('accounts.update');
+        Route::delete('/quy/{account}', [FinanceAccountController::class, 'destroy'])->name('accounts.destroy');
+        Route::post('/quy/{account}/nap-tien', [FinanceAccountController::class, 'deposit'])->name('accounts.deposit');
+        Route::post('/quy/{account}/dieu-chinh', [FinanceAccountController::class, 'adjust'])->name('accounts.adjust');
+
+        // Danh mục thu/chi
+        Route::get('/danh-muc', [FinanceCategoryController::class, 'index'])->name('categories.index');
+        Route::post('/danh-muc', [FinanceCategoryController::class, 'store'])->name('categories.store');
+        Route::put('/danh-muc/{category}', [FinanceCategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/danh-muc/{category}', [FinanceCategoryController::class, 'destroy'])->name('categories.destroy');
+
+        // Sổ giao dịch thu/chi
+        Route::get('/giao-dich', [FinanceTransactionController::class, 'index'])->name('transactions.index');
+        Route::post('/giao-dich', [FinanceTransactionController::class, 'store'])->name('transactions.store');
+        Route::put('/giao-dich/{transaction}', [FinanceTransactionController::class, 'update'])->name('transactions.update');
+        Route::delete('/giao-dich/{transaction}', [FinanceTransactionController::class, 'destroy'])->name('transactions.destroy');
+
+        // Công nợ
+        Route::get('/cong-no', [FinanceDebtController::class, 'index'])->name('debts.index');
+        Route::post('/cong-no', [FinanceDebtController::class, 'store'])->name('debts.store');
+        Route::put('/cong-no/{debt}', [FinanceDebtController::class, 'update'])->name('debts.update');
+        Route::post('/cong-no/{debt}/thanh-toan', [FinanceDebtController::class, 'pay'])->name('debts.pay');
+        Route::patch('/cong-no/{debt}/huy', [FinanceDebtController::class, 'cancel'])->name('debts.cancel');
+        Route::delete('/cong-no/{debt}', [FinanceDebtController::class, 'destroy'])->name('debts.destroy');
     });
 });

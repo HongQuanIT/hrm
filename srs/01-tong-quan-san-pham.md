@@ -16,12 +16,13 @@ Dylan HRM số hoá các hoạt động nhân sự cốt lõi trong một công 
 - **Bảng điều khiển** hai chế độ: tổng quan công ty (quản trị) và cá nhân (nhân viên).
 - **Cài đặt hệ thống**: thông tin công ty, chính sách chấm công/nghỉ phép, phòng ban, vai trò người dùng.
 - **Quản lý tài khoản cá nhân**: đổi mật khẩu.
+- **Quản lý tài chính**: quỹ tiền công ty, thu/chi, góp vốn, công nợ; báo cáo tổng nạp / tổng chi / số dư hiện có (cho phép âm).
 
 ### Ngoài phạm vi (phiên bản hiện tại)
 
 Các hạng mục sau **chưa** được hiện thực (xem thêm phần Lộ trình ở tài liệu 05):
 
-- Tính lương/bảng lương (payroll) — hệ thống chỉ **lưu trữ** thông tin lương/ngân hàng, không xử lý tính toán.
+- Tính lương/bảng lương (payroll) — hệ thống chỉ **lưu trữ** thông tin lương/ngân hàng, không xử lý tính toán (khoản chi lương có thể ghi nhận thủ công trong module Tài chính).
 - Tuyển dụng, onboarding nâng cao.
 - Báo cáo/xuất dữ liệu chuyên biệt (BI, export Excel/PDF).
 - Cổng API cho ứng dụng ngoài (không có `routes/api.php`).
@@ -86,7 +87,8 @@ Dylan HRM
 ├── M06 Nghỉ phép                 (đơn, duyệt, quỹ, lịch)
 ├── M07 KPI & Hiệu suất           (mục tiêu, giai đoạn, tiến độ)
 ├── M08 Cài đặt hệ thống          (công ty, chính sách, vai trò)
-└── M09 Tài khoản cá nhân         (đổi mật khẩu)
+├── M09 Tài khoản cá nhân         (đổi mật khẩu)
+└── M10 Quản lý tài chính         (quỹ, thu/chi, góp vốn, công nợ, số dư)
 ```
 
 Chi tiết từng module xem thư mục [`modules/`](modules/).

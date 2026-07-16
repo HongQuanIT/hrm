@@ -22,6 +22,11 @@
         'in_progress' => 'bg-orange-100 text-orange-700',
         'behind' => 'bg-red-100 text-red-700',
         'done' => 'bg-green-100 text-green-700',
+        // finance debts
+        'open' => 'bg-tertiary-fixed text-on-tertiary-fixed-variant',
+        'partially_paid' => 'bg-orange-100 text-orange-700',
+        'paid' => 'bg-green-100 text-green-700',
+        'overdue' => 'bg-red-100 text-red-700',
     ];
     $classes = $map[$status] ?? 'bg-surface-container-highest text-on-surface-variant';
 @endphp

@@ -28,6 +28,68 @@ class DatabaseSeeder extends Seeder
         $this->seedAttendances($employees);
         $this->seedLeaves($employees, $admin);
         $this->seedKpis($departments, $employees);
+        $this->seedFinance($admin);
+    }
+
+    private function seedFinance(Employee $admin): void
+    {
+        $adminUserId = $admin->user_id ?? User::where('role', User::ROLE_SUPER_ADMIN)->value('id');
+
+        // Quỹ tiền
+        $cash = \App\Models\FinanceAccount::create([
+            'name' => 'Tiền mặt',
+            'type' => 'cash',
+            'opening_balance' => 50000000,
+            'note' => 'Quỹ tiền mặt văn phòng',
+        ]);
+        $bank = \App\Models\FinanceAccount::create([
+            'name' => 'VCB — Tài khoản công ty',
+            'type' => 'bank',
+            'bank_name' => 'Vietcombank',
+            'account_number' => '0123456789',
+            'opening_balance' => 200000000,
+        ]);
+
+        // Danh mục
+        $catSalary = \App\Models\FinanceCategory::create(['name' => 'Lương & thưởng', 'direction' => 'expense', 'color' => '#EF4444']);
+        $catRent = \App\Models\FinanceCategory::create(['name' => 'Thuê văn phòng', 'direction' => 'expense', 'color' => '#F59E0B']);
+        $catService = \App\Models\FinanceCategory::create(['name' => 'Doanh thu dịch vụ', 'direction' => 'income', 'color' => '#22C55E']);
+        \App\Models\FinanceCategory::create(['name' => 'Tiện ích (điện/nước/internet)', 'direction' => 'expense', 'color' => '#3B82F6']);
+
+        // Giao dịch mẫu
+        $bank->transactions()->create([
+            'category_id' => $catService->id, 'direction' => 'income', 'amount' => 80000000,
+            'occurred_on' => Carbon::today()->subDays(20)->toDateString(),
+            'description' => 'Thu tiền dự án A', 'created_by' => $adminUserId,
+        ]);
+        $bank->transactions()->create([
+            'category_id' => $catRent->id, 'direction' => 'expense', 'amount' => 25000000,
+            'occurred_on' => Carbon::today()->subDays(15)->toDateString(),
+            'description' => 'Thuê văn phòng tháng này', 'created_by' => $adminUserId,
+        ]);
+        $cash->transactions()->create([
+            'category_id' => $catSalary->id, 'direction' => 'expense', 'amount' => 45000000,
+            'occurred_on' => Carbon::today()->subDays(5)->toDateString(),
+            'description' => 'Tạm ứng lương', 'created_by' => $adminUserId,
+        ]);
+        $bank->transactions()->create([
+            'direction' => 'income', 'amount' => 100000000, 'is_contribution' => true,
+            'contributor_name' => 'Giám đốc góp vốn',
+            'occurred_on' => Carbon::today()->subDays(25)->toDateString(),
+            'description' => 'Góp thêm vốn kinh doanh', 'created_by' => $adminUserId,
+        ]);
+
+        // Công nợ
+        \App\Models\FinanceDebt::create([
+            'type' => 'receivable', 'partner_name' => 'Công ty TNHH Khách Hàng B',
+            'amount' => 60000000, 'due_date' => Carbon::today()->addDays(10)->toDateString(),
+            'status' => 'open', 'description' => 'Công nợ hợp đồng dịch vụ',
+        ]);
+        \App\Models\FinanceDebt::create([
+            'type' => 'payable', 'partner_name' => 'Nhà cung cấp thiết bị C',
+            'amount' => 30000000, 'due_date' => Carbon::today()->subDays(3)->toDateString(),
+            'status' => 'overdue', 'description' => 'Mua máy tính',
+        ]);
     }
 
     private function seedSettings(): void

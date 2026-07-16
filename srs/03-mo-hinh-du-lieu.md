@@ -33,6 +33,19 @@
 ┌───────────────────┐
 │ company_settings  │  (key/value độc lập — cấu hình toàn hệ thống)
 └───────────────────┘
+
+── Cụm tài chính (M10) ─────────────────────────────────────────
+┌──────────────────┐        ┌─────────────────────┐        ┌────────────────┐
+│ finance_accounts │ 1    N │ finance_transactions│ N    1 │finance_categories│
+│     (quỹ)        ├────────┤    (giao dịch)      ├────────┤ (danh mục thu/chi)│
+└──────────────────┘        └──────────┬──────────┘        └────────────────┘
+                                        │ N
+                                        │ 0..1 (debt_id)
+                                  ┌─────▼──────────┐
+                                  │ finance_debts  │
+                                  │   (công nợ)    │
+                                  └────────────────┘
+   finance_transactions.created_by ─► users (nullOnDelete)
 ```
 
 ### Danh sách quan hệ
@@ -49,6 +62,10 @@
 | `employees` — `kpis` (chủ trì) | 1 — N | `kpis.owner_employee_id` | `nullOnDelete` |
 | `kpis` — `kpi_phases` | 1 — N | `kpi_phases.kpi_id` | `cascadeOnDelete` |
 | `employees` — `kpi_phases` (phụ trách) | 1 — N | `kpi_phases.assignee_employee_id` | `nullOnDelete` |
+| `finance_accounts` — `finance_transactions` | 1 — N | `finance_transactions.account_id` | `cascadeOnDelete` |
+| `finance_categories` — `finance_transactions` | 1 — N | `finance_transactions.category_id` | `nullOnDelete` |
+| `finance_debts` — `finance_transactions` | 1 — N | `finance_transactions.debt_id` | `nullOnDelete` |
+| `users` — `finance_transactions` (người tạo) | 1 — N | `finance_transactions.created_by` | `nullOnDelete` |
 
 ## 3.2. Từ điển dữ liệu
 
@@ -196,6 +213,70 @@ Thuộc tính tính toán (model): `is_overdue`, `completed_late`.
 
 Model cung cấp `CompanySetting::get($key, $default)`, `put($key, $value)`, `pairs()` với cache theo vòng đời request.
 
+### Bảng `finance_accounts` — Quỹ / tài khoản tiền (M10)
+
+| Cột | Kiểu | Ràng buộc | Mô tả |
+|-----|------|-----------|-------|
+| `id` | bigint | PK | Định danh |
+| `name` | string | unique | Tên quỹ (Tiền mặt, TK ngân hàng…) |
+| `type` | enum(`cash`,`bank`) | default `cash` | Loại quỹ |
+| `bank_name` | string | nullable | Tên ngân hàng (nếu là `bank`) |
+| `account_number` | string | nullable | Số tài khoản |
+| `opening_balance` | decimal(15,2) | default 0 | Số dư đầu kỳ |
+| `currency` | string(3) | default `VND` | Loại tiền |
+| `is_active` | boolean | default true | Còn sử dụng |
+| `note` | string | nullable | Ghi chú |
+| `timestamps` + `softDeletes` | | | |
+
+Thuộc tính tính toán (model): `balance` = `opening_balance` + tổng thu − tổng chi của quỹ.
+
+### Bảng `finance_categories` — Danh mục thu/chi (M10)
+
+| Cột | Kiểu | Ràng buộc | Mô tả |
+|-----|------|-----------|-------|
+| `id` | bigint | PK | Định danh |
+| `name` | string | not null | Tên danh mục |
+| `direction` | enum(`income`,`expense`) | not null | Hướng: thu hay chi |
+| `color` | string | nullable | Màu nhận diện (UI) |
+| `timestamps` | | | |
+
+### Bảng `finance_debts` — Công nợ (M10)
+
+| Cột | Kiểu | Ràng buộc | Mô tả |
+|-----|------|-----------|-------|
+| `id` | bigint | PK | Định danh |
+| `type` | enum(`receivable`,`payable`) | not null | Phải thu / Phải trả |
+| `partner_name` | string | not null | Đối tác/cá nhân liên quan |
+| `partner_contact` | string | nullable | Liên hệ đối tác |
+| `amount` | decimal(15,2) | not null | Tổng số nợ |
+| `due_date` | date | nullable | Hạn thanh toán |
+| `status` | enum(`open`,`partially_paid`,`paid`,`overdue`,`cancelled`) | default `open` | Trạng thái |
+| `description` | string | nullable | Diễn giải |
+| `timestamps` + `softDeletes` | | | |
+
+Thuộc tính tính toán (model): `paid_amount` (tổng giao dịch gắn nợ), `remaining_amount` (`amount` − đã trả), `is_overdue`.
+
+### Bảng `finance_transactions` — Giao dịch tài chính (M10)
+
+| Cột | Kiểu | Ràng buộc | Mô tả |
+|-----|------|-----------|-------|
+| `id` | bigint | PK | Định danh |
+| `account_id` | bigint | FK→finance_accounts, cascade | Quỹ ghi nhận |
+| `category_id` | bigint | FK→finance_categories, nullable | Danh mục thu/chi |
+| `debt_id` | bigint | FK→finance_debts, nullable | Công nợ liên quan (khi thanh toán nợ) |
+| `direction` | enum(`income`,`expense`) | not null | Thu hoặc chi |
+| `amount` | decimal(15,2) | not null | Số tiền |
+| `is_contribution` | boolean | default false | Đánh dấu **góp vốn** (tổng tiền nạp vào công ty) |
+| `contributor_name` | string | nullable | Người góp vốn (khi `is_contribution`) |
+| `occurred_on` | date | not null | Ngày phát sinh |
+| `description` | string | nullable | Diễn giải |
+| `reference` | string | nullable | Số chứng từ tham chiếu |
+| `created_by` | bigint | FK→users, nullable | Người tạo |
+| `timestamps` + `softDeletes` | | | |
+| — | | index(`account_id`,`occurred_on`), index(`direction`,`is_contribution`) | Tối ưu truy vấn |
+
+Thuộc tính tính toán (model): `direction_label` (Thu / Chi / Góp vốn theo `is_contribution`).
+
 #### Các khóa cấu hình đã dùng
 
 | Khóa | Ý nghĩa | Mặc định tham chiếu |
@@ -230,6 +311,11 @@ Model cung cấp `CompanySetting::get($key, $default)`, `put($key, $value)`, `pa
 | kpis.priority | `low`/`medium`/`high` | Thấp / Trung bình / Cao |
 | kpis.status | `on_track`/`in_progress`/`behind`/`done` | Đúng tiến độ / Đang làm / Chậm / Hoàn thành |
 | kpi_phases.status | `pending`/`received`/`in_progress`/`done` | Chờ / Đã nhận / Đang làm / Hoàn thành |
+| finance_accounts.type | `cash`/`bank` | Tiền mặt / Ngân hàng |
+| finance_categories.direction | `income`/`expense` | Thu / Chi |
+| finance_transactions.direction | `income`/`expense` | Thu / Chi |
+| finance_debts.type | `receivable`/`payable` | Phải thu / Phải trả |
+| finance_debts.status | `open`/`partially_paid`/`paid`/`overdue`/`cancelled` | Còn nợ / Trả một phần / Đã trả / Quá hạn / Đã huỷ |
 
 ## 3.4. Dữ liệu khởi tạo (Seeder)
 
@@ -243,6 +329,7 @@ Model cung cấp `CompanySetting::get($key, $default)`, `put($key, $value)`, `pa
 6. **Chấm công 30 ngày** — cho từng nhân viên (bỏ cuối tuần, có mẫu đi muộn/vắng/nghỉ).
 7. **Đơn nghỉ phép** — 1–3 đơn/nhân viên với trạng thái/loại đa dạng.
 8. **5 KPI** — kèm giai đoạn và người phụ trách.
+9. **Tài chính (M10)** — 2 quỹ (Tiền mặt, TK ngân hàng), 4 danh mục thu/chi, các giao dịch mẫu (gồm góp vốn `is_contribution`, doanh thu, lương, thuê văn phòng…) và 2 công nợ (phải thu/phải trả).
 
 ## 3.5. Toàn vẹn dữ liệu — ghi chú
 
@@ -250,3 +337,4 @@ Model cung cấp `CompanySetting::get($key, $default)`, `put($key, $value)`, `pa
 - Xoá **phòng ban** đặt `department_id`/`head_employee_id` liên quan về `null` (không cascade).
 - Xoá **KPI** sẽ **cascade** xoá toàn bộ `kpi_phases`.
 - Ràng buộc `unique(employee_id, work_date)` đảm bảo idempotency khi chốt công.
+- Xoá **quỹ** (`finance_accounts`) sẽ **cascade** xoá `finance_transactions` của quỹ; xoá **danh mục** hoặc **công nợ** chỉ đặt `category_id`/`debt_id` liên quan về `null`. Các bảng `finance_accounts`, `finance_debts`, `finance_transactions` dùng **soft delete**.

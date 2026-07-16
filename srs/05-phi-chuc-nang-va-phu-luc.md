@@ -79,6 +79,27 @@
 | PUT | `/cai-dat/phong-ban/{department}` | `settings.departments.update` | auth, can:admin |
 | DELETE | `/cai-dat/phong-ban/{department}` | `settings.departments.destroy` | auth, can:admin |
 | PUT | `/cai-dat/nguoi-dung/{user}/vai-tro` | `settings.users.role` | auth, can:admin |
+| GET | `/tai-chinh` | `finance.overview` | auth, can:admin |
+| GET | `/tai-chinh/quy` | `finance.accounts.index` | auth, can:admin |
+| POST | `/tai-chinh/quy` | `finance.accounts.store` | auth, can:admin |
+| PUT | `/tai-chinh/quy/{account}` | `finance.accounts.update` | auth, can:admin |
+| DELETE | `/tai-chinh/quy/{account}` | `finance.accounts.destroy` | auth, can:admin |
+| POST | `/tai-chinh/quy/{account}/nap-tien` | `finance.accounts.deposit` | auth, can:admin |
+| POST | `/tai-chinh/quy/{account}/dieu-chinh` | `finance.accounts.adjust` | auth, can:admin |
+| GET | `/tai-chinh/danh-muc` | `finance.categories.index` | auth, can:admin |
+| POST | `/tai-chinh/danh-muc` | `finance.categories.store` | auth, can:admin |
+| PUT | `/tai-chinh/danh-muc/{category}` | `finance.categories.update` | auth, can:admin |
+| DELETE | `/tai-chinh/danh-muc/{category}` | `finance.categories.destroy` | auth, can:admin |
+| GET | `/tai-chinh/giao-dich` | `finance.transactions.index` | auth, can:admin |
+| POST | `/tai-chinh/giao-dich` | `finance.transactions.store` | auth, can:admin |
+| PUT | `/tai-chinh/giao-dich/{transaction}` | `finance.transactions.update` | auth, can:admin |
+| DELETE | `/tai-chinh/giao-dich/{transaction}` | `finance.transactions.destroy` | auth, can:admin |
+| GET | `/tai-chinh/cong-no` | `finance.debts.index` | auth, can:admin |
+| POST | `/tai-chinh/cong-no` | `finance.debts.store` | auth, can:admin |
+| PUT | `/tai-chinh/cong-no/{debt}` | `finance.debts.update` | auth, can:admin |
+| POST | `/tai-chinh/cong-no/{debt}/thanh-toan` | `finance.debts.pay` | auth, can:admin |
+| PATCH | `/tai-chinh/cong-no/{debt}/huy` | `finance.debts.cancel` | auth, can:admin |
+| DELETE | `/tai-chinh/cong-no/{debt}` | `finance.debts.destroy` | auth, can:admin |
 
 ## 5.3. Phụ lục B — Tác vụ nền / lệnh Artisan
 
@@ -94,7 +115,7 @@
 - Trường `attachment` của đơn nghỉ tồn tại nhưng chưa có luồng tải tệp.
 - Không có đặt lại mật khẩu qua email (chỉ có hạ tầng bảng).
 - Không có nhật ký kiểm toán (audit log), không đa công ty (multi-tenant).
-- Validation nằm trong controller (chưa dùng Form Request).
+- Phần lớn validation nằm trong controller; riêng module Tài chính (M10) đã dùng Form Request.
 - Phụ thuộc CDN cho CSS/Font/Icon (cần Internet phía client).
 - `README.md` và một số test tham chiếu route cũ (`/nhan-su`, `/luong-thuong`…) không còn tồn tại.
 
@@ -113,5 +134,5 @@
 ## 5.6. Phụ lục E — Tài khoản & dữ liệu demo
 
 - Đăng nhập quản trị: `admin@HRM.vn` / `password`.
-- Seeder tạo 5 phòng ban, 13 nhân viên (kèm 13 tài khoản), 30 ngày chấm công, đơn nghỉ và 5 KPI mẫu.
+- Seeder tạo 5 phòng ban, 13 nhân viên (kèm 13 tài khoản), 30 ngày chấm công, đơn nghỉ, 5 KPI và dữ liệu tài chính mẫu (2 quỹ, danh mục, giao dịch, công nợ).
 - Khởi tạo dữ liệu: `php artisan migrate --seed`.

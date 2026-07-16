@@ -7,6 +7,7 @@
         ['label' => 'KPI', 'icon' => 'analytics', 'route' => 'kpis.index', 'pattern' => 'kpis.*'],
     ];
     $systemNav = [
+        ['label' => 'Tài chính', 'icon' => 'account_balance_wallet', 'route' => 'finance.overview', 'pattern' => 'finance.*'],
         ['label' => 'Cài đặt', 'icon' => 'settings', 'route' => 'settings.index', 'pattern' => 'settings.*'],
     ];
     $user = auth()->user();

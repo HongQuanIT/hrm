@@ -7,6 +7,7 @@ use App\Models\CompanySetting;
 use App\Models\Employee;
 use App\Models\Kpi;
 use App\Models\LeaveRequest;
+use App\Services\FinanceService;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -87,10 +88,13 @@ class DashboardController extends Controller
             ->take(3)
             ->get();
 
+        // M10 (FR-M10-20): số dư hiện có + tổng nạp/chi cho thẻ tài chính.
+        $finance = app(FinanceService::class)->summary();
+
         return view('dashboard', compact(
             'totalEmployees', 'workingToday', 'onLeaveToday', 'lateToday', 'avgKpi',
             'weekAttendance', 'leaveUsed', 'leaveQuota', 'leavePct',
-            'newEmployees', 'pendingLeaves', 'recentLeaves'
+            'newEmployees', 'pendingLeaves', 'recentLeaves', 'finance'
         ));
     }
 

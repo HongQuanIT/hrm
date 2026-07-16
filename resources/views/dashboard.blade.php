@@ -158,6 +158,28 @@
             </div>
 
             <div class="lg:col-span-4 space-y-xl">
+                <!-- Số dư tài chính (M10) -->
+                @php $balNeg = $finance['balance'] < 0; @endphp
+                <a href="{{ route('finance.overview') }}" class="block {{ $balNeg ? 'bg-error-container text-on-error-container' : 'bg-primary-container text-on-primary-container' }} p-lg rounded-xl shadow-sm">
+                    <div class="flex items-center justify-between mb-sm">
+                        <div class="flex items-center gap-sm">
+                            <span class="material-symbols-outlined">account_balance</span>
+                            <span class="font-label-md text-label-md uppercase tracking-wider opacity-80">Số dư hiện có</span>
+                        </div>
+                        @if ($balNeg)
+                            <span class="px-2 py-0.5 bg-error text-on-error text-[10px] font-bold rounded-full">ĐANG ÂM</span>
+                        @endif
+                    </div>
+                    <h3 class="font-display-lg text-display-lg mb-sm">{{ number_format($finance['balance'], 0, ',', '.') }} ₫</h3>
+                    <div class="flex items-center gap-lg text-[12px] opacity-90">
+                        <span>Đã nạp: <b>{{ number_format($finance['contributed'], 0, ',', '.') }} ₫</b></span>
+                        <span>Đã chi: <b>{{ number_format($finance['spent'], 0, ',', '.') }} ₫</b></span>
+                    </div>
+                    @if ($balNeg)
+                        <p class="text-[12px] mt-sm">Chi vượt vốn — có thể do ứng tiền cá nhân.</p>
+                    @endif
+                </a>
+
                 <!-- Notifications -->
                 <div class="bg-surface-container-high p-lg rounded-xl shadow-sm border border-outline-variant/30">
                     <div class="flex items-center justify-between mb-lg">
