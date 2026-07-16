@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\CompanySetting;
+use App\Models\Department;
 use App\Models\Employee;
 use App\Models\Holiday;
 use App\Models\LeaveRequest;
@@ -30,9 +31,14 @@ class AttendanceController extends Controller
         $monthStart = $selected->copy()->startOfMonth();
         $monthEnd = $selected->copy()->endOfMonth();
 
+        // Admin có thể lọc bảng lịch sử theo một nhân viên cụ thể (bấm từ bảng tổng kết).
+        $filterEmployeeId = $isAdmin ? (int) $request->query('nhan_vien') : 0;
+        $filteredEmployee = $filterEmployeeId > 0 ? Employee::find($filterEmployeeId) : null;
+
         // Lịch sử chỉ hiển thị trong tháng đang xem.
         $records = Attendance::with('employee')
             ->when(! $isAdmin, fn ($q) => $q->where('employee_id', $ownId))
+            ->when($filteredEmployee, fn ($q) => $q->where('employee_id', $filteredEmployee->id))
             ->whereBetween('work_date', [$monthStart, $monthEnd])
             ->orderByDesc('work_date')
             ->paginate(15)
@@ -99,6 +105,58 @@ class AttendanceController extends Controller
         }
         unset($t);
 
+        // Bảng tổng kết công tháng cho từng nhân viên (chỉ Admin), có tìm kiếm + lọc phòng ban.
+        $employeeSummaries = collect();
+        $departments = collect();
+        $summarySearch = '';
+        $summaryDept = 0;
+        if ($isAdmin) {
+            $departments = Department::orderBy('name')->get();
+            $summarySearch = trim((string) $request->query('q'));
+            $summaryDept = (int) $request->query('phong_ban');
+
+            // Gộp số liệu chấm công của tháng theo từng nhân viên trong một truy vấn.
+            $agg = Attendance::query()
+                ->whereBetween('work_date', [$monthStart, $monthEnd])
+                ->selectRaw('employee_id')
+                ->selectRaw("SUM(CASE WHEN status IN ('on_time','late','working') THEN 1 ELSE 0 END) as worked_days")
+                ->selectRaw("SUM(CASE WHEN status = 'late' THEN 1 ELSE 0 END) as late_days")
+                ->selectRaw('SUM(late_minutes) as late_minutes_total')
+                ->selectRaw("SUM(CASE WHEN status = 'absent' THEN 1 ELSE 0 END) as absent_days")
+                ->selectRaw("SUM(CASE WHEN status = 'leave' THEN 1 ELSE 0 END) as leave_days")
+                ->selectRaw('SUM(total_minutes) as total_minutes')
+                ->groupBy('employee_id')
+                ->get()
+                ->keyBy('employee_id');
+
+            $employees = Employee::with('department')
+                ->when($summarySearch !== '', fn ($q) => $q->where(function ($qq) use ($summarySearch) {
+                    $qq->where('name', 'like', "%{$summarySearch}%")
+                        ->orWhere('code', 'like', "%{$summarySearch}%");
+                }))
+                ->when($summaryDept > 0, fn ($q) => $q->where('department_id', $summaryDept))
+                ->orderBy('name')
+                ->get();
+
+            $employeeSummaries = $employees->map(function (Employee $emp) use ($agg) {
+                $row = $agg->get($emp->id);
+                $workedDays = (int) ($row->worked_days ?? 0);
+                $totalMinutes = (int) ($row->total_minutes ?? 0);
+                $overtime = round($totalMinutes / 60 - $workedDays * 8, 1);
+
+                return [
+                    'employee' => $emp,
+                    'worked_days' => $workedDays,
+                    'late_days' => (int) ($row->late_days ?? 0),
+                    'late_minutes_total' => (int) ($row->late_minutes_total ?? 0),
+                    'absent_days' => (int) ($row->absent_days ?? 0),
+                    'leave_days' => (int) ($row->leave_days ?? 0),
+                    'total_minutes' => $totalMinutes,
+                    'overtime_hours' => max($overtime, 0),
+                ];
+            });
+        }
+
         $showAllHistory = $isAdmin;
         $selectedValue = $selected->format('Y-m');
         $selectedLabel = $selected->translatedFormat('\T\h\á\n\g m/Y');
@@ -108,7 +166,8 @@ class AttendanceController extends Controller
             'records', 'workedDays', 'standardDays', 'lateCount',
             'overtimeHours', 'leaveBalance', 'todayRecord', 'employee', 'trend', 'showAllHistory',
             'selectedValue', 'selectedLabel', 'currentMonthValue',
-            'todayOnLeave', 'workStart', 'workEnd', 'checkinOpen', 'checkinDeadline'
+            'todayOnLeave', 'workStart', 'workEnd', 'checkinOpen', 'checkinDeadline',
+            'employeeSummaries', 'departments', 'summarySearch', 'summaryDept', 'filteredEmployee'
         ));
     }
 

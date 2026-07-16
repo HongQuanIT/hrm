@@ -49,8 +49,96 @@
                 </div>
             </div>
 
+            @if ($showAllHistory)
+            <!-- Monthly summary per employee (admin only) -->
+            <div class="md:col-span-12 md:order-3 bg-white rounded-2xl border border-outline-variant shadow-sm overflow-hidden">
+                <div class="p-lg border-b border-outline-variant flex flex-col lg:flex-row lg:justify-between lg:items-center gap-md">
+                    <div>
+                        <h3 class="font-headline-md text-headline-md text-on-surface">Bảng công tháng — toàn công ty</h3>
+                        <p class="text-[12px] text-on-surface-variant mt-xs">Tổng kết chấm công của từng nhân viên trong {{ $selectedLabel }}. Bấm vào một dòng để xem chi tiết ngày-theo-ngày bên dưới.</p>
+                    </div>
+                    <form method="GET" action="{{ route('attendance.index') }}" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-sm">
+                        <div class="flex items-center gap-xs">
+                            <span class="material-symbols-outlined text-outline text-[20px]">calendar_month</span>
+                            <input type="month" name="thang" value="{{ $selectedValue }}" max="{{ $currentMonthValue }}"
+                                   onchange="this.form.submit()"
+                                   class="px-md py-1.5 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md bg-white">
+                        </div>
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+                            <input type="text" name="q" value="{{ $summarySearch }}" placeholder="Tìm tên / mã NV"
+                                   class="pl-8 pr-md py-1.5 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md bg-white w-full sm:w-48">
+                        </div>
+                        <select name="phong_ban" onchange="this.form.submit()"
+                                class="px-md py-1.5 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md bg-white">
+                            <option value="">Tất cả phòng ban</option>
+                            @foreach ($departments as $dept)
+                                <option value="{{ $dept->id }}" @selected($summaryDept === $dept->id)>{{ $dept->name }}</option>
+                            @endforeach
+                        </select>
+                        <button type="submit" class="px-lg py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md hover:opacity-90 transition-opacity">Lọc</button>
+                    </form>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-surface-container-low border-b border-outline-variant">
+                                <th class="px-lg py-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Nhân viên</th>
+                                <th class="px-lg py-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Phòng ban</th>
+                                <th class="px-lg py-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-center">Công (ngày)</th>
+                                <th class="px-lg py-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-center">Đi muộn</th>
+                                <th class="px-lg py-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-center">Vắng</th>
+                                <th class="px-lg py-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-center">Nghỉ phép</th>
+                                <th class="px-lg py-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-center">Tăng ca</th>
+                                <th class="px-lg py-md font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-right">Tổng giờ</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant/30">
+                            @forelse ($employeeSummaries as $sum)
+                                @php $emp = $sum['employee']; @endphp
+                                <tr class="hover:bg-surface-container-lowest transition-colors cursor-pointer {{ $filteredEmployee && $filteredEmployee->id === $emp->id ? 'bg-primary-fixed/40' : '' }}"
+                                    onclick="window.location='{{ route('attendance.index', ['thang' => $selectedValue, 'nhan_vien' => $emp->id, 'q' => $summarySearch, 'phong_ban' => $summaryDept ?: null]) }}'">
+                                    <td class="px-lg py-md">
+                                        <div class="flex flex-col">
+                                            <span class="font-body-md text-body-md text-on-surface font-medium">{{ $emp->name }}</span>
+                                            <span class="text-[12px] text-on-surface-variant">{{ $emp->code }}{{ $emp->position ? ' • ' . $emp->position : '' }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-lg py-md font-body-md text-body-md text-on-surface-variant">{{ $emp->department?->name ?? '—' }}</td>
+                                    <td class="px-lg py-md text-center font-body-md text-body-md text-on-surface font-medium">{{ $sum['worked_days'] }} / {{ $standardDays }}</td>
+                                    <td class="px-lg py-md text-center">
+                                        @if ($sum['late_days'] > 0)
+                                            <span class="inline-flex items-center gap-1 px-sm py-xs rounded-full font-label-md text-[11px] font-bold bg-orange-100 text-orange-700" title="Tổng {{ $sum['late_minutes_total'] }} phút muộn">
+                                                {{ $sum['late_days'] }} lần • {{ $sum['late_minutes_total'] }}′
+                                            </span>
+                                        @else
+                                            <span class="text-outline">—</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-lg py-md text-center">
+                                        @if ($sum['absent_days'] > 0)
+                                            <span class="inline-flex items-center px-sm py-xs rounded-full font-label-md text-[11px] font-bold bg-red-100 text-red-700">{{ $sum['absent_days'] }}</span>
+                                        @else
+                                            <span class="text-outline">—</span>
+                                        @endif
+                                    </td>
+                                    <td class="px-lg py-md text-center font-body-md text-body-md text-on-surface-variant">{{ $sum['leave_days'] ?: '—' }}</td>
+                                    <td class="px-lg py-md text-center font-body-md text-body-md text-on-surface-variant">{{ $sum['overtime_hours'] > 0 ? $sum['overtime_hours'] . 'h' : '—' }}</td>
+                                    <td class="px-lg py-md text-right font-body-md text-body-md text-on-surface">{{ intdiv($sum['total_minutes'], 60) }}h {{ str_pad($sum['total_minutes'] % 60, 2, '0', STR_PAD_LEFT) }}m</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="px-lg py-xl text-center text-on-surface-variant">Không tìm thấy nhân viên phù hợp.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @endif
+
             <!-- Check-in/out card -->
-            <div class="md:col-span-5 flex flex-col gap-lg">
+            <div class="md:col-span-5 md:order-1 flex flex-col gap-lg">
                 <div class="bg-primary text-on-primary p-xl rounded-2xl shadow-lg relative overflow-hidden">
                     <div class="absolute top-[-20%] right-[-10%] w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
                     <div class="absolute bottom-[-10%] left-[-5%] w-32 h-32 bg-primary-container/30 rounded-full blur-2xl"></div>
@@ -108,37 +196,38 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Trend -->
-                <div class="bg-white p-lg rounded-2xl border border-outline-variant shadow-sm flex-1">
-                    <div class="flex justify-between items-center mb-lg">
-                        <h3 class="font-headline-md text-headline-md text-on-surface">Xu hướng chuyên cần</h3>
-                    </div>
-                    <div class="h-48 w-full flex items-end gap-xs">
-                        @foreach ($trend as $t)
-                            <div class="flex-1 {{ $loop->last ? 'bg-primary' : 'bg-primary-fixed' }} rounded-t-sm relative group" style="height: {{ max($t['pct'], 4) }}%"></div>
-                        @endforeach
-                    </div>
-                    <div class="flex justify-between mt-sm text-[11px] text-on-surface-variant font-medium px-xs">
-                        @foreach ($trend as $t)
-                            <span>{{ $t['label'] }}</span>
-                        @endforeach
-                    </div>
-                </div>
             </div>
 
-            <!-- History table -->
-            <div class="md:col-span-7 bg-white rounded-2xl border border-outline-variant shadow-sm overflow-hidden flex flex-col">
+            <!-- History table (cạnh thẻ check-in, chiều cao khớp thẻ check-in) -->
+            <div class="md:col-span-7 md:order-2 relative min-h-0">
+                <div class="md:absolute md:inset-0 bg-white rounded-2xl border border-outline-variant shadow-sm overflow-hidden flex flex-col">
                 <div class="p-lg border-b border-outline-variant flex flex-col sm:flex-row sm:justify-between sm:items-center gap-sm">
-                    <h3 class="font-headline-md text-headline-md text-on-surface">{{ $showAllHistory ? 'Lịch sử chấm công toàn công ty' : 'Lịch sử chấm công chi tiết' }}</h3>
+                    <div class="flex items-center gap-sm flex-wrap">
+                        <h3 class="font-headline-md text-headline-md text-on-surface">
+                            @if (isset($filteredEmployee) && $filteredEmployee)
+                                Lịch sử: {{ $filteredEmployee->name }}
+                            @else
+                                {{ $showAllHistory ? 'Lịch sử chấm công toàn công ty' : 'Lịch sử chấm công chi tiết' }}
+                            @endif
+                        </h3>
+                        @if (isset($filteredEmployee) && $filteredEmployee)
+                            <a href="{{ route('attendance.index', ['thang' => $selectedValue]) }}"
+                               class="inline-flex items-center gap-1 px-sm py-xs rounded-full bg-surface-container-low text-on-surface-variant text-[12px] hover:bg-surface-container transition-colors">
+                                <span class="material-symbols-outlined text-[14px]">close</span> Bỏ lọc
+                            </a>
+                        @endif
+                    </div>
                     <form method="GET" action="{{ route('attendance.index') }}" class="flex items-center gap-xs">
+                        @if (isset($filteredEmployee) && $filteredEmployee)
+                            <input type="hidden" name="nhan_vien" value="{{ $filteredEmployee->id }}">
+                        @endif
                         <span class="material-symbols-outlined text-outline text-[20px]">calendar_month</span>
                         <input type="month" name="thang" value="{{ $selectedValue }}" max="{{ $currentMonthValue }}"
                                onchange="this.form.submit()"
                                class="px-md py-1.5 rounded-lg border border-outline-variant focus:border-primary outline-none text-body-md bg-white">
                     </form>
                 </div>
-                <div class="flex-1 overflow-x-auto">
+                <div class="flex-1 overflow-auto min-h-0">
                     <table class="w-full text-left border-collapse">
                         <thead>
                             <tr class="bg-surface-container-low border-b border-outline-variant">
@@ -195,6 +284,7 @@
                 </div>
                 <div class="p-md bg-surface-container border-t border-outline-variant flex justify-center">
                     {{ $records->links() }}
+                </div>
                 </div>
             </div>
         </div>
