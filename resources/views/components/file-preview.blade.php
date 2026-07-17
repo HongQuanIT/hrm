@@ -134,8 +134,17 @@
             const img = document.getElementById('fp-media');
             img.onload = function () {
                 const bw = body.clientWidth, bh = body.clientHeight;
-                const fit = Math.min(bw / img.naturalWidth, bh / img.naturalHeight, 1) || 1;
-                const w = img.naturalWidth * fit, h = img.naturalHeight * fit;
+                let w, h;
+                if (img.naturalWidth && img.naturalHeight) {
+                    // Vừa khung (contain): một chiều đạt 100% khung preview.
+                    const fit = Math.min(bw / img.naturalWidth, bh / img.naturalHeight);
+                    w = img.naturalWidth * fit;
+                    h = img.naturalHeight * fit;
+                } else {
+                    // Ảnh không có kích thước nội tại (một số SVG) → lấp đầy khung.
+                    w = bw;
+                    h = bh;
+                }
                 img.style.width = w + 'px';
                 img.style.height = h + 'px';
                 fpSetBase(w, h);
