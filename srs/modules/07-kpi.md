@@ -143,7 +143,7 @@ Quản lý mục tiêu hiệu suất (KPI) của công ty/phòng ban, chia nhỏ
 - `kpis/show.blade.php` — chi tiết + **bảng Kanban kéo–thả (SortableJS)** + **drawer** chi tiết giai đoạn (mô tả, checklist, bình luận) + đính kèm KPI + render mô tả HTML.
 - `kpis/create.blade.php`, `kpis/edit.blade.php`, `kpis/_form.blade.php` — form KPI cấp cao, CKEditor cho mô tả, khu tài liệu đính kèm (chỉ khi sửa). **Không** còn khối quản lý giai đoạn (chuyển sang trang chi tiết).
 - `components/phase-action.blade.php` — nút chuyển trạng thái giai đoạn.
-- `components/file-preview.blade.php` — modal xem trước tài liệu dùng chung (kích hoạt qua thuộc tính `data-preview` + `data-url/name/mime/ext`); dùng ở trang chi tiết và form KPI.
+- `components/file-preview.blade.php` — modal xem trước tài liệu dùng chung (kích hoạt qua thuộc tính `data-preview` + `data-url/name/mime/ext`); hỗ trợ **phóng to/thu nhỏ** (nút −/%/+, phím Ctrl +/−/0, Ctrl + cuộn chuột) cho ảnh/PDF/văn bản bằng `transform: scale` kèm bù kích thước "stage" để cuộn xem toàn bộ (tương thích mọi trình duyệt kể cả Firefox); dùng ở trang chi tiết và form KPI.
 
 ## 8. Ánh xạ mã nguồn
 
