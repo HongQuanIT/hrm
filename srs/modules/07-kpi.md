@@ -103,7 +103,7 @@ Quản lý mục tiêu hiệu suất (KPI) của công ty/phòng ban, chia nhỏ
 | Mã | Quy tắc |
 |----|--------|
 | BR-M07-11 | Mọi mô tả HTML (KPI & giai đoạn) được lọc bằng `mews/purifier` (`clean()`) khi lưu và khi hiển thị để chống XSS. |
-| BR-M07-12 | Tài liệu đính kèm: tối đa 10MB; định dạng cho phép: pdf, doc(x), xls(x), ppt(x), csv, txt, ảnh (jpg/png/gif/webp/**svg**), zip/rar. Lưu ở disk `public` (`storage/app/public/attachments/kpi/{kpi_id}`). Bảo mật SVG: khi lưu, nội dung SVG được **làm sạch** (`sanitizeSvg`) — loại bỏ `<script>`, `<foreignObject>`, thuộc tính sự kiện `on*` và vô hiệu hoá URI `javascript:` — nên an toàn kể cả khi mở trực tiếp bằng trình duyệt. |
+| BR-M07-12 | Tài liệu đính kèm: tối đa 10MB; định dạng cho phép: pdf, doc(x), xls(x), ppt(x), csv, txt, ảnh (jpg/png/gif/webp/**svg**), zip/rar. Lưu ở disk `public` (`storage/app/public/attachments/kpi/{kpi_id}`). Lưu ý bảo mật: SVG có thể chứa mã script; modal xem trước dùng `<img>` nên không thực thi script, nhưng khi mở trực tiếp bằng trình duyệt vẫn tiềm ẩn XSS — chỉ nhận tệp từ nguồn tin cậy. |
 | BR-M07-13 | Đính kèm dùng bảng đa hình `attachments` (`attachable_type`, `attachable_id`); MVP chỉ gắn ở cấp `Kpi`. Khi xoá phải kiểm tra tài liệu thuộc đúng KPI đang thao tác. |
 
 ## 6. Ràng buộc dữ liệu (validation)
@@ -149,7 +149,7 @@ Quản lý mục tiêu hiệu suất (KPI) của công ty/phòng ban, chia nhỏ
 
 | Thành phần | Vị trí |
 |------------|--------|
-| Controller | `app/Http/Controllers/KpiController.php` (`storePhase`, `updatePhase`, `destroyPhase`, `updatePhaseStatus`, `storeAttachment`, `destroyAttachment`, `saveUploadedAttachments`, `sanitizeSvg`, `cleanKpiData`, `addChecklistItem`, `toggleChecklistItem`, `deleteChecklistItem`, `addComment`, `authorizePhaseAction`, `backToPhase`). Đã **gỡ** `syncPhases`. |
+| Controller | `app/Http/Controllers/KpiController.php` (`storePhase`, `updatePhase`, `destroyPhase`, `updatePhaseStatus`, `storeAttachment`, `destroyAttachment`, `saveUploadedAttachments`, `cleanKpiData`, `addChecklistItem`, `toggleChecklistItem`, `deleteChecklistItem`, `addComment`, `authorizePhaseAction`, `backToPhase`). Đã **gỡ** `syncPhases`. |
 | Model | `app/Models/Kpi.php`, `app/Models/KpiPhase.php`, `app/Models/Attachment.php`, `app/Models/PhaseChecklistItem.php`, `app/Models/PhaseComment.php` |
 | Route | `routes/web.php` (`kpis.*`, `kpis.phases.*`, `kpis.phases.checklist.*`, `kpis.phases.comments.*`, `kpis.attachments.*`) |
 | Migration | `..._add_ticket_fields_to_kpi_phases_table.php`, `..._create_attachments_table.php`, `..._create_phase_checklist_items_table.php`, `..._create_phase_comments_table.php` |
