@@ -33,7 +33,7 @@ class KpiRequest extends FormRequest
             'attachments' => ['nullable', 'array'],
             'attachments.*' => [
                 'file', 'max:10240',
-                'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,csv,txt,jpg,jpeg,png,gif,webp,zip,rar',
+                'mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,csv,txt,jpg,jpeg,png,gif,webp,svg,zip,rar',
             ],
         ];
     }

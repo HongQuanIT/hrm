@@ -13,6 +13,7 @@ use App\Models\PhaseComment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class KpiController extends Controller
@@ -489,17 +490,60 @@ class KpiController extends Controller
                 continue;
             }
 
-            $path = $file->store('attachments/kpi/' . $kpi->id, 'public');
+            $isSvg = strtolower((string) $file->getClientOriginalExtension()) === 'svg'
+                || str_contains((string) $file->getClientMimeType(), 'svg');
+
+            if ($isSvg) {
+                // Làm sạch SVG trước khi lưu để loại bỏ script/handler tiềm ẩn XSS.
+                $clean = $this->sanitizeSvg((string) file_get_contents($file->getRealPath()));
+                $path = 'attachments/kpi/' . $kpi->id . '/' . Str::random(40) . '.svg';
+                Storage::disk('public')->put($path, $clean);
+                $mime = 'image/svg+xml';
+                $size = strlen($clean);
+            } else {
+                $path = $file->store('attachments/kpi/' . $kpi->id, 'public');
+                $mime = $file->getClientMimeType();
+                $size = $file->getSize();
+            }
 
             $kpi->attachments()->create([
                 'disk' => 'public',
                 'path' => $path,
                 'original_name' => $file->getClientOriginalName(),
-                'mime_type' => $file->getClientMimeType(),
-                'size' => $file->getSize(),
+                'mime_type' => $mime,
+                'size' => $size,
                 'uploaded_by' => Auth::id(),
             ]);
         }
     }
 
+    /**
+     * Làm sạch nội dung SVG: xoá <script>, <foreignObject>, thuộc tính sự kiện on*
+     * và các URI javascript: nhằm ngăn XSS khi hiển thị/mở tệp.
+     */
+    private function sanitizeSvg(string $svg): string
+    {
+        $patterns = [
+            '#<script\b[^>]*>.*?</script>#is',              // khối <script>...</script>
+            '#<script\b[^>]*/?>#is',                        // thẻ <script> đơn/tự đóng
+            '#<foreignObject\b[^>]*>.*?</foreignObject>#is', // nhúng HTML tuỳ ý
+            '#<foreignObject\b[^>]*/?>#is',
+            '#\son[a-z]+\s*=\s*"[^"]*"#is',                 // on...="..."
+            "#\son[a-z]+\s*=\s*'[^']*'#is",                 // on...='...'
+            '#\son[a-z]+\s*=\s*[^\s>]+#is',                 // on...=value (không dấu nháy)
+        ];
+
+        foreach ($patterns as $pattern) {
+            $svg = preg_replace($pattern, '', $svg) ?? $svg;
+        }
+
+        // Vô hiệu hoá javascript: trong href/xlink:href/src.
+        $svg = preg_replace(
+            '#(href|xlink:href|src)\s*=\s*(["\']?)\s*javascript:[^"\'>\s]*#is',
+            '$1=$2#',
+            $svg
+        ) ?? $svg;
+
+        return $svg;
+    }
 }

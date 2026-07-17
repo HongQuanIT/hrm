@@ -99,7 +99,7 @@
                             @endif
                             <input type="file" name="attachments[]" multiple
                                    class="w-full text-body-md file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-primary file:text-on-primary file:cursor-pointer file:font-label-md">
-                            <p class="text-xs text-on-surface-variant">Hỗ trợ: PDF, Word, Excel, PowerPoint, ảnh, zip… tối đa 10MB. Tệp sẽ được lưu khi bấm “Lưu mục tiêu”.</p>
+                            <p class="text-xs text-on-surface-variant">Hỗ trợ: PDF, Word, Excel, PowerPoint, ảnh (JPG/PNG/GIF/WebP/SVG), zip… tối đa 10MB. Tệp sẽ được lưu khi bấm “Lưu mục tiêu”.</p>
                         </div>
                     </div>
                 </section>
