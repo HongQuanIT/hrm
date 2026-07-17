@@ -116,12 +116,10 @@
                 <h2 class="font-headline-md text-headline-md">Bảng công việc</h2>
                 <p class="text-xs text-on-surface-variant">Kéo–thả thẻ giữa các cột để đổi trạng thái. Bấm vào thẻ để xem chi tiết, checklist và bình luận.</p>
             </div>
-            @can('admin')
-                <button type="button" onclick="document.getElementById('add-phase-panel').classList.toggle('hidden')"
-                        class="flex items-center gap-1 px-lg py-sm bg-primary text-on-primary rounded-full font-label-md text-label-md shadow-sm hover:opacity-90 transition-all shrink-0">
-                    <span class="material-symbols-outlined text-sm">add</span> Thêm giai đoạn
-                </button>
-            @endcan
+            <button type="button" onclick="document.getElementById('add-phase-panel').classList.toggle('hidden')"
+                    class="flex items-center gap-1 px-lg py-sm bg-primary text-on-primary rounded-full font-label-md text-label-md shadow-sm hover:opacity-90 transition-all shrink-0">
+                <span class="material-symbols-outlined text-sm">add</span> Thêm giai đoạn
+            </button>
         </div>
 
         @if ($errors->any())
@@ -130,7 +128,6 @@
             </div>
         @endif
 
-        @can('admin')
             <div id="add-phase-panel" class="{{ $errors->any() ? '' : 'hidden' }} mb-md bg-surface-container-lowest border border-dashed border-outline-variant rounded-xl p-md">
                 <form method="POST" action="{{ route('kpis.phases.store', $kpi) }}" class="grid grid-cols-1 md:grid-cols-12 gap-md items-end">
                     @csrf
@@ -178,7 +175,6 @@
                     </div>
                 </form>
             </div>
-        @endcan
 
         <div id="kanban" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-md">
             @foreach ($statusColumns as $col)
@@ -269,13 +265,17 @@
             @if ($kpi->attachments->isNotEmpty())
                 <div class="divide-y divide-outline-variant/40">
                     @foreach ($kpi->attachments as $file)
-                        <a href="{{ $file->url }}" target="_blank" rel="noopener" class="flex items-center gap-md min-w-0 group py-sm">
+                        <button type="button" data-preview
+                                data-url="{{ $file->url }}" data-name="{{ $file->original_name }}"
+                                data-mime="{{ $file->mime_type }}" data-ext="{{ pathinfo($file->original_name, PATHINFO_EXTENSION) }}"
+                                class="w-full flex items-center gap-md min-w-0 group py-sm text-left">
                             <span class="material-symbols-outlined text-on-surface-variant shrink-0">{{ $file->icon }}</span>
-                            <div class="min-w-0">
+                            <div class="min-w-0 flex-1">
                                 <p class="font-body-md text-body-md text-on-surface truncate group-hover:text-primary group-hover:underline">{{ $file->original_name }}</p>
                                 <p class="text-xs text-on-surface-variant">{{ $file->human_size }}</p>
                             </div>
-                        </a>
+                            <span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity shrink-0">visibility</span>
+                        </button>
                     @endforeach
                 </div>
             @else
@@ -284,6 +284,9 @@
         </div>
     </div>
 </div>
+
+<x-file-preview />
+
 
 <!-- Drawers chi tiết giai đoạn -->
 @foreach ($kpi->phases as $phase)

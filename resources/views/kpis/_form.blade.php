@@ -79,13 +79,16 @@
                                 <div class="divide-y divide-outline-variant/40 mb-xs">
                                     @foreach ($k->attachments as $file)
                                         <div class="flex items-center justify-between gap-md py-sm">
-                                            <a href="{{ $file->url }}" target="_blank" rel="noopener" class="flex items-center gap-md min-w-0 group">
+                                            <button type="button" data-preview
+                                                    data-url="{{ $file->url }}" data-name="{{ $file->original_name }}"
+                                                    data-mime="{{ $file->mime_type }}" data-ext="{{ pathinfo($file->original_name, PATHINFO_EXTENSION) }}"
+                                                    class="flex items-center gap-md min-w-0 group text-left flex-1">
                                                 <span class="material-symbols-outlined text-on-surface-variant shrink-0">{{ $file->icon }}</span>
                                                 <div class="min-w-0">
                                                     <p class="font-body-md text-body-md text-on-surface truncate group-hover:text-primary group-hover:underline">{{ $file->original_name }}</p>
                                                     <p class="text-xs text-on-surface-variant">{{ $file->human_size }} • {{ $file->created_at->format('d/m/Y H:i') }}{{ $file->uploader ? ' • ' . $file->uploader->name : '' }}</p>
                                                 </div>
-                                            </a>
+                                            </button>
                                             <button type="submit" form="del-att-{{ $file->id }}" onclick="return confirm('Xoá tài liệu này?')"
                                                     class="text-outline hover:text-error transition-colors p-1 shrink-0" title="Xoá">
                                                 <span class="material-symbols-outlined text-lg">delete</span>
@@ -202,6 +205,8 @@
         @endif
     </div>
 </div>
+
+<x-file-preview />
 
 @push('scripts')
 <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>

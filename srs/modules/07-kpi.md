@@ -61,7 +61,7 @@ Quản lý mục tiêu hiệu suất (KPI) của công ty/phòng ban, chia nhỏ
 | FR-M07-09 | Mô tả KPI và mô tả giai đoạn được soạn thảo; riêng mô tả KPI dùng CKEditor (rich text). Nội dung HTML được **làm sạch** (`mews/purifier`) trước khi lưu và khi render. | can:admin (KPI), thành viên (giai đoạn) |
 | FR-M07-10 | Tài liệu đính kèm KPI tải lên qua chính form KPI (trường `attachments[]`, multipart) trong thẻ "Thông tin KPI", lưu khi `POST /kpi` hoặc `PUT /kpi/{kpi}`. | can:admin |
 | FR-M07-11 | `DELETE /kpi/{kpi}/tai-lieu/{attachment}`: xoá tài liệu (phải thuộc KPI đó), xoá cả file vật lý. | thành viên KPI hoặc admin |
-| FR-M07-12 | `GET /kpi/{kpi}`: hiển thị danh sách tài liệu KPI (chỉ đọc/tải) ở sidebar. | auth (thành viên/admin) |
+| FR-M07-12 | `GET /kpi/{kpi}`: hiển thị danh sách tài liệu KPI ở sidebar; bấm vào mở **modal xem trước dùng chung** (ảnh, PDF, văn bản/CSV xem trực tiếp; Office qua trình xem online khi máy chủ công khai, môi trường nội bộ thì gợi ý tải xuống) kèm nút mở tab mới / tải xuống. | auth (thành viên/admin) |
 
 ## 5. Quy tắc nghiệp vụ
 
@@ -143,6 +143,7 @@ Quản lý mục tiêu hiệu suất (KPI) của công ty/phòng ban, chia nhỏ
 - `kpis/show.blade.php` — chi tiết + **bảng Kanban kéo–thả (SortableJS)** + **drawer** chi tiết giai đoạn (mô tả, checklist, bình luận) + đính kèm KPI + render mô tả HTML.
 - `kpis/create.blade.php`, `kpis/edit.blade.php`, `kpis/_form.blade.php` — form KPI cấp cao, CKEditor cho mô tả, khu tài liệu đính kèm (chỉ khi sửa). **Không** còn khối quản lý giai đoạn (chuyển sang trang chi tiết).
 - `components/phase-action.blade.php` — nút chuyển trạng thái giai đoạn.
+- `components/file-preview.blade.php` — modal xem trước tài liệu dùng chung (kích hoạt qua thuộc tính `data-preview` + `data-url/name/mime/ext`); dùng ở trang chi tiết và form KPI.
 
 ## 8. Ánh xạ mã nguồn
 
