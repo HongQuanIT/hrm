@@ -99,7 +99,7 @@ class DatabaseSeeder extends Seeder
             'tax_code' => '0101234567',
             'website' => 'www.HRM.vn',
             'address' => 'Tòa nhà Innovation, Công viên Phần mềm Quang Trung, Quận 12, TP.HCM',
-            'leave_days_per_month' => '1',
+            'leave_days_per_month' => '6',
             'leave_days_per_year' => '12',
             // Giờ làm việc & chính sách chấm công
             'work_start_time' => '08:00',

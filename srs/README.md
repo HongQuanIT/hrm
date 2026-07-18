@@ -34,6 +34,7 @@ Mỗi module được đặc tả riêng trong thư mục [`modules/`](modules/)
 | M08 | Cài đặt hệ thống | [modules/08-cai-dat.md](modules/08-cai-dat.md) | Thông tin công ty, chính sách chấm công, vai trò |
 | M09 | Tài khoản cá nhân | [modules/09-tai-khoan.md](modules/09-tai-khoan.md) | Đổi mật khẩu |
 | M10 | Quản lý tài chính | [modules/10-tai-chinh.md](modules/10-tai-chinh.md) | Quỹ tiền, thu/chi, góp vốn, công nợ, số dư (cho phép âm) |
+| M11 | Lương / Bảng lương | [modules/11-luong.md](modules/11-luong.md) | Kỳ lương tháng, prorate theo ngày công + quota phép, phiếu lương, chi qua Tài chính, self-service |
 
 ## Quy ước ký hiệu
 

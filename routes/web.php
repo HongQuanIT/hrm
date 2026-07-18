@@ -12,6 +12,9 @@ use App\Http\Controllers\Finance\FinanceOverviewController;
 use App\Http\Controllers\Finance\FinanceTransactionController;
 use App\Http\Controllers\KpiController;
 use App\Http\Controllers\LeaveController;
+use App\Http\Controllers\Payroll\MyPayslipController;
+use App\Http\Controllers\Payroll\PayrollPeriodController;
+use App\Http\Controllers\Payroll\PayslipController;
 use App\Http\Controllers\SettingController;
 use Illuminate\Support\Facades\Route;
 
@@ -152,5 +155,30 @@ Route::middleware('auth')->group(function () {
         Route::post('/cong-no/{debt}/thanh-toan', [FinanceDebtController::class, 'pay'])->name('debts.pay');
         Route::patch('/cong-no/{debt}/huy', [FinanceDebtController::class, 'cancel'])->name('debts.cancel');
         Route::delete('/cong-no/{debt}', [FinanceDebtController::class, 'destroy'])->name('debts.destroy');
+    });
+
+    // M11 — Lương/Bảng lương.
+    // Self-service: nhân viên xem phiếu của mình (khai báo trước để không bị "/luong/{period}" nuốt).
+    Route::get('/luong/cua-toi', [MyPayslipController::class, 'index'])->name('payroll.my');
+    // Xem chi tiết phiếu: admin xem tất cả, nhân viên xem phiếu của mình (kiểm tra trong controller).
+    Route::get('/luong/{period}/phieu/{payslip}', [PayslipController::class, 'show'])
+        ->scopeBindings()->name('payroll.payslips.show');
+
+    // Quản trị kỳ lương: chỉ Super Admin.
+    Route::middleware('can:admin')->prefix('luong')->name('payroll.')->group(function () {
+        Route::get('/', [PayrollPeriodController::class, 'index'])->name('periods.index');
+        Route::post('/', [PayrollPeriodController::class, 'store'])->name('periods.store');
+        Route::get('/{period}', [PayrollPeriodController::class, 'show'])->name('periods.show');
+        Route::post('/{period}/tinh', [PayrollPeriodController::class, 'calculate'])->name('periods.calculate');
+        Route::patch('/{period}/duyet', [PayrollPeriodController::class, 'approve'])->name('periods.approve');
+        Route::patch('/{period}/mo-lai', [PayrollPeriodController::class, 'reopen'])->name('periods.reopen');
+        Route::post('/{period}/chi', [PayrollPeriodController::class, 'pay'])->name('periods.pay');
+        Route::delete('/{period}', [PayrollPeriodController::class, 'destroy'])->name('periods.destroy');
+
+        // Khoản cộng/trừ tay trên từng phiếu.
+        Route::post('/{period}/phieu/{payslip}/khoan', [PayslipController::class, 'storeItem'])
+            ->scopeBindings()->name('payslips.items.store');
+        Route::delete('/{period}/phieu/{payslip}/khoan/{item}', [PayslipController::class, 'destroyItem'])
+            ->name('payslips.items.destroy');
     });
 });

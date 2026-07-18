@@ -216,7 +216,7 @@
                         </div>
                     </div>
                     <div class="space-y-xs">
-                        <label class="block font-label-md text-label-md text-on-surface-variant">Phụ cấp ăn trưa</label>
+                        <label class="block font-label-md text-label-md text-on-surface-variant">Phụ cấp (ăn trưa, đi lại, chỗ ở...)</label>
                         <div class="relative">
                             <input name="lunch_allowance" value="{{ $val('lunch_allowance') }}" type="number" step="1000" placeholder="730000"
                                    class="w-full h-12 pl-md pr-12 border border-outline-variant rounded-lg font-body-md form-input-ring transition-all">

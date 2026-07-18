@@ -100,6 +100,18 @@
 | POST | `/tai-chinh/cong-no/{debt}/thanh-toan` | `finance.debts.pay` | auth, can:admin |
 | PATCH | `/tai-chinh/cong-no/{debt}/huy` | `finance.debts.cancel` | auth, can:admin |
 | DELETE | `/tai-chinh/cong-no/{debt}` | `finance.debts.destroy` | auth, can:admin |
+| GET | `/luong/cua-toi` | `payroll.my` | auth |
+| GET | `/luong/{period}/phieu/{payslip}` | `payroll.payslips.show` | auth (admin hoặc chủ phiếu) |
+| GET | `/luong` | `payroll.periods.index` | auth, can:admin |
+| POST | `/luong` | `payroll.periods.store` | auth, can:admin |
+| GET | `/luong/{period}` | `payroll.periods.show` | auth, can:admin |
+| POST | `/luong/{period}/tinh` | `payroll.periods.calculate` | auth, can:admin |
+| PATCH | `/luong/{period}/duyet` | `payroll.periods.approve` | auth, can:admin |
+| PATCH | `/luong/{period}/mo-lai` | `payroll.periods.reopen` | auth, can:admin |
+| POST | `/luong/{period}/chi` | `payroll.periods.pay` | auth, can:admin |
+| DELETE | `/luong/{period}` | `payroll.periods.destroy` | auth, can:admin |
+| POST | `/luong/{period}/phieu/{payslip}/khoan` | `payroll.payslips.items.store` | auth, can:admin |
+| DELETE | `/luong/{period}/phieu/{payslip}/khoan/{item}` | `payroll.payslips.items.destroy` | auth, can:admin |
 
 ## 5.3. Phụ lục B — Tác vụ nền / lệnh Artisan
 
@@ -110,7 +122,7 @@
 ## 5.4. Phụ lục C — Giới hạn hiện tại
 
 - Không có tầng API (không `routes/api.php`).
-- Không xử lý lương/bảng lương; chỉ lưu trữ dữ liệu lương/ngân hàng.
+- Module Lương (M11) đã có: tính lương prorate + phiếu lương + chi qua Tài chính. **Chưa** có BHXH/thuế TNCN, phạt đi muộn/tăng ca/tạm ứng tự động, xuất PDF (phase sau).
 - Không có module tuyển dụng, báo cáo/xuất dữ liệu.
 - Trường `attachment` của đơn nghỉ tồn tại nhưng chưa có luồng tải tệp.
 - Không có đặt lại mật khẩu qua email (chỉ có hạ tầng bảng).
@@ -123,7 +135,7 @@
 
 | Ưu tiên | Hạng mục | Ghi chú |
 |---------|----------|---------|
-| Cao | Module Lương/Bảng lương | Tận dụng `base_salary`, `lunch_allowance`, chấm công, nghỉ phép sẵn có |
+| Cao | Lương Phase 2/3 (BHXH, thuế TNCN, phạt/tăng ca/tạm ứng tự động, xuất PDF) | Mở rộng M11 đã có |
 | Cao | Tải tệp đính kèm đơn nghỉ | Kích hoạt trường `attachment` |
 | Trung bình | Báo cáo & xuất Excel/PDF | Chấm công, nghỉ phép, KPI |
 | Trung bình | Đặt lại mật khẩu qua email | Dùng `password_reset_tokens` + cấu hình SMTP |

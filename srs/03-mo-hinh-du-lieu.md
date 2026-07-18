@@ -71,6 +71,10 @@
 | `finance_categories` — `finance_transactions` | 1 — N | `finance_transactions.category_id` | `nullOnDelete` |
 | `finance_debts` — `finance_transactions` | 1 — N | `finance_transactions.debt_id` | `nullOnDelete` |
 | `users` — `finance_transactions` (người tạo) | 1 — N | `finance_transactions.created_by` | `nullOnDelete` |
+| `payroll_periods` — `payslips` | 1 — N | `payslips.payroll_period_id` | `cascadeOnDelete` |
+| `employees` — `payslips` | 1 — N | `payslips.employee_id` | `cascadeOnDelete` |
+| `payslips` — `payslip_items` | 1 — N | `payslip_items.payslip_id` | `cascadeOnDelete` |
+| `finance_transactions` — `payroll_periods` | 1 — 1 | `payroll_periods.finance_transaction_id` | `nullOnDelete` |
 
 ## 3.2. Từ điển dữ liệu
 
@@ -118,7 +122,7 @@ Bảng phụ trợ do Laravel tạo: `password_reset_tokens`, `sessions`, `cache
 | `bank_account` | string | nullable | Số tài khoản |
 | `bank_holder` | string | nullable | Chủ tài khoản |
 | `base_salary` | decimal(15,2) | nullable | Lương cơ bản (chỉ lưu trữ) |
-| `lunch_allowance` | decimal(15,2) | nullable | Phụ cấp ăn trưa (chỉ lưu trữ) |
+| `lunch_allowance` | decimal(15,2) | nullable | Phụ cấp gộp (ăn trưa, đi lại, chỗ ở...) |
 | `emergency_contact` | string | nullable | Liên hệ khẩn cấp |
 | `skills` | json | nullable | Danh sách kỹ năng (mảng) |
 | `timestamps` | | | |
@@ -328,6 +332,58 @@ Thuộc tính tính toán (model): `paid_amount` (tổng giao dịch gắn nợ)
 
 Thuộc tính tính toán (model): `direction_label` (Thu / Chi / Góp vốn theo `is_contribution`).
 
+### Bảng `payroll_periods` — Kỳ lương (M11)
+
+| Cột | Kiểu | Ràng buộc | Mô tả |
+|-----|------|-----------|-------|
+| `id` | bigint | PK | Định danh |
+| `name` | string | nullable | Tên hiển thị (tự sinh "Lương tháng MM/YYYY" nếu trống) |
+| `month` | tinyint | not null | Tháng 1–12 |
+| `year` | smallint | not null | Năm |
+| `days_in_month` | tinyint | not null | Số ngày lịch của kỳ = mẫu số chia lương ngày |
+| `status` | enum(`draft`,`calculated`,`approved`,`paid`) | default `draft` | Trạng thái kỳ |
+| `finance_transaction_id` | bigint | FK→finance_transactions, nullOnDelete | Giao dịch chi lương |
+| `note` | string | nullable | Ghi chú |
+| `created_by` / `approved_by` | bigint | FK→users, nullOnDelete | Người tạo / duyệt |
+| `approved_at` | timestamp | nullable | Thời điểm duyệt |
+| `timestamps` + `softDeletes` | | | |
+| — | | unique(`month`,`year`,`deleted_at`) | Không trùng kỳ (bỏ qua bản đã xoá) |
+
+### Bảng `payslips` — Phiếu lương từng nhân viên/kỳ (M11)
+
+| Cột | Kiểu | Ràng buộc | Mô tả |
+|-----|------|-----------|-------|
+| `id` | bigint | PK | |
+| `payroll_period_id` | bigint | FK→payroll_periods, cascade | Kỳ lương |
+| `employee_id` | bigint | FK→employees, cascade | Nhân viên |
+| `base_salary` / `lunch_allowance` | decimal(15,2) | | Snapshot lương/phụ cấp |
+| `days_in_month` | tinyint | | Mẫu số chia lương ngày |
+| `present_days` | decimal(5,1) | | Ngày thực đi làm (tính quota phép) |
+| `paid_leave_days` | decimal(5,1) | | Ngày phép có lương (≤ quota) |
+| `unpaid_leave_days` | decimal(5,1) | | Nghỉ không lương (gồm phần vượt quota) |
+| `absent_days` | decimal(5,1) | | Ngày vắng |
+| `unpaid_days` | decimal(5,1) | | Tổng ngày bị trừ = unpaid_leave + absent |
+| `paid_days` | decimal(5,1) | | Ngày được trả = days_in_month − unpaid_days |
+| `late_count` / `late_minutes` / `overtime_minutes` | int | | Tham chiếu (chưa tự động trừ ở Phase 1) |
+| `gross_amount` / `deduction_total` / `net_amount` | decimal(15,2) | | Tổng cộng / trừ / thực nhận |
+| `bank_snapshot` | string | nullable | TK ngân hàng lúc chi (đối soát) |
+| `note` | string | nullable | Cờ cảnh báo (VD quên check-out) |
+| `timestamps` | | unique(`payroll_period_id`,`employee_id`) | Một phiếu/NV/kỳ |
+
+### Bảng `payslip_items` — Dòng cộng/trừ của phiếu (M11)
+
+| Cột | Kiểu | Ràng buộc | Mô tả |
+|-----|------|-----------|-------|
+| `id` | bigint | PK | |
+| `payslip_id` | bigint | FK→payslips, cascade | Phiếu lương |
+| `type` | enum(`earning`,`deduction`) | not null | Cộng / Trừ |
+| `code` | string | nullable | `base`/`lunch` = hệ thống; NULL = thủ công |
+| `label` | string | not null | Diễn giải |
+| `amount` | decimal(15,2) | not null | Số tiền (>0) |
+| `is_system` | boolean | default false | Dòng hệ thống (không cho xoá tay) |
+| `meta` | json | nullable | Dữ liệu phụ (đơn giá, số ngày…) |
+| `timestamps` | | index(`payslip_id`,`type`) | |
+
 #### Các khóa cấu hình đã dùng
 
 | Khóa | Ý nghĩa | Mặc định tham chiếu |
@@ -336,7 +392,7 @@ Thuộc tính tính toán (model): `direction_label` (Thu / Chi / Góp vốn the
 | `tax_code` | Mã số thuế | — |
 | `website` | Website | — |
 | `address` | Địa chỉ | — |
-| `leave_days_per_month` | Quỹ phép/tháng | 1 |
+| `leave_days_per_month` | Quỹ phép có lương/tháng (dùng cho cả M06 & M11) | 6 |
 | `leave_days_per_year` | Quỹ phép/năm | 12 |
 | `work_start_time` | Giờ bắt đầu làm | 08:00 |
 | `work_end_time` | Giờ kết thúc làm | 17:30 |
@@ -367,6 +423,8 @@ Thuộc tính tính toán (model): `direction_label` (Thu / Chi / Góp vốn the
 | finance_transactions.direction | `income`/`expense` | Thu / Chi |
 | finance_debts.type | `receivable`/`payable` | Phải thu / Phải trả |
 | finance_debts.status | `open`/`partially_paid`/`paid`/`overdue`/`cancelled` | Còn nợ / Trả một phần / Đã trả / Quá hạn / Đã huỷ |
+| payroll_periods.status | `draft`/`calculated`/`approved`/`paid` | Nháp / Đã tính / Đã duyệt / Đã chi |
+| payslip_items.type | `earning`/`deduction` | Khoản cộng / Khoản trừ |
 
 ## 3.4. Dữ liệu khởi tạo (Seeder)
 

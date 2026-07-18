@@ -13,7 +13,7 @@ Cung cấp cho doanh nghiệp một công cụ **quản lý dòng tiền nội b
 - **Báo cáo dòng vốn**: **tổng tiền đã nạp vào công ty**, **tổng tiền đã chi**, và **số dư hiện tại** (đối chiếu nạp − chi). Số dư **được phép âm** (khi chi vượt nạp, ví dụ nhân viên ứng tiền cá nhân).
 - **Tổng quan tài chính** trên Dashboard: hiển thị **số dư hiện có**, tổng nạp/tổng chi, công nợ, dòng tiền theo thời gian.
 
-Module độc lập với nghiệp vụ nhân sự; là bước đệm cho module Lương/Bảng lương ở lộ trình sau.
+Module độc lập với nghiệp vụ nhân sự và là nền cho **module Lương (M11)**: khi chi lương, M11 sinh **một giao dịch `expense`** danh mục hệ thống **"Lương"** (tự tạo nếu chưa có) gắn quỹ được chọn, làm giảm số dư quỹ (cho phép âm). Tham chiếu `payroll_periods.finance_transaction_id` liên kết kỳ lương ↔ giao dịch chi.
 
 ## 2. Phạm vi
 
@@ -24,7 +24,7 @@ Module độc lập với nghiệp vụ nhân sự; là bước đệm cho modul
 
 ### Ngoài phạm vi (phiên bản này)
 
-- Tính lương/bảng lương (module riêng ở lộ trình sau; khi có sẽ *đẩy* giao dịch chi vào module này).
+- Tính lương/bảng lương do **module Lương (M11)** đảm nhận; M11 *đẩy* giao dịch chi (danh mục "Lương") vào module này.
 - Đa tiền tệ (giữ cột `currency` mặc định `VND` để mở rộng, nhưng không quy đổi tỷ giá).
 - Hoá đơn điện tử, kết nối ngân hàng/kế toán ngoài, xuất báo cáo thuế.
 - Xuất Excel/PDF (đề xuất bổ sung ở Phase 4+).

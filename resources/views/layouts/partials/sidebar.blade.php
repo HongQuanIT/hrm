@@ -5,9 +5,11 @@
         ['label' => 'Chấm công', 'icon' => 'fingerprint', 'route' => 'attendance.index', 'pattern' => 'attendance.*'],
         ['label' => 'Nghỉ phép', 'icon' => 'event_busy', 'route' => 'leaves.index', 'pattern' => 'leaves.*'],
         ['label' => 'KPI', 'icon' => 'analytics', 'route' => 'kpis.index', 'pattern' => 'kpis.*'],
+        ['label' => 'Phiếu lương', 'icon' => 'payments', 'route' => 'payroll.my', 'pattern' => 'payroll.my'],
     ];
     $systemNav = [
         ['label' => 'Tài chính', 'icon' => 'account_balance_wallet', 'route' => 'finance.overview', 'pattern' => 'finance.*'],
+        ['label' => 'Lương', 'icon' => 'receipt_long', 'route' => 'payroll.periods.index', 'pattern' => 'payroll.periods.*'],
         ['label' => 'Cài đặt', 'icon' => 'settings', 'route' => 'settings.index', 'pattern' => 'settings.*'],
     ];
     $user = auth()->user();
