@@ -17,7 +17,7 @@ Dylan HRM số hoá các hoạt động nhân sự cốt lõi trong một công 
 - **Cài đặt hệ thống**: thông tin công ty, chính sách chấm công/nghỉ phép, phòng ban, vai trò người dùng.
 - **Quản lý tài khoản cá nhân**: đổi mật khẩu.
 - **Quản lý tài chính**: quỹ tiền công ty, thu/chi, góp vốn, công nợ; báo cáo tổng nạp / tổng chi / số dư hiện có (cho phép âm).
-- **Lương / Bảng lương**: kỳ lương theo tháng, tính lương prorate theo ngày công và quota phép co theo tỷ lệ đi làm, phiếu lương từng nhân viên, khoản cộng/trừ tay, duyệt & chi qua Tài chính, nhân viên tự xem phiếu (self-service). Chưa gồm BHXH/thuế TNCN (phase sau).
+- **Lương / Bảng lương**: kỳ lương theo tháng, tính lương prorate theo `present_days + paid_leave_quota` (quota tự động theo tỷ lệ công), phiếu lương từng nhân viên, khoản cộng/trừ tay, duyệt & chi qua Tài chính, nhân viên tự xem phiếu (self-service). Chưa gồm BHXH/thuế TNCN (phase sau).
 
 ### Ngoài phạm vi (phiên bản hiện tại)
 

@@ -12,8 +12,8 @@ Tính lương theo **kỳ (tháng)** cho từng nhân viên dựa trên **công 
 
 ### Trong phạm vi (Phase 1 — MVP)
 - Tạo và quản lý **kỳ lương** theo tháng (mỗi tháng một kỳ).
-- **Tính lương tự động** theo phương pháp **prorate ngày công thực tế**: lương ngày × số ngày công (nghỉ không lương/vắng mặt bị trừ; nghỉ có lương được tính công).
-- **Lương tháng = lương cơ bản + phụ cấp**; lương ngày = lương tháng ÷ số ngày trong tháng. Phụ cấp là một phần của lương tháng (không phải khoản cộng ngoài) — nghỉ trong quota vẫn hưởng, chỉ ngày không lương/vắng bị trừ.
+- **Tính lương tự động** theo phương pháp **prorate ngày công thực tế**: lương ngày × `min(present_days + paid_leave_quota, days_in_month)`. Quota phép **tự động cộng** theo tỷ lệ đi làm (không bắt buộc đơn nghỉ); vắng / nghỉ vượt quota **không** được trả.
+- **Lương tháng = lương cơ bản + phụ cấp**; lương ngày = lương tháng ÷ số ngày trong tháng (mẫu số chia). Phụ cấp prorate theo `paid_days`.
 - **Phiếu lương** cho từng nhân viên với các dòng cộng/trừ (`payslip_items`); admin **thêm/xoá khoản tay** (thưởng, phạt, tạm ứng…).
 - Quy trình trạng thái: `draft` → `calculated` → `approved` → `paid`.
 - **Chi lương**: sinh giao dịch **chi** trong Tài chính (danh mục "Lương"), trừ quỹ được chọn.
@@ -71,20 +71,20 @@ Tính lương theo **kỳ (tháng)** cho từng nhân viên dựa trên **công 
 ### 5.2. Tính công (nguồn từ M05 + M06)
 | Mã | Quy tắc |
 |----|--------|
-| BR-M11-04 | **Lương tháng & đơn giá ngày công**: `monthly_salary = base_salary + lunch_allowance` (lương cơ bản + phụ cấp = lương của cả tháng). `daily_rate = monthly_salary / days_in_month`. Mỗi ngày lịch (kể cả cuối tuần) đều mang giá trị `daily_rate`; nhân viên đủ công cả tháng nhận đủ `monthly_salary`. |
+| BR-M11-04 | **Lương tháng & đơn giá ngày công**: `monthly_salary = base_salary + lunch_allowance`. `daily_rate = monthly_salary / days_in_month` (mẫu số = ngày lịch tháng). Được trả: ngày **đi làm** + **quota phép theo tỷ lệ công**; vắng / nghỉ vượt quota **không** hưởng. Chỉ khi `paid_days = days_in_month` mới nhận đủ `monthly_salary`. |
 | BR-M11-05 | **Ngày thực đi làm** (`present_days`): số bản ghi chấm công trong kỳ có `status ∈ {on_time, late, working, missing_checkout}` (`missing_checkout` vẫn tính 1 công nhưng **gắn cờ** để admin rà). |
-| BR-M11-06 | **Quota phép có lương co theo tỷ lệ đi làm**: `paid_leave_quota = round(leave_days_per_month × present_days / days_in_month)` — `leave_days_per_month` lấy từ cấu hình M09 (mặc định **6**); nghỉ càng nhiều → quota càng giảm. Làm tròn **gần nhất** (0.5 làm tròn lên). |
-| BR-M11-07 | **Ngày phép có lương** (`paid_leave_days`) `= min(tổng ngày nghỉ approved trong kỳ, paid_leave_quota)` — **không trừ lương**; số dư phép giảm dần và **được phép âm** (thống nhất BR-M06-09). |
-| BR-M11-08 | **Ngày nghỉ không lương** (`unpaid_leave_days`) `= max(tổng ngày nghỉ − paid_leave_days, 0)` (phần vượt quota + đơn loại `unpaid`) — **bị trừ**. **Ngày vắng** (`absent_days`): chấm công `status = absent` không có đơn phép hợp lệ — **bị trừ**. |
-| BR-M11-09 | `unpaid_days = unpaid_leave_days + absent_days`. `paid_days = days_in_month − unpaid_days`. Nghỉ phép **trong quota** và cuối tuần **không** làm giảm `paid_days`. |
+| BR-M11-06 | **Quota phép có lương co theo tỷ lệ đi làm**: `paid_leave_quota = round(leave_days_per_month × present_days / days_in_month)` — `leave_days_per_month` lấy từ cấu hình M09 (mặc định **6**). Làm ít → quota ít. Làm tròn **gần nhất** (0.5 làm tròn lên). |
+| BR-M11-07 | **Ngày phép được trả** (`paid_leave_days`) `= paid_leave_quota` — **tự động cộng** theo tỷ lệ công, **không bắt buộc** có đơn nghỉ approved. Đơn nghỉ approved vượt quota → phần vượt vào `unpaid_leave_days`. Số dư phép M06 vẫn chỉ giảm khi có đơn (thống nhất BR-M06-09). |
+| BR-M11-08 | **Ngày nghỉ không lương** (`unpaid_leave_days`) `= đơn loại unpaid + max(tổng ngày nghỉ loại có lương − quota, 0)` — **không cộng** vào `paid_days`. **Ngày vắng** (`absent_days`): chấm công `status = absent` — **không cộng** vào `paid_days`. |
+| BR-M11-09 | `unpaid_days = unpaid_leave_days + absent_days` (minh bạch). **`paid_days = min(present_days + paid_leave_days, days_in_month)`**. Không có công → quota = 0 → `paid_days = 0` → lương = 0. |
 
-### 5.3. Công thức lương (Phase 1 — prorate theo ngày lịch)
+### 5.3. Công thức lương (Phase 1 — prorate theo công thực tế)
 | Mã | Quy tắc |
 |----|--------|
 | BR-M11-10 | `daily_rate = (base_salary + lunch_allowance) / days_in_month` (nếu `days_in_month = 0` → coi lương công = 0, cảnh báo). |
-| BR-M11-11 | **Tổng lương theo công** (gồm cả phụ cấp) `= round(daily_rate × paid_days)`. Khi không có ngày bị trừ → đúng bằng `monthly_salary`. Trên phiếu tách thành 2 dòng để minh bạch: **Phụ cấp** `= round((lunch_allowance / days_in_month) × paid_days)` và **Lương cơ bản theo công** = tổng − phụ cấp (đảm bảo cộng khớp tuyệt đối). |
-| BR-M11-12 | **Khấu trừ nghỉ/vắng** thể hiện gián tiếp qua `paid_days` (đã trừ `unpaid_days`); có thể xuất **dòng thông tin** ghi rõ `unpaid_days × daily_rate` để minh bạch trên phiếu. |
-| BR-M11-13 | Phụ cấp là **một phần của lương tháng** (không phải khoản cộng thêm ngoài lương ngày). Nghỉ **trong quota** vẫn hưởng đủ phần phụ cấp tương ứng `paid_days`; chỉ ngày **không lương/vắng** mới làm giảm cả lương lẫn phụ cấp. |
+| BR-M11-11 | **Tổng lương theo công** (gồm cả phụ cấp) `= round(daily_rate × paid_days)`. Chỉ bằng `monthly_salary` khi `paid_days = days_in_month`. Trên phiếu tách thành 2 dòng: **Phụ cấp** `= round((lunch_allowance / days_in_month) × paid_days)` và **Lương cơ bản theo công** = tổng − phụ cấp (đảm bảo cộng khớp tuyệt đối). |
+| BR-M11-12 | **Vắng / nghỉ không lương** thể hiện gián tiếp vì không cộng vào `paid_days`; `unpaid_days` vẫn lưu trên phiếu để minh bạch (có thể xuất dòng thông tin `unpaid_days × daily_rate`). |
+| BR-M11-13 | Phụ cấp là **một phần của lương tháng** (không phải khoản cộng thêm ngoài lương ngày). Phụ cấp prorate theo `paid_days` giống lương cơ bản. |
 | BR-M11-14 | `gross_amount = Σ(earning items)`; `deduction_total = Σ(deduction items)`; `net_amount = gross_amount − deduction_total`. Tiền lưu `decimal(15,2)`, làm tròn đến đồng, **VND**, không dùng float (BR-M10-08). `net_amount` có thể = 0 nhưng **không âm** (khấu trừ > gross → cảnh báo, chốt 0, ghi công nợ phần vượt ở Phase sau). |
 
 ### 5.4. Trạng thái & khoá chỉnh sửa
@@ -157,11 +157,11 @@ Tính lương theo **kỳ (tháng)** cho từng nhân viên dựa trên **công 
 | `lunch_allowance` | decimal(15,2) | default 0 | Phụ cấp gộp (ăn trưa, đi lại, chỗ ở...) — snapshot |
 | `days_in_month` | tinyint | not null | Số ngày lịch của kỳ (mẫu số chia lương ngày) |
 | `present_days` | decimal(5,1) | default 0 | Ngày thực đi làm (dùng tính quota phép) |
-| `paid_leave_days` | decimal(5,1) | default 0 | Ngày nghỉ có lương (trong quota, không trừ) |
+| `paid_leave_days` | decimal(5,1) | default 0 | Quota phép được trả (= paid_leave_quota, tự động theo công) |
 | `unpaid_leave_days` | decimal(5,1) | default 0 | Ngày nghỉ không lương (gồm phần vượt quota) — bị trừ |
 | `absent_days` | decimal(5,1) | default 0 | Ngày vắng — bị trừ |
-| `unpaid_days` | decimal(5,1) | default 0 | Tổng ngày bị trừ = unpaid_leave + absent |
-| `paid_days` | decimal(5,1) | default 0 | Ngày được tính lương = days_in_month − unpaid_days |
+| `unpaid_days` | decimal(5,1) | default 0 | Tổng ngày không trả = unpaid_leave + absent (minh bạch) |
+| `paid_days` | decimal(5,1) | default 0 | Ngày được tính lương = min(present_days + paid_leave_days, days_in_month) |
 | `late_count` | int | default 0 | Số lần đi muộn (tham chiếu) |
 | `late_minutes` | int | default 0 | Tổng phút muộn (tham chiếu) |
 | `overtime_minutes` | int | default 0 | Phút tăng ca (Phase 2; mặc định 0) |
@@ -207,32 +207,36 @@ Tính lương theo **kỳ (tháng)** cho từng nhân viên dựa trên **công 
 
 ### 9.1. Chạy lương một tháng
 1. Admin vào `/luong` → "Tạo kỳ lương" tháng 04/2026 (`days_in_month` tự tính = 30) → `draft`.
-2. Bấm **Tính lương** → hệ thống duyệt từng nhân viên đủ điều kiện: đọc chấm công + nghỉ phép trong tháng, tính `present_days`, `paid_leave_days`, `unpaid_leave_days`/`absent_days`, suy ra `unpaid_days` và `paid_days`, sinh phiếu với dòng `base` + `lunch` → `calculated`.
+2. Bấm **Tính lương** → hệ thống duyệt từng nhân viên đủ điều kiện: đọc chấm công + nghỉ phép trong tháng, tính `present_days`, `paid_leave_quota` (= `paid_leave_days`), phần vượt đơn nghỉ / vắng vào `unpaid_*`, suy ra `paid_days = min(present + quota, days_in_month)`, sinh phiếu với dòng `base` + `lunch` → `calculated`.
 3. Admin rà soát, thêm khoản tay (VD Thưởng dự án +2.000.000; Tạm ứng −1.000.000) trên một số phiếu.
 4. **Duyệt** kỳ → `approved` (khoá).
 5. **Chi lương**: chọn quỹ "Tiền mặt", ngày chi 30/04 → sinh 1 giao dịch **chi** = Σ net, danh mục "Lương"; kỳ → `paid`; số dư quỹ giảm tương ứng.
 6. Nhân viên vào `/luong/cua-toi` xem phiếu tháng 04 của mình.
 
-### 9.2. Ví dụ tính một phiếu (quota phép co theo tỷ lệ đi làm)
+### 9.2. Ví dụ tính một phiếu (`paid_days = min(present_days + paid_leave_quota, days_in_month)`)
 
 Chung: lương cơ bản `24.000.000` + phụ cấp `6.000.000` → **lương tháng = 30.000.000**, tháng 4 → `days_in_month = 30`, `leave_days_per_month = 6`.
 → **lương ngày `daily_rate = 30.000.000 / 30 = 1.000.000`**.
 
-**Ví dụ A — nghỉ ít (3 ngày):** đi làm 27 ngày.
-- `paid_leave_quota = round(6 × 27/30) = round(5.4) = 5`; nghỉ 3 ≤ 5 → `paid_leave_days = 3`, `unpaid_days = 0`.
-- `paid_days = 30` → **Lương theo công** = 1.000.000 × 30 = **30.000.000** (đủ lương tháng).
+**Ví dụ A — đi làm 27 ngày** (có hoặc không đơn nghỉ ≤ quota):
+- `paid_leave_quota = round(6 × 27/30) = round(5.4) = 5` → `paid_leave_days = 5` (tự động).
+- `paid_days = min(27 + 5, 30) = 30` → **Lương theo công** = **30.000.000**.
 - `gross = net = 30.000.000` (tách phiếu: phụ cấp 6.000.000 + lương cơ bản 24.000.000).
 
-**Ví dụ B — nghỉ nhiều (10 ngày, đúng tình huống bạn nêu):** đi làm 20 ngày.
-- `paid_leave_quota = round(6 × 20/30) = round(4.0) = 4` → **phép có lương = 4**.
-- `unpaid_days = 10 − 4 = 6` → **vượt 6 ngày không lương**; `paid_days = 30 − 6 = 24`.
-- **Lương theo công** = 1.000.000 × 24 = **24.000.000** (trừ 6 ngày = 6.000.000).
-- `gross = net = 24.000.000` (phụ cấp phần công = 6.000.000×24/30 = 4.800.000; lương cơ bản = 19.200.000).
-- Số dư phép giảm 4 ngày (dùng hết quota tháng, không còn 6).
+**Ví dụ B — đi làm 20 ngày, đăng ký nghỉ 10 ngày:**
+- `paid_leave_quota = round(6 × 20/30) = 4` → `paid_leave_days = 4`.
+- `unpaid_days = 10 − 4 = 6` (phần vượt đơn nghỉ; không cộng paid_days).
+- `paid_days = min(20 + 4, 30) = 24` → **Lương theo công** = **24.000.000**.
+- `gross = net = 24.000.000` (phụ cấp 4.800.000; lương cơ bản 19.200.000).
 
-**Ví dụ C — nghỉ đúng 6 ngày:** đi làm 24 ngày.
-- `paid_leave_quota = round(6 × 24/30) = round(4.8) = 5`; nghỉ 6 > 5 → `paid_leave_days = 5`, `unpaid_days = 1`.
-- `paid_days = 29` → **Lương theo công** = 1.000.000 × 29 = **29.000.000**.
+**Ví dụ C — đi làm 24 ngày, đăng ký nghỉ 6 ngày:**
+- `paid_leave_quota = round(6 × 24/30) = round(4.8) = 5` → `paid_leave_days = 5`, `unpaid_days = 1`.
+- `paid_days = min(24 + 5, 30) = 29` → **Lương theo công** = **29.000.000**.
+
+**Ví dụ D — tháng 7 (31 ngày), lương tháng 10.000.000, `daily_rate ≈ 322.580,65`, quota gốc 6:**
+- NV1: Công / Nghỉ(đơn) / Vắng = 0 / 0 / 19 → quota `round(6×0/31)=0` → `paid_days = 0` → **lương = 0**.
+- NV2: 22 / 4 / 0 → quota `round(6×22/31)=4` → `paid_days = min(22+4,31)=26` → **lương = 8.387.097**.
+- NV3: 10 / 0 / 10 → quota `round(6×10/31)=2` (tự động, dù không đăng ký nghỉ) → `paid_days = min(10+2,31)=12` → **lương = round(10.000.000×12/31) = 3.870.968**.
 
 ## 10. Giao diện liên quan (đề xuất)
 
@@ -281,11 +285,14 @@ Chung: lương cơ bản `24.000.000` + phụ cấp `6.000.000` → **lương th
 ## 14. Trường hợp kiểm thử tiêu biểu
 
 - Tạo kỳ trùng (month, year) → lỗi validation "kỳ đã tồn tại".
-- Tính lương: NV đủ công cả tháng (không nghỉ/vắng) → Lương theo công = `base_salary`.
-- Quota phép co theo tỷ lệ đi làm: `round(6 × present_days / days_in_month)`; nghỉ ≤ quota → không trừ, nghỉ vượt quota → phần vượt tính `unpaid` và bị trừ `daily_rate`/ngày.
-- Ví dụ B mục 9.2: tháng 30 ngày, nghỉ 10, đi làm 20 → quota 4 → phép 4 + không lương 6 → `paid_days = 24`, lương = base × 24/30.
-- Kiểm tra làm tròn quota: đi làm 24/30 → `round(4.8)=5` (làm tròn gần nhất).
-- `days_in_month` ghi đè thủ công → công thức dùng giá trị ghi đè.
+- Tính lương: NV không có công → quota = 0 → `paid_days = 0` → lương = 0.
+- `paid_days = min(present_days + paid_leave_quota, days_in_month)`; `paid_leave_days = quota` (tự động, không bắt buộc đơn nghỉ).
+- Chỉ khi `paid_days = days_in_month` mới nhận đủ `monthly_salary`.
+- Đơn nghỉ vượt quota → phần vượt vào `unpaid_days` (không cộng paid_days).
+- Ví dụ B mục 9.2: tháng 30 ngày, đi làm 20, nghỉ đơn 10 → quota 4 → `paid_days = 24`, lương = monthly × 24/30.
+- Ví dụ D mục 9.2: tháng 7, lương 10.000.000 — NV1 → 0đ; NV2 → 8.387.097; NV3 (10 công, 0 đơn) → quota 2 → `paid_days = 12` → 3.870.968.
+- Kiểm tra làm tròn quota: đi làm 24/30 → `round(4.8)=5`; đi làm 10/31 → `round(1.935)=2`.
+- `days_in_month` ghi đè thủ công → công thức dùng giá trị ghi đè (mẫu số chia lương ngày).
 - Thêm khoản trừ tay → net giảm; net không âm (nếu khấu trừ > gross → chốt 0 + cảnh báo).
 - Duyệt kỳ → không cho sửa phiếu/thêm khoản (403/chặn).
 - Chi lương → sinh 1 giao dịch chi = Σ net, danh mục "Lương", số dư quỹ giảm đúng; kỳ `paid`.

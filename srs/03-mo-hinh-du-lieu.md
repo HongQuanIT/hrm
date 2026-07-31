@@ -359,11 +359,11 @@ Thuộc tính tính toán (model): `direction_label` (Thu / Chi / Góp vốn the
 | `base_salary` / `lunch_allowance` | decimal(15,2) | | Snapshot lương/phụ cấp |
 | `days_in_month` | tinyint | | Mẫu số chia lương ngày |
 | `present_days` | decimal(5,1) | | Ngày thực đi làm (tính quota phép) |
-| `paid_leave_days` | decimal(5,1) | | Ngày phép có lương (≤ quota) |
+| `paid_leave_days` | decimal(5,1) | | Quota phép được trả (= paid_leave_quota theo công) |
 | `unpaid_leave_days` | decimal(5,1) | | Nghỉ không lương (gồm phần vượt quota) |
 | `absent_days` | decimal(5,1) | | Ngày vắng |
-| `unpaid_days` | decimal(5,1) | | Tổng ngày bị trừ = unpaid_leave + absent |
-| `paid_days` | decimal(5,1) | | Ngày được trả = days_in_month − unpaid_days |
+| `unpaid_days` | decimal(5,1) | | Tổng ngày không trả = unpaid_leave + absent (minh bạch) |
+| `paid_days` | decimal(5,1) | | Ngày được trả = min(present_days + paid_leave_days, days_in_month) |
 | `late_count` / `late_minutes` / `overtime_minutes` | int | | Tham chiếu (chưa tự động trừ ở Phase 1) |
 | `gross_amount` / `deduction_total` / `net_amount` | decimal(15,2) | | Tổng cộng / trừ / thực nhận |
 | `bank_snapshot` | string | nullable | TK ngân hàng lúc chi (đối soát) |

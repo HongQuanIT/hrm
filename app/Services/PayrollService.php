@@ -86,14 +86,16 @@ class PayrollService
         $paidTypeDays = (float) $leaves->whereIn('type', self::PAID_LEAVE_TYPES)->sum('days');
         $unpaidTypeDays = (float) $leaves->where('type', 'unpaid')->sum('days');
 
-        // Quota phép co theo tỷ lệ đi làm → phần vượt quota tính không lương
+        // Quota phép co theo tỷ lệ đi làm — tự động cộng vào lương (không bắt buộc có đơn nghỉ).
+        // Đơn nghỉ vượt quota → phần vượt tính unpaid (không cộng paid_days).
         $quota = $this->paidLeaveQuota($presentDays, $daysInMonth);
-        $paidLeaveDays = min($paidTypeDays, $quota);
-        $excessLeaveDays = max($paidTypeDays - $paidLeaveDays, 0);
+        $paidLeaveDays = $quota;
+        $excessLeaveDays = max($paidTypeDays - $quota, 0);
         $unpaidLeaveDays = $unpaidTypeDays + $excessLeaveDays;
 
-        $unpaidDays = $unpaidLeaveDays + $absentDays;
-        $paidDays = max($daysInMonth - $unpaidDays, 0);
+        $unpaidDays = $unpaidLeaveDays + $absentDays; // lưu để minh bạch trên phiếu
+        // paid_days = công thực tế + quota phép theo tỷ lệ (trần = days_in_month).
+        $paidDays = min($presentDays + $paidLeaveDays, $daysInMonth);
 
         // Tổng lương theo công (gồm cả phụ cấp) = lương ngày × số ngày được trả.
         $workPay = (int) round($daily * $paidDays);

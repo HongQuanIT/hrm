@@ -113,7 +113,7 @@
                 </table>
             </div>
         </div>
-        <p class="text-[12px] text-on-surface-variant mt-sm">Cột "Công / Nghỉ / Vắng" = ngày đi làm / ngày phép có lương / ngày vắng.</p>
+        <p class="text-[12px] text-on-surface-variant mt-sm">Cột "Công / Nghỉ / Vắng" = ngày đi làm / quota phép theo tỷ lệ công (tự động) / ngày vắng.</p>
     </div>
 </div>
 
