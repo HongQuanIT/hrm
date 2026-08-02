@@ -71,12 +71,18 @@ command -v "${COMPOSER_BIN}" >/dev/null 2>&1 || die "Không tìm thấy Composer
 [ -f "artisan" ] || die "Không thấy file 'artisan' trong '${PROJECT_ROOT}'. Đặt đúng đường dẫn dự án qua biến PROJECT_ROOT, ví dụ: PROJECT_ROOT=/www/wwwroot/hrm.wpops.io ./script/deploy.sh"
 [ -f ".env" ] || die "Thiếu file .env. Copy từ .env.example và cấu hình trước khi deploy."
 
+# Git ≥2.35 từ chối repo nếu user chạy script ≠ owner thư mục (aaPanel/BT hay gặp).
+# Dùng -c safe.directory để không cần sửa git config --global trên server.
+git_safe() {
+  git -c "safe.directory=${PROJECT_ROOT}" "$@"
+}
+
 # 1. Lấy code mới nhất từ nhánh main.
 log "Lấy code mới nhất từ ${REMOTE}/${BRANCH}..."
-git fetch "${REMOTE}" "${BRANCH}"
-git checkout "${BRANCH}"
-git reset --hard "${REMOTE}/${BRANCH}"
-ok "Đã cập nhật code lên $(git rev-parse --short HEAD)."
+git_safe fetch "${REMOTE}" "${BRANCH}"
+git_safe checkout "${BRANCH}"
+git_safe reset --hard "${REMOTE}/${BRANCH}"
+ok "Đã cập nhật code lên $(git_safe rev-parse --short HEAD)."
 
 # 2. Cài dependency production.
 log "Cài đặt dependency (production, no-dev)..."
